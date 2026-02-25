@@ -20,6 +20,7 @@ from fastoad.module_management.service_registry import RegisterSubmodel
 from fastoad_cs25.models.weight.mass_breakdown.a_airframe.constants import (
     SERVICE_WING_MASS,
 )
+from scipy.constants import g
 
 RegisterSubmodel.active_models[SERVICE_WING_MASS] = "rta.submodel.weight.mass.airframe.wing"
 
@@ -43,8 +44,7 @@ class WingWeight(om.ExplicitComponent):
         self.add_input("data:geometry:wing:sweep_25", val=np.nan, units="rad")
         self.add_input("data:geometry:wing:outer_area", val=np.nan, units="m**2")
         self.add_input("data:weight:aircraft:MTOW", val=np.nan, units="kg")
-        self.add_input("data:mission:sizing:cs25:sizing_load_1", val=np.nan, units="kg")
-        self.add_input("data:mission:sizing:cs25:sizing_load_2", val=np.nan, units="kg")
+        self.add_input("data:mission:sizing:cs25:sizing_load", val=np.nan, units="N")
         self.add_input("tuning:weight:airframe:wing:mass:k", val=1.0)
         self.add_input("tuning:weight:airframe:wing:mass:offset", val=0.0, units="kg")
         self.add_input("tuning:weight:airframe:wing:bending_sizing:mass:k", val=1.0)
@@ -80,10 +80,7 @@ class WingWeight(om.ExplicitComponent):
         sweep_25 = inputs["data:geometry:wing:sweep_25"]
         cantilevered_area = inputs["data:geometry:wing:outer_area"]
         mtow = inputs["data:weight:aircraft:MTOW"]
-        max_nm = max(
-            inputs["data:mission:sizing:cs25:sizing_load_1"],
-            inputs["data:mission:sizing:cs25:sizing_load_2"],
-        )
+        max_nm = inputs["data:mission:sizing:cs25:sizing_load"] / g
 
         # K factors
         k_a1 = inputs["tuning:weight:airframe:wing:mass:k"]

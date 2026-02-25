@@ -290,10 +290,7 @@
           </second_segment>
         </climb>
         <cs25>
-          <load_factor_1 is_input="False">3.75</load_factor_1>
-          <load_factor_2 is_input="False">3.75</load_factor_2>
-          <sizing_load_1 units="kg" is_input="False">92856.73472461183</sizing_load_1>
-          <sizing_load_2 units="kg" is_input="False">88508.21187260823</sizing_load_2>
+          <sizing_load units="N" is_input="False">910613.4975871146</sizing_load>
         </cs25>
         <descent>
           <thrust_rate is_input="True">0.1<!--Input defined by the mission.--></thrust_rate>
