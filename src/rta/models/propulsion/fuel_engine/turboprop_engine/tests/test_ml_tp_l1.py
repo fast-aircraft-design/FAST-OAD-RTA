@@ -1,10 +1,11 @@
 import os.path as pth
 
 import numpy as np
-from fastoad.io import VariableIO
-from ..ml_tp_l1 import ML_TP_L1
-from fastoad.model_base import FlightPoint
 from fastoad.constants import EngineSetting
+from fastoad.io import VariableIO
+from fastoad.model_base import FlightPoint
+
+from ..ml_tp_l1 import ML_TP_L1
 
 DATA_FOLDER_PATH = pth.join(pth.dirname(__file__), "data")
 RESULTS_FOLDER_PATH = pth.join(pth.dirname(__file__), "results")
@@ -14,7 +15,7 @@ RESULTS_FOLDER = "problem_folder"
 
 engine_params = {
     "RTO_power": "data:propulsion:RTO_power",
-    "Power_Offtake": "data:propulsion:Power_Offtake",
+    "power_offtake": "data:propulsion:power_offtake",
     "gearbox_eta": "data:propulsion:gearbox_eta",
     "d_prop": "data:geometry:propulsion:propeller:diameter",
     "k_gb_RTO": "settings:propulsion:ratings:RTO:k_gb",

@@ -12,17 +12,19 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-from scipy import constants
 import logging
-from typing import Union, Sequence, Tuple, Optional
+from typing import Optional, Sequence, Tuple, Union
+
 import numpy as np
+import pandas as pd
 from fastoad.constants import FlightPhase
+from fastoad.model_base.flight_point import FlightPoint
 from fastoad_cs25.models.propulsion.fuel_propulsion.rubber_engine.exceptions import (
     FastRubberEngineInconsistentInputParametersError,
 )
+from scipy import constants
 from stdatm import AtmosphereSI
-import pandas as pd
-from fastoad.model_base.flight_point import FlightPoint
+
 from .base import AbstractFuelPropulsion
 from .engine_components.propeller import Propeller
 
@@ -34,7 +36,7 @@ class ML_TP_L1(AbstractFuelPropulsion):
     def __init__(
         self,
         RTO_power: float,
-        Power_Offtake: float,
+        power_offtake: float,
         gearbox_eta: float,
         d_prop: float,
         k_gb_RTO: float,
@@ -61,7 +63,7 @@ class ML_TP_L1(AbstractFuelPropulsion):
         """
 
         self.RTO_power = RTO_power
-        self.Power_Offtake = Power_Offtake
+        self.power_offtake = power_offtake
         self.gearbox_eta = gearbox_eta
         self.d_prop = d_prop
 

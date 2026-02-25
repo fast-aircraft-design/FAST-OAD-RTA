@@ -14,14 +14,14 @@
 
 import numpy as np
 from fastoad.model_base.propulsion import (
+    FuelEngineSet,
     IOMPropulsionWrapper,
     IPropulsion,
-    FuelEngineSet,
 )
 from fastoad.module_management.service_registry import RegisterPropulsion
 from openmdao.core.component import Component
-from .ml_tp_l1 import ML_TP_L1
 
+from .ml_tp_l1 import ML_TP_L1
 
 ####################################################################################################
 # TURBOPROP model
@@ -40,7 +40,7 @@ class OMMLTPL1Wrapper(IOMPropulsionWrapper):
 
     def setup(self, component: Component):
         component.add_input("data:propulsion:RTO_power", np.nan, units="W")
-        component.add_input("data:propulsion:Power_Offtake", np.nan, units="W")
+        component.add_input("data:propulsion:power_offtake", np.nan, units="W")
         component.add_input("data:propulsion:gearbox_eta", np.nan)
         component.add_input("data:geometry:propulsion:propeller:diameter", np.nan, units="m")
         component.add_input("data:geometry:propulsion:engine:count", 2)
@@ -64,7 +64,7 @@ class OMMLTPL1Wrapper(IOMPropulsionWrapper):
         """
         engine_params = {
             "RTO_power": inputs["data:propulsion:RTO_power"],
-            "Power_Offtake": inputs["data:propulsion:Power_Offtake"],
+            "power_offtake": inputs["data:propulsion:power_offtake"],
             "gearbox_eta": inputs["data:propulsion:gearbox_eta"],
             "d_prop": inputs["data:geometry:propulsion:propeller:diameter"],
             "k_gb_RTO": inputs["settings:propulsion:ratings:RTO:k_gb"],

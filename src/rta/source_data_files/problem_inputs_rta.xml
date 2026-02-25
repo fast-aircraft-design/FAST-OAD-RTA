@@ -196,7 +196,7 @@
     </handling_qualities>
     <propulsion>
       <design_thermal_power units="W" is_input="True">2497648.194206328</design_thermal_power>
-      <Power_Offtake units="W" is_input="True">7500.0</Power_Offtake>
+      <power_offtake units="W" is_input="True">7500.0</power_offtake>
       <RTO_power units="W" is_input="True">2047252.6182019084</RTO_power>
       <gearbox_eta is_input="True">0.99</gearbox_eta>
       <L1_engine>
