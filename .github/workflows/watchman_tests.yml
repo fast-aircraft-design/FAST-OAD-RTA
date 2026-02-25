@@ -53,3 +53,7 @@ jobs:
       - name: Unit tests
         run: pytest --no-cov src
         shell: bash
+
+      - name: Integration tests
+        run: pytest --no-cov tests
+        shell: bash
