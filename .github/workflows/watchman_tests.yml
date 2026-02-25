@@ -1,0 +1,55 @@
+name: Watchman Tests
+# This workflow will run tests with an up-to-date production environment instead
+# of the locked one.
+# It will warn developers if the update of a dependency broke something.
+
+on:
+  workflow_dispatch:
+  workflow_call:
+  push:
+    branches: [ main ]
+  pull_request:
+    # The branches below must be a subset of the branches above
+    branches: [ main ]
+  schedule:
+    - cron: '27 4 * * MON' # Every Monday at 4:27 UTC
+
+
+
+jobs:
+  tests:
+    runs-on: ${{ matrix.os }}
+    if: ${{ !contains(github.event.head_commit.message, '[ci skip]') && !contains(github.event.head_commit.message, '[skip ci]') }}
+    strategy:
+      matrix:
+        python-version: [ "3.14" ]
+        os: [ ubuntu-latest, windows-latest, macos-latest ]
+
+    steps:
+      - uses: actions/checkout@v6
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v6
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install
+        # Installing pytest-cov is needed because of pytest settings in pyproject.toml
+        run: |
+          pip install .
+          pip install git+https://github.com/fast-aircraft-design/FAST-OAD.git
+          pip install pytest pytest-cov nbval
+        shell: bash
+
+      - name: List installed packages
+        # List packages and versions for postmortem analysis.
+        run: pip list --format=freeze | tee requirements.txt
+        shell: bash
+
+      - uses: actions/upload-artifact@v6
+        with:
+          name: pip package list for ${{ matrix.os }}
+          path: requirements.txt
+
+      - name: Unit tests
+        run: pytest --no-cov src
+        shell: bash
