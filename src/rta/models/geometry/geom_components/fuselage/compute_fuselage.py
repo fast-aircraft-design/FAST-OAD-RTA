@@ -103,7 +103,7 @@ class ComputeFuselageGeometryBasic(ExplicitComponent):
 
         x_cg_c6 = lav / 2  # modified
 
-        pnc = int((npax_1 + 17) / 35)
+        pnc = np.trunc((npax_1 + 17) / 35)
 
         # Equivalent diameter of the fuselage
         fus_dia = np.sqrt(b_f * h_f)
@@ -264,9 +264,9 @@ class ComputeFuselageGeometryCabinSizing(ExplicitComponent):
         )
 
         # Number of rows = Npax / N
-        npax_1 = int(1.05 * npax)
-        n_rows = int(npax_1 / front_seat_number_eco)
-        pnc = int((npax + 17) / 35)
+        npax_1 = np.trunc(1.05 * npax)
+        n_rows = np.trunc(npax_1 / front_seat_number_eco)
+        pnc = np.trunc((npax + 17) / 35)
         # Length of pax cabin = Length of seat area + Width of 1 Emergency
         # exits
         lpax = (n_rows * ls_eco) + 1 * w_exit
