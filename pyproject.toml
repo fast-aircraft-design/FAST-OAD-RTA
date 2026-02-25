@@ -39,7 +39,6 @@ rta = "rta"
 # Poetry settings ==============================================================
 [tool.poetry]
 requires-poetry = ">=2.0" # You should upgrade poetry to v2 using 'pipx upgrade poetry'
-version = "0.1.0"  # This version number is overwritten by GitHub packaging workflow
 packages = [
     { include = "rta", from = "src" },
 ]
@@ -67,6 +66,8 @@ classifiers = [
 
 # Development dependencies -----------------------------------------------------
 # Development dependencies using Poetry groups instead of [project.optional-dependencies]
+version = "0.1.0"  # This version number is overwritten by GitHub packaging workflow
+
 [tool.poetry.group.dev.dependencies]
 matplotlib = "^3.9.2"
 
@@ -107,7 +108,7 @@ build-backend = "poetry_dynamic_versioning.backend"
 [tool.pytest.ini_options]
 minversion = "8.0"
 addopts = "--cov-report term-missing --cov-report html --verbose"
-testpaths = ["src"]
+testpaths = ["src", "tests"]
 norecursedirs = ["dist", "build", ".tox", ".ipynb_checkpoints"]
 filterwarnings = ["default"]
 
