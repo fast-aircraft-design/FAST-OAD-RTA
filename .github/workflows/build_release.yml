@@ -41,7 +41,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: ${{ matrix.python-version }}
 
@@ -55,7 +55,7 @@ jobs:
 
       - name: Build and publish RTA to PyPI
         env:
-          TOKEN: ${{ secrets.PyPI }} # do not use the secret directly in run command, it would write it plainly in the log
+          TOKEN: ${{ secrets.PYPI_API_TOKEN }} # do not use the secret directly in run command, it would write it plainly in the log
         run: |
           poetry build
           poetry config pypi-token.pypi "$TOKEN"

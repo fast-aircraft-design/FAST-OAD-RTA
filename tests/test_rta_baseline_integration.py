@@ -6,12 +6,11 @@ import numpy as np
 import openmdao.api as om
 import pandas as pd
 import pytest
-from fastoad.module_management._plugins import FastoadLoader
-from numpy.testing import assert_allclose
-
 from fastoad import api
 from fastoad.io import VariableIO
 from fastoad.io.configuration.configuration import FASTOADProblemConfigurator
+from fastoad.module_management._plugins import FastoadLoader
+from numpy.testing import assert_allclose
 
 FastoadLoader()
 
@@ -51,7 +50,7 @@ def run_non_regression_test(
 
     # Copy of configuration file and generation of problem instance ------------------
     api.generate_configuration_file(
-        configuration_file_path, distribution_name="rta"
+        configuration_file_path, distribution_name="FAST-OAD-RTA"
     )  # just ensure folders are created...
     shutil.copy(pth.join(DATA_FOLDER_PATH, conf_file), configuration_file_path)
     shutil.copy(
