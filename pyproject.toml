@@ -29,7 +29,7 @@ dependencies = [
 ]
 
 [project.urls]
-homepage = "https://github.com/fast-aircraft-design/RTA"
+homepage = "https://github.com/fast-aircraft-design/FAST-OAD-RTA"
 
 # Entry points -----------------------------------------------------------------
 [project.entry-points."fastoad.plugins"]
