@@ -5,4 +5,4 @@ Changelog
 
 Version 0.1.0
 =============
-- Initialization
+- First release of FAST-OAD-RTA.
