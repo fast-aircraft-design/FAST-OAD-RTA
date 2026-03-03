@@ -1,6 +1,6 @@
-from pytest import approx
 from fastoad.testing import run_system
 from openmdao.core.indepvarcomp import IndepVarComp
+from pytest import approx
 
 from ..compute_engine_size import ComputeEngineSize
 
@@ -14,8 +14,8 @@ def test_compute_engine_size():
     ivc.add_output("data:TLAR:OEI_ceiling", val=8000, units="m")
     ivc.add_output("data:TLAR:cruise_mach", val=0.55)
 
-    problem = run_system(ComputeEngineSize(), ivc)
+    problem = run_system(ComputeEngineSize(), ivc, nonlinear_solver="om.NonlinearBlockGS")
 
     assert problem["data:propulsion:RTO_power"] == approx(4.301e6, rel=1e-3)
-    assert problem["data:propulsion:Design_Thermo_Power"] == approx(5.247e6, rel=1e-3)
+    assert problem["data:propulsion:design_thermal_power"] == approx(5.247e6, rel=1e-3)
     assert problem["data:propulsion:propeller:max_power"] == approx(4.705e6, rel=1e-3)

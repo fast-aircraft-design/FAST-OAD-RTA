@@ -15,7 +15,7 @@ jobs:
     if: ${{ !contains(github.event.head_commit.message, '[ci skip]') && !contains(github.event.head_commit.message, '[skip ci]') }}
     strategy:
       matrix:
-        python-version: ["3.10", "3.12" ]
+        python-version: ["3.10", "3.12", "3.14" ]
         os: [ ubuntu-latest, windows-latest, macos-latest ]
 
     steps:
@@ -25,7 +25,7 @@ jobs:
         run: pipx install poetry==${{ vars.POETRY_VERSION }}
 
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: ${{ matrix.python-version }}
           cache: 'poetry'
@@ -42,7 +42,8 @@ jobs:
         shell: bash
 
       - name: Unit tests
-        if: ${{ runner.os != 'Linux' && matrix.python-version != '3.10' }}
+      # Runners that won't send coverage report are run without coverage overhead
+        if: ${{ runner.os != 'Linux' || matrix.python-version != '3.10' }}
         run: |
           poetry run pytest src
         shell: bash

@@ -13,14 +13,14 @@
 
 # pylint: disable=redefined-outer-name  # needed for pytest fixtures
 import os.path as pth
+
 import openmdao.api as om
 import pytest
-
-from fastoad.testing import run_system
 from fastoad.io import VariableIO
+from fastoad.testing import run_system
 
-from ..a_airframe.a6_nacelles_weight import NacellesWeight
 from ..a_airframe.a1_wing_weight import WingWeight
+from ..a_airframe.a6_nacelles_weight import NacellesWeight
 from ..b_propulsion.turboprop_weight import TurbopropWeight
 
 
@@ -57,8 +57,7 @@ def test_wing_weight():
         "data:geometry:wing:sweep_25",
         "data:geometry:wing:outer_area",
         "data:weight:aircraft:MTOW",
-        "data:mission:sizing:cs25:sizing_load_1",
-        "data:mission:sizing:cs25:sizing_load_2",
+        "data:mission:sizing:cs25:sizing_load",
         "tuning:weight:airframe:wing:mass:k",
         "tuning:weight:airframe:wing:mass:offset",
         "tuning:weight:airframe:wing:bending_sizing:mass:k",

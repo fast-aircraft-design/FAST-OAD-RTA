@@ -14,9 +14,10 @@ Computation of turbopropeller output power
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+import warnings
+
 import numpy as np
 import openmdao.api as om
-import warnings
 from fastoad.module_management.constants import ModelDomain
 from fastoad.module_management.service_registry import RegisterOpenMDAOSystem
 
@@ -39,7 +40,7 @@ class ComputeEngineSize(om.ExplicitComponent):
 
         self.add_output("data:propulsion:RTO_power", val=self.initial_RTO_power, units="W")
         self.add_output(
-            "data:propulsion:Design_Thermo_Power",
+            "data:propulsion:design_thermal_power",
             val=self.initial_RTO_power * 1.22,
             units="W",
         )
@@ -73,5 +74,5 @@ class ComputeEngineSize(om.ExplicitComponent):
         self.previous_RTO_power = RTO_power
 
         outputs["data:propulsion:RTO_power"] = RTO_power
-        outputs["data:propulsion:Design_Thermo_Power"] = RTO_power * 1.22
+        outputs["data:propulsion:design_thermal_power"] = RTO_power * 1.22
         outputs["data:propulsion:propeller:max_power"] = RTO_power * 1.094

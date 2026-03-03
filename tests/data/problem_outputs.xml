@@ -205,7 +205,7 @@
     </handling_qualities>
     <load_case>
       <gust_intensity is_input="True">1.0<!--a factor for gust load alleviation, 1.0: full gust load is applied, 0.0: gust load is fully alleviated--></gust_intensity>
-      <manoeuvre_load_factor is_input="True">2.5<!--limit positive manoeuvring load factor--></manoeuvre_load_factor>
+      <maneuver_load_factor is_input="True">2.5<!--limit positive maneuvering load factor--></maneuver_load_factor>
       <lc1>
         <U_gust units="m/s" is_input="True">15.25<!--gust vertical speed for sizing load case 1 (gust with minimum aircraft mass)--></U_gust>
         <Vc_EAS units="m/s" is_input="True">102.8888888888889<!--equivalent air speed for sizing load case 1 (gust with minimum aircraft mass)--></Vc_EAS>
@@ -218,8 +218,8 @@
       </lc2>
     </load_case>
     <propulsion>
-      <Design_Thermo_Power units="W" is_input="True">2497648.194206328<!--Power used to compute the gas turbine mass flow rate--></Design_Thermo_Power>
-      <Power_Offtake units="W" is_input="True">7500.0</Power_Offtake>
+      <design_thermal_power units="W" is_input="True">2497648.194206328<!--Power used to compute the gas turbine mass flow rate--></design_thermal_power>
+      <power_offtake units="W" is_input="True">7500.0</power_offtake>
       <RTO_power units="W" is_input="True">2047252.6182019084<!--Reserve take off power of the gas turbine--></RTO_power>
       <gearbox_eta is_input="True">0.99<!--Efficiency of gearbox between turboshaft and propeller--></gearbox_eta>
       <L1_engine>
@@ -268,7 +268,7 @@
         </sizing>
       </L1_engine>
       <electric_systems>
-        <P_nom units="W" is_input="True">0.0</P_nom>
+        <design_electric_power units="W" is_input="True">0.0</design_electric_power>
       </electric_systems>
       <propeller>
         <disk_loading units="kW/m**2" is_input="True">184.99</disk_loading>

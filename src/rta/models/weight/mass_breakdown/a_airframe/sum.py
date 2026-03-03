@@ -1,14 +1,13 @@
 import openmdao.api as om
 from fastoad.module_management.service_registry import RegisterSubmodel
+from fastoad_cs25.models.weight.mass_breakdown.a_airframe.constants import (
+    SERVICE_EMPENNAGE_MASS,
+    SERVICE_FUSELAGE_MASS,
+    SERVICE_LANDING_GEARS_MASS,
+    SERVICE_WING_MASS,
+)
 from fastoad_cs25.models.weight.mass_breakdown.constants import (
     SERVICE_AIRFRAME_MASS,
-    SERVICE_GUST_LOADS,
-)
-from fastoad_cs25.models.weight.mass_breakdown.a_airframe.constants import (
-    SERVICE_WING_MASS,
-    SERVICE_FUSELAGE_MASS,
-    SERVICE_EMPENNAGE_MASS,
-    SERVICE_LANDING_GEARS_MASS,
 )
 
 from rta.models.weight.mass_breakdown.a_airframe.constants import SERVICE_NACELLE_MASS
@@ -24,9 +23,6 @@ class AirframeWeight(om.Group):
 
     def setup(self):
         # Airframe
-        self.add_subsystem(
-            "loads", RegisterSubmodel.get_submodel(SERVICE_GUST_LOADS), promotes=["*"]
-        )
         self.add_subsystem(
             "ATA57", RegisterSubmodel.get_submodel(SERVICE_WING_MASS), promotes=["*"]
         )

@@ -6,9 +6,10 @@ Created on Mon Sep 14 10:12:50 2020
 """
 
 import numpy as np
+from fastoad.module_management.service_registry import RegisterSubmodel
 from openmdao.core.explicitcomponent import ExplicitComponent
 from scipy import constants
-from fastoad.module_management.service_registry import RegisterSubmodel
+
 from rta.models.weight.mass_breakdown.b_propulsion.constants import (
     SERVICE_TURBOPROP_MASS,
 )
@@ -43,7 +44,7 @@ class TurbopropWeight(ExplicitComponent):
         self.declare_partials("*", "*", method="fd")
 
     def compute(self, inputs, outputs, discrete_inputs=None, discrete_outputs=None):
-        P_nom = inputs["data:propulsion:RTO_power"]
+        design_electric_power = inputs["data:propulsion:RTO_power"]
         n_eng = inputs["data:geometry:propulsion:engine:count"]
         l_fus = inputs["data:geometry:fuselage:length"]
         k_eng = inputs["tuning:weight:propulsion:engine:mass:k"]
@@ -51,11 +52,13 @@ class TurbopropWeight(ExplicitComponent):
         k_prop = inputs["tuning:weight:propulsion:propeller:mass:k"]
         D_prop = inputs["data:geometry:propulsion:propeller:diameter"]
         n_blades = inputs["data:geometry:propulsion:propeller:B"]
-        P_nom_prop = inputs["data:propulsion:propeller:max_power"] * 1000
+        design_electric_power_prop = inputs["data:propulsion:propeller:max_power"] * 1000
 
-        m_eng = 0.758 * (P_nom / constants.hp) ** 0.803  # mass of dry engine and gearbox
+        m_eng = (
+            0.758 * (design_electric_power / constants.hp) ** 0.803
+        )  # mass of dry engine and gearbox
 
-        m_prop = 0.5 * ((D_prop * P_nom_prop * (n_blades) ** 0.5) / 227.2) ** 0.52
+        m_prop = 0.5 * ((D_prop * design_electric_power_prop * (n_blades) ** 0.5) / 227.2) ** 0.52
         m_ec = 0.454 * (5 * n_eng + 2.63 * l_fus)
         m_ess = 22.31 * ((m_eng * n_eng) / 453.59) ** 0.541
         m_osc = 0.07 * m_eng

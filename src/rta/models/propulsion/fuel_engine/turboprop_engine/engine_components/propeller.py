@@ -1,9 +1,10 @@
-from scipy import constants
-import numpy as np
-from stdatm import AtmosphereSI
-from typing import Union, Sequence
+from typing import Sequence, Union
 
+import numpy as np
+from fastoad._utils.arrays import scalarize
+from scipy import constants
 from scipy.optimize import fsolve
+from stdatm import AtmosphereSI
 
 
 class Propeller(object):
@@ -57,9 +58,9 @@ class Propeller(object):
 
             # Interpol while mach is between [0,0.2]
             x = [0, 0.2]
-            y = [float(T_prop_0), float(T_prop_ref)]
+            y = [scalarize(T_prop_0), scalarize(T_prop_ref)]
 
-            T_prop = np.interp(float(mach), x, y)
+            T_prop = np.interp(scalarize(mach), x, y)
 
         else:
             T_prop = fsolve(P_to_T, 1, args=(shp_prop, V_TAS, rho, d))[0]

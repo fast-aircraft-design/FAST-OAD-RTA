@@ -196,8 +196,8 @@
       <static_margin is_input="False">0.050000008056034356<!--(X-position of neutral point - X-position of center of gravity ) / (mean aerodynamic chord)--><target is_input="True">0.05</target></static_margin>
     </handling_qualities>
     <propulsion>
-      <Design_Thermo_Power units="W" is_input="False">2497648.194206328</Design_Thermo_Power>
-      <Power_Offtake units="W" is_input="True">7500.0</Power_Offtake>
+      <design_thermal_power units="W" is_input="False">2497648.194206328</design_thermal_power>
+      <power_offtake units="W" is_input="True">7500.0</power_offtake>
       <RTO_power units="W" is_input="False">2047252.6182019084</RTO_power>
       <gearbox_eta is_input="True">0.99</gearbox_eta>
       <L1_engine>
@@ -246,7 +246,7 @@
         </sizing>
       </L1_engine>
       <electric_systems>
-        <P_nom units="W" is_input="True">0.0</P_nom>
+        <design_electric_power units="W" is_input="True">0.0</design_electric_power>
         <H2_storage>
           <diameter units="m" is_input="True">0.0</diameter>
           <length units="m" is_input="True">0.0</length>
