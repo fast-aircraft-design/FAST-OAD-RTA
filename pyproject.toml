@@ -1,6 +1,6 @@
 # Project metadata (PEP 621) ===============================================
 [project]
-name = "RTA"
+name = "FAST-OAD-RTA"
 description = "Conceptual aircraft design platform for conventional 80 seat aircraft"
 readme = "README.md"
 license = "GPL-3.0-only"
@@ -12,11 +12,11 @@ keywords = [
 ]
 authors = [
     {name = "Vincenzo PALLADINO"},
-    {name = "Eric Nguyen Van", email = "eric.nguyen_van@onera.fr"}
+    {name = "Eric NGUYEN VAN", email = "eric.nguyen_van@onera.fr"}
 ]
 maintainers = [
     { name = "Florent LUTZ", email = "Florent.LUTZ2@isae-supaero.fr" },
-    { name = "Eric NGUYEN VAN", email = "Eric.Nguyen_Van@onera.fr" },
+    { name = "Eric NGUYEN VAN", email = "eric.nguyen_van@onera.fr" },
     { name = "Enrico STRAGIOTTI", email = "enrico.stragiotti@onera.fr" },
 ]
 requires-python = ">=3.10,<3.15"
