@@ -246,7 +246,7 @@
         </sizing>
       </L1_engine>
       <electric_systems>
-        <P_nom units="W" is_input="True">0.0</P_nom>
+        <design_electric_power units="W" is_input="True">0.0</design_electric_power>
         <H2_storage>
           <diameter units="m" is_input="True">0.0</diameter>
           <length units="m" is_input="True">0.0</length>

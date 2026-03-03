@@ -17,7 +17,7 @@ def test_nacelle():
     ivc.add_output("data:geometry:propulsion:engine:y_ratio", val=0.3)
     ivc.add_output("data:geometry:wing:span", val=26.84, units="m")
     ivc.add_output("data:propulsion:design_thermal_power", val=2.497e6, units="W")
-    ivc.add_output("data:propulsion:electric_systems:P_nom", val=0.0, units="W")
+    ivc.add_output("data:propulsion:electric_systems:design_electric_power", val=0.0, units="W")
 
     problem = run_system(ComputeNacelleGeometry(), ivc)
 

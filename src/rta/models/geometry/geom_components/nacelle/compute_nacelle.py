@@ -32,7 +32,7 @@ class ComputeNacelleGeometry(om.ExplicitComponent):
         self.add_input("data:geometry:propulsion:engine:y_ratio", val=np.nan)
         self.add_input("data:geometry:wing:span", val=np.nan, units="m")
         self.add_input("data:propulsion:design_thermal_power", np.nan, units="W")
-        self.add_input("data:propulsion:electric_systems:P_nom", 0, units="W")
+        self.add_input("data:propulsion:electric_systems:design_electric_power", 0, units="W")
 
         self.add_output("data:geometry:propulsion:nacelle:length", units="m")
         self.add_output("data:geometry:propulsion:nacelle:diameter", units="m")
@@ -43,7 +43,7 @@ class ComputeNacelleGeometry(om.ExplicitComponent):
             "data:geometry:propulsion:nacelle:diameter",
             [
                 "data:propulsion:design_thermal_power",
-                "data:propulsion:electric_systems:P_nom",
+                "data:propulsion:electric_systems:design_electric_power",
             ],
             method="fd",
         )
@@ -51,7 +51,7 @@ class ComputeNacelleGeometry(om.ExplicitComponent):
             "data:geometry:propulsion:nacelle:length",
             [
                 "data:propulsion:design_thermal_power",
-                "data:propulsion:electric_systems:P_nom",
+                "data:propulsion:electric_systems:design_electric_power",
             ],
             method="fd",
         )
@@ -69,7 +69,7 @@ class ComputeNacelleGeometry(om.ExplicitComponent):
             "data:geometry:propulsion:nacelle:wetted_area",
             [
                 "data:propulsion:design_thermal_power",
-                "data:propulsion:electric_systems:P_nom",
+                "data:propulsion:electric_systems:design_electric_power",
             ],
             method="fd",
         )
@@ -78,17 +78,17 @@ class ComputeNacelleGeometry(om.ExplicitComponent):
         y_ratio_engine = inputs["data:geometry:propulsion:engine:y_ratio"]
         span = inputs["data:geometry:wing:span"]
         design_thermal_power = inputs["data:propulsion:design_thermal_power"]
-        Design_Elec_Power = inputs["data:propulsion:electric_systems:P_nom"]
+        design_electric_power = inputs["data:propulsion:electric_systems:design_electric_power"]
 
         # calculation of gas turbine dimensions
         nac_length = (
             4.14
-            * ((design_thermal_power + Design_Elec_Power) / constants.hp) ** 0.373
+            * ((design_thermal_power + design_electric_power) / constants.hp) ** 0.373
             * constants.inch
         )
         nac_dia = (
             9.48
-            * ((design_thermal_power + Design_Elec_Power) / constants.hp) ** 0.12
+            * ((design_thermal_power + design_electric_power) / constants.hp) ** 0.12
             * constants.inch
         )
 

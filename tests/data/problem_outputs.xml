@@ -268,7 +268,7 @@
         </sizing>
       </L1_engine>
       <electric_systems>
-        <P_nom units="W" is_input="True">0.0</P_nom>
+        <design_electric_power units="W" is_input="True">0.0</design_electric_power>
       </electric_systems>
       <propeller>
         <disk_loading units="kW/m**2" is_input="True">184.99</disk_loading>
