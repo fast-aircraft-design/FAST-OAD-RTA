@@ -10,3 +10,9 @@
 #  GNU General Public License for more details.
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+"""Propulsion models and components for RTA."""
+
+from .component_base import AbstractPropulsiveComponent
+
+__all__ = ["AbstractPropulsiveComponent"]
