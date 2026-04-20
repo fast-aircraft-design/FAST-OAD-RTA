@@ -18,15 +18,13 @@ inheriting from AbstractPropulsiveComponent.
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-from dataclasses import dataclass
-
+import numpy as np
 from fastoad.model_base.flight_point import FlightPoint
 from fastoad.openmdao.variables import VariableList, Variable
 
 from rta.models.propulsion.component_base import AbstractPropulsiveComponent
 
 
-@dataclass
 class PropellerPowerCalculator(AbstractPropulsiveComponent):
     """
     Example component for turboprop shaft power calculations.
@@ -34,19 +32,19 @@ class PropellerPowerCalculator(AbstractPropulsiveComponent):
     This component computes the required shaft power for a propeller
     based on thrust, velocity, and propeller efficiency.
 
-    Inputs:
+    input_parameters:
         - data:propulsion:propeller:efficiency: Propeller efficiency [1]
 
-    FlightPoint inputs:
+    FlightPoint input fields:
         - thrust: Thrust [N]
         - true_airspeed: Aircraft true airspeed [m/s]
 
-    Outputs:
+    FlightPoint output fields:
         - gearbox_shaft_power: Shaft power [W]
 
     Usage:
         >>> propeller = PropellerPowerCalculator()
-        >>> propeller.inputs["data:propulsion:propeller:efficiency"].value(0.85)
+        >>> propeller.input_parameters["data:propulsion:propeller:efficiency"].value(0.85)
         >>> fp = FlightPoint()
         >>> fp.thrust = 5000  # N
         >>> fp.true_airspeed = 200  # m/s
@@ -57,23 +55,25 @@ class PropellerPowerCalculator(AbstractPropulsiveComponent):
 
     name = "PropellerPowerCalculator"
 
-    inputs = VariableList()
-    inputs.append(
-        Variable(
-            "data:propulsion:propeller:efficiency",
-            units="unitless",
-            desc="Propeller efficiency (0-1)",
-        )
+    input_parameters = VariableList(
+        [
+            Variable(
+                "data:propulsion:propeller:efficiency",
+                val=np.nan,
+                units="unitless",
+                desc="Propeller efficiency (0-1)",
+            )
+        ]
     )
 
     # Dictionary of FlightPoint fields required as input (field_name: unit)
-    flightpoint_input = {
+    input_fields = {
         "thrust": "N",
         "true_airspeed": "m/s",
     }
 
     # Dictionary of FlightPoint fields to be computed (field_name: unit)
-    flightpoint_output = {
+    output_fields = {
         "gearbox_shaft_power": "W",
     }
 
@@ -91,7 +91,7 @@ class PropellerPowerCalculator(AbstractPropulsiveComponent):
         """
         thrust = flight_point.thrust
         true_airspeed = flight_point.true_airspeed
-        efficiency = self.inputs["data:propulsion:propeller:efficiency"].get_val()
+        efficiency = self.input_parameters["data:propulsion:propeller:efficiency"].get_val()
 
         # Avoid division by zero
         if efficiency == 0:

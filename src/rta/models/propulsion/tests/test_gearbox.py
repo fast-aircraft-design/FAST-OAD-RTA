@@ -27,17 +27,22 @@ from rta.models.propulsion.tests.dummy_components.gearbox import GearboxComponen
 
 def test_gearbox_compute_perfo_single_flight_point():
     """Test compute_perfo() with a single FlightPoint."""
-    gearbox = GearboxComponent()
-    gearbox.inputs["data:propulsion:gearbox:efficiency"].value = 0.90
+    try:
+        gearbox = GearboxComponent()
+        gearbox.input_parameters["data:propulsion:gearbox:efficiency"].value = 0.90
 
-    fp = FlightPoint()
-    fp.gearbox_shaft_power = 500000.0  # W
+        fp = FlightPoint()
+        fp.gearbox_shaft_power = 500000.0  # W
 
-    gearbox.compute_perfo(fp)
+        gearbox.compute_perfo(fp)
 
-    # Expected: 500000 * 0.90 = 450000
-    expected_power = 500000.0 * 0.90
-    assert fp.TPshaft_power == pytest.approx(expected_power, rel=1e-6)
+        # Expected: 500000 / 0.90 = 550000
+        expected_power = 500000.0 / 0.90
+        assert fp.TPshaft_power == pytest.approx(expected_power, rel=1e-6)
+
+    finally:
+        for field, val in GearboxComponent.output_fields.items():
+            FlightPoint.remove_field(field)
 
 
 def test_gearbox_compute_perfo_list_of_flight_points():
@@ -45,7 +50,7 @@ def test_gearbox_compute_perfo_list_of_flight_points():
     try:
         FlightPoint.add_field(name="gearbox_shaft_power", unit="W")
         gearbox = GearboxComponent()
-        gearbox.inputs["data:propulsion:gearbox:efficiency"].value = 0.95
+        gearbox.input_parameters["data:propulsion:gearbox:efficiency"].value = 0.95
 
         fp1 = FlightPoint()
         fp1.gearbox_shaft_power = 1000000.0
@@ -55,14 +60,13 @@ def test_gearbox_compute_perfo_list_of_flight_points():
 
         gearbox.compute_perfo([fp1, fp2])
 
-        # First result: 1000000 * 0.95
-        expected_power1 = 1000000.0 * 0.95
+        # First result: 1000000 / 0.95
+        expected_power1 = 1000000.0 / 0.95
         assert fp1.TPshaft_power == pytest.approx(expected_power1, rel=1e-6)
 
-        # Second result: 2000000 * 0.95
-        expected_power2 = 2000000.0 * 0.95
+        # Second result: 2000000 / 0.95
+        expected_power2 = 2000000.0 / 0.95
         assert fp2.TPshaft_power == pytest.approx(expected_power2, rel=1e-6)
     finally:
-        FlightPoint.remove_field("gearbox_shaft_power")
-        for field, val in gearbox.flightpoint_output.items():
+        for field, val in GearboxComponent.output_fields.items():
             FlightPoint.remove_field(field)

@@ -18,15 +18,13 @@ based on input power and gearbox efficiency.
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-from dataclasses import dataclass
-
+import numpy as np
 from fastoad.model_base.flight_point import FlightPoint
 from fastoad.openmdao.variables import VariableList, Variable
 
 from rta.models.propulsion.component_base import AbstractPropulsiveComponent
 
 
-@dataclass
 class GearboxComponent(AbstractPropulsiveComponent):
     """
     Component for gearbox power transmission calculations.
@@ -34,20 +32,20 @@ class GearboxComponent(AbstractPropulsiveComponent):
     This component computes the output shaft power from a gearbox based on
     input power and gearbox efficiency.
 
-    Inputs:
+    input_parameters:
         - data:propulsion:gearbox:efficiency: Gearbox efficiency [1]
 
-    FlightPoint inputs:
+    FlightPoint input fields:
         - gearbox_shaft_power: Input shaft power [W]
 
-    Outputs:
+    FlightPoint output fields:
         - TPshaft_power: Output shaft power [W]
 
     Usage:
         >>> gearbox = GearboxComponent()
         >>> fp = FlightPoint()
         >>> fp.gearbox_shaft_power = 1000000  # W
-        >>> gearbox.inputs["data:propulsion:gearbox:efficiency"].value = 0.95
+        >>> gearbox.input_parameters["data:propulsion:gearbox:efficiency"].value = 0.95
         >>> gearbox.compute_perfo(fp)
         >>> print(fp.TPshaft_power)
         950000.0
@@ -55,20 +53,24 @@ class GearboxComponent(AbstractPropulsiveComponent):
 
     name = "GearboxComponent"
 
-    inputs = VariableList()
-    inputs.append(
-        Variable(
-            "data:propulsion:gearbox:efficiency", units="unitless", desc="Gearbox efficiency (0-1)"
-        )
+    input_parameters = VariableList(
+        [
+            Variable(
+                "data:propulsion:gearbox:efficiency",
+                val=np.nan,
+                units="unitless",
+                desc="Gearbox efficiency (0-1)",
+            )
+        ]
     )
 
     # Dictionary of FlightPoint fields required as input (field_name: unit)
-    flightpoint_input = {
+    input_fields = {
         "gearbox_shaft_power": "W",
     }
 
     # Dictionary of FlightPoint fields to be computed (field_name: unit)
-    flightpoint_output = {
+    output_fields = {
         "TPshaft_power": "W",
     }
 
@@ -85,7 +87,7 @@ class GearboxComponent(AbstractPropulsiveComponent):
             FlightPoint with TPshaft_power computed.
         """
         input_power = flight_point.gearbox_shaft_power
-        efficiency = self.inputs["data:propulsion:gearbox:efficiency"].get_val()
+        efficiency = self.input_parameters["data:propulsion:gearbox:efficiency"].get_val()
 
         # Compute output power
-        flight_point.TPshaft_power = input_power * efficiency
+        flight_point.TPshaft_power = input_power / efficiency

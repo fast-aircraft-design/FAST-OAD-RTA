@@ -18,12 +18,13 @@ for integration with FAST-OAD's OpenMDAO-based workflow.
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import numpy as np
+from fastoad.model_base import FlightPoint
+from openmdao.api import ExplicitComponent
 from openmdao.core.component import Component
 
 from fastoad.model_base.propulsion import (
     FuelEngineSet,
     IOMPropulsionWrapper,
-    BaseOMPropulsionComponent,
 )
 
 from .gearbox import GearboxComponent
@@ -57,15 +58,15 @@ class PropulsionSystemOMWrapper(IOMPropulsionWrapper):
             component: The OpenMDAO component where inputs will be declared.
         """
         # Declare inputs from PropellerPowerCalculator
-        for var in PropellerPowerCalculator.inputs:
+        for var in PropellerPowerCalculator.input_parameters:
             component.add_input(var.name, np.nan, units=var.units)
 
         # Declare inputs from GearboxComponent
-        for var in GearboxComponent.inputs:
+        for var in GearboxComponent.input_parameters:
             component.add_input(var.name, np.nan, units=var.units)
 
     @staticmethod
-    def get_model(inputs) -> FuelEngineSet:
+    def get_model(inputs, engine_count) -> FuelEngineSet:
         """
         Create and configure the propulsion system model instance.
 
@@ -81,6 +82,7 @@ class PropulsionSystemOMWrapper(IOMPropulsionWrapper):
         Returns:
             FuelEngineSet instance with the PropulsionSystemModule as engine.
         """
+
         # Instantiate the propeller power calculator
         propeller = PropellerPowerCalculator()
 
@@ -88,10 +90,10 @@ class PropulsionSystemOMWrapper(IOMPropulsionWrapper):
         gearbox = GearboxComponent()
 
         # Update propeller inputs from the inputs vector
-        propeller.inputs.update(inputs, add_variables=False)
+        propeller.update_input_parameters(inputs)
 
         # Update gearbox inputs from the inputs vector
-        gearbox.inputs.update(inputs, add_variables=False)
+        gearbox.update_input_parameters(inputs)
 
         # Create the propulsion system module with configured components
         propulsion_system = PropulsionSystemModule(
@@ -100,22 +102,53 @@ class PropulsionSystemOMWrapper(IOMPropulsionWrapper):
         )
 
         # Return a FuelEngineSet with the propulsion system as engine
-        # engine_count=1 for a single engine configuration
-        return FuelEngineSet(engine=propulsion_system, engine_count=2)
+        return FuelEngineSet(engine=propulsion_system, engine_count=engine_count)
 
 
-class OMPropulsionSystemComponent(BaseOMPropulsionComponent):
+class OMPropulsionSystemComponent(ExplicitComponent):
     """
     Parametric engine model as OpenMDAO component. Used for unit and integration tests.
 
     """
 
-    def setup(self):
-        super().setup()
+    def setup(
+        self,
+    ):
         self.get_wrapper().setup(self)
+
+        self.add_input("data:propulsion:true_airspeed", np.nan, units="m/s", shape_by_conn=True)
+        self.add_input("data:propulsion:thrust", np.nan, units="N", shape_by_conn=True)
+        self.add_input(
+            "data:propulsion:count",
+            val=np.nan,
+        )
+
+        self.add_output("data:propulsion:sfc", copy_shape="data:propulsion:thrust", units="kg/s/N")
+        self.add_output(
+            "data:propulsion:gearbox_shaft_power", copy_shape="data:propulsion:thrust", units="W"
+        )
+        self.add_output(
+            "data:propulsion:TPshaft_power", copy_shape="data:propulsion:thrust", units="W"
+        )
 
     def setup_partials(self):
         self.declare_partials("*", "*", method="fd")
+
+    def compute(self, inputs, outputs, discrete_inputs=None, discrete_outputs=None):
+        engine_count = inputs["data:propulsion:count"]
+
+        wrapper = self.get_wrapper().get_model(inputs, engine_count)
+
+        airspeed = inputs["data:propulsion:true_airspeed"]
+        thrusts = inputs["data:propulsion:thrust"]
+
+        flight_points = FlightPoint(true_airspeed=airspeed, thrust=thrusts)
+
+        wrapper.compute_flight_points(flight_points)
+
+        outputs["data:propulsion:sfc"] = flight_points.sfc
+        outputs["data:propulsion:gearbox_shaft_power"] = flight_points.gearbox_shaft_power
+        outputs["data:propulsion:TPshaft_power"] = flight_points.TPshaft_power
 
     @staticmethod
     def get_wrapper() -> PropulsionSystemOMWrapper:

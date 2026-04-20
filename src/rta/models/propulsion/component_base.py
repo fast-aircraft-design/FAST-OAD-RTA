@@ -20,15 +20,14 @@ components that can be used in aircraft performance calculations.
 
 import warnings
 from abc import ABC, abstractmethod
-from copy import deepcopy
-from dataclasses import dataclass, field
+
+from openmdao.vectors.default_vector import DefaultVector
 from typing import ClassVar, Union
 
 from fastoad.model_base.flight_point import FlightPoint
-from fastoad.openmdao.variables import Variable, VariableList
+from fastoad.openmdao.variables import VariableList
 
 
-@dataclass
 class AbstractPropulsiveComponent(ABC):
     """
     Abstract base class for propulsive components in RTA.
@@ -38,72 +37,36 @@ class AbstractPropulsiveComponent(ABC):
 
     Subclasses must:
         1. Define class-level `name` as a string identifying the component
-        2. Define class-level `inputs` as VariableList instance
-        3. Define class-level `flightpoint_input` and `flightpoint_output` as dictionaries
+        2. Define class-level `input_parameters` as VariableList instance
+        3. Define class-level `input_fields` and `output_fields` as dictionaries
            mapping FlightPoint field names to their units
         4. Implement the `compute_single_point()` method with their specific logic
 
     Attributes:
         name: Class-level string identifying the component name (used in error messages).
         inputs: Class-level VariableList declaring input variables for the component.
-        flightpoint_input: Dictionary of FlightPoint field names required as input with their units.
-        flightpoint_output: Dictionary of FlightPoint field names to be computed with their units.
+        input_fields: Dictionary of FlightPoint field names required as input with their units.
+        output_fields: Dictionary of FlightPoint field names to be computed with their units.
     """
 
-    # Class-level name for the component (must be defined by subclasses)
+    # Name of the component
     name: ClassVar[str] = "UnnamedComponent"
 
-    # Instance-level copy of class-level VariableLists (for potential per-instance modifications)
-    _inputs: VariableList = field(default=VariableList, init=False, repr=False)
-    _flightpoint_input: dict = field(default=None, init=False, repr=False)
-    _flightpoint_output: dict = field(default=None, init=False, repr=False)
+    # Input parameters, all parameters defining the components and required for calculation of FlightPoint
+    input_parameters: VariableList = None
 
-    def __post_init__(self):
+    # Inputs fields that should be present in the FlightPoint class to compute component performances
+    input_fields: dict = None
+
+    # Output fields that will be added to the FlightPoint class and computed by the components
+    output_fields: dict = None
+
+    def __init__(self):
         """
         Initialize the component and automatically expand FlightPoint with output fields.
         """
-        # Copy class-level VariableLists to instance level using deepcopy
-        # self._inputs = deepcopy(self.inputs)
-        # self._flightpoint_input = dict(self.flightpoint_input)
-        # self._flightpoint_output = dict(self.flightpoint_output)
-
         # Automatically expand FlightPoint class with output fields
         self._expand_flight_point()
-
-    @property
-    def inputs(self) -> VariableList:
-        """
-        Get the input VariableList.
-
-        Returns:
-            The input VariableList for this component.
-        """
-        return self._inputs
-
-    @inputs.setter
-    def inputs(self, value: VariableList):
-        """Set the input VariableList."""
-        self._inputs = value
-
-    @property
-    def flightpoint_input(self) -> dict:
-        """
-        Get the dictionary of input FlightPoint fields.
-
-        Returns:
-            Dictionary mapping FlightPoint field names to their units.
-        """
-        return self._flightpoint_input
-
-    @property
-    def flightpoint_output(self) -> dict:
-        """
-        Get the dictionary of output FlightPoint fields.
-
-        Returns:
-            Dictionary mapping FlightPoint field names to their units.
-        """
-        return self._flightpoint_output
 
     def _expand_flight_point(self) -> None:
         """
@@ -114,30 +77,26 @@ class AbstractPropulsiveComponent(ABC):
         a warning is issued to alert about potential redundant declarations.
 
         The method uses FlightPoint.add_field() to dynamically add fields for
-        each output variable declared in the flightpoint_output dictionary.
+        each output variable declared in the output_fields dictionary.
         """
-        for field_name, unit in self.flightpoint_output.items():
+        for field_name, unit in self.output_fields.items():
             if hasattr(FlightPoint, field_name):
                 warnings.warn(
                     f"Component '{self.name}' attempts to expand FlightPoint with "
                     f"field '{field_name}' but it is already present. "
-                    f"Check redondant declarations."
+                    f"Check for redondant declarations."
                 )
             else:
                 FlightPoint.add_field(field_name, unit=unit)
 
-    def _check_flightpoint_input_fields(self) -> None:
+    def _check_input_fields_fields(self) -> None:
         """
-        Check that all fields declared in flightpoint_input are part of the FlightPoint class.
-
-        This method should be called inside compute_perfo() before processing flight points.
-        It validates that all required input fields exist in the FlightPoint class.
-
+        Check that all fields declared in input_fields are part of the FlightPoint class.
         Raises:
             ValueError: If one or more required input fields are missing from the FlightPoint class.
         """
         missing_fields = []
-        for field_name in self.flightpoint_input.keys():
+        for field_name in self.input_fields.keys():
             if not hasattr(FlightPoint, field_name):
                 missing_fields.append(field_name)
 
@@ -146,7 +105,7 @@ class AbstractPropulsiveComponent(ABC):
                 f"Component '{self.name}': The following required input fields are missing "
                 f"from the FlightPoint class: {', '.join(missing_fields)}. "
                 f"Please ensure these fields are properly defined in the FlightPoint class "
-                f"or remove them from the flightpoint_input dictionary."
+                f"or remove them from the input_fields dictionary."
             )
 
     def compute_perfo(self, flight_point: Union[FlightPoint, list[FlightPoint]]):
@@ -169,7 +128,7 @@ class AbstractPropulsiveComponent(ABC):
                                  compute_single_point().
         """
         # Check that all required input fields exist in FlightPoint class
-        self._check_flightpoint_input_fields()
+        self._check_input_fields_fields()
 
         if isinstance(flight_point, list):
             for fp in flight_point:
@@ -198,3 +157,9 @@ class AbstractPropulsiveComponent(ABC):
         raise NotImplementedError(
             f"Subclass {self.__class__.__name__} must implement compute_single_point()"
         )
+
+    def update_input_parameters(self, inputs: DefaultVector):
+        """Update the input_parameters list from openmdao vector"""
+
+        for name in self.input_parameters.names():
+            self.input_parameters[name].value = inputs[name]

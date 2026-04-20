@@ -19,7 +19,6 @@ by combining propeller, gearbox, and fuel flow calculations.
 
 from typing import Union
 
-import numpy as np
 import pandas as pd
 from fastoad.model_base.flight_point import FlightPoint
 
@@ -126,5 +125,4 @@ class PropulsionSystemModule(AbstractFuelPropulsion):
 
         # Store results in flight point
         flight_point.psfc = psfc_in_kg_per_w_s  # kg/W/s
-        flight_point.thrust = flight_point.thrust  # N (already set from propeller input)
         flight_point.sfc = sfc  # kg/N/s
