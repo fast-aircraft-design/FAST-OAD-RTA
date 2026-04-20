@@ -44,13 +44,13 @@ class AbstractPropulsiveComponent(ABC):
 
     Attributes:
         name: Class-level string identifying the component name (used in error messages).
-        inputs: Class-level VariableList declaring input variables for the component.
+        input_parameters: Class-level VariableList declaring input parameters for the component.
         input_fields: Dictionary of FlightPoint field names required as input with their units.
         output_fields: Dictionary of FlightPoint field names to be computed with their units.
     """
 
     # Name of the component
-    name: ClassVar[str] = "UnnamedComponent"
+    name: ClassVar[str] = None
 
     # Input parameters, all parameters defining the components and required for calculation of FlightPoint
     input_parameters: VariableList = None

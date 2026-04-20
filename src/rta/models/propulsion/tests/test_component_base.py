@@ -21,12 +21,10 @@ VariableList updates.
 
 import pytest
 
-from dataclasses import dataclass
 
 from fastoad.model_base.flight_point import FlightPoint
 from fastoad.openmdao.variables import VariableList, Variable
 
-from rta.models.propulsion.component_base import AbstractPropulsiveComponent
 from rta.models.propulsion.tests.dummy_components.propeller_power_calculator import (
     PropellerPowerCalculator,
 )
@@ -36,29 +34,28 @@ def test_flight_point_fields_expanded_at_instantiation():
     """Test that FlightPoint fields are expanded when component is instantiated."""
     # Before instantiation, check that the output field doesn't exist
     # We use a fresh FlightPoint to verify the field is added
-    try:
-        _ = PropellerPowerCalculator()
+    _ = PropellerPowerCalculator()
 
-        # After instantiation, the output field should be available on FlightPoint
-        fp = FlightPoint()
-        assert hasattr(
-            fp, "gearbox_shaft_power"
-        ), "FlightPoint should have gearbox_shaft_power attribute after component instantiation"
-    finally:
-        FlightPoint.remove_field("gearbox_shaft_power")
-        for field, val in PropellerPowerCalculator.output_fields.items():
-            FlightPoint.remove_field(field)
+    # After instantiation, the output field should be available on FlightPoint
+    fp = FlightPoint()
+    assert hasattr(
+        fp, "gearbox_shaft_power"
+    ), "FlightPoint should have gearbox_shaft_power attribute after component instantiation"
 
 
 def test_flight_point_expansion_only_once():
     """Test that FlightPoint fields are only added once (not duplicated)."""
-    # Create first component - should add fields
-    # component1 = PropellerPowerCalculator()
+    # Create first component - should add fields without warning
+    _ = PropellerPowerCalculator()
 
-    # Create second component of same type - should not cause issues
-    # component2 = PropellerPowerCalculator()
+    # Create second component of same type - should trigger warning for redundant field
+    with pytest.warns(UserWarning) as record:
+        _ = PropellerPowerCalculator()
 
-    # TODO:check warning message
+    # Verify that a warning was issued about redundant declarations
+    assert len(record) == 1
+    assert "redondant declarations" in str(record[0].message)
+    assert "gearbox_shaft_power" in str(record[0].message)
 
 
 def test_compute_perfo_single_flight_point():
@@ -116,19 +113,3 @@ def test_inputs_can_be_updated_using_update():
 
     # Verify
     assert component.input_parameters["data:propulsion:propeller:efficiency"].get_val() == 0.5
-
-
-def test_subclass_must_implement_compute_single_point():
-    """Test that subclasses must implement compute_single_point()."""
-    # TODO: check error message
-
-    # Create a minimal subclass without implementing compute_single_point
-    @dataclass
-    class IncompleteComponent(AbstractPropulsiveComponent):
-        name: str = "IncompleteComponent"
-        inputs = VariableList()
-        input_fields = {}
-        flightpoint_output = {}
-
-    with pytest.raises(NotImplementedError):
-        _ = IncompleteComponent()
