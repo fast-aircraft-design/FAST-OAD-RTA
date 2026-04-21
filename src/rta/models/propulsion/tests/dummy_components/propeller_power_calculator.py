@@ -44,7 +44,7 @@ class PropellerPowerCalculator(AbstractPropulsiveComponent):
 
     Usage:
         >>> propeller = PropellerPowerCalculator()
-        >>> propeller.input_parameters["data:propulsion:propeller:efficiency"].value(0.85)
+        >>> propeller.input_parameters["data:propulsion:propeller:efficiency"].value = 0.85
         >>> fp = FlightPoint()
         >>> fp.thrust = 5000  # N
         >>> fp.true_airspeed = 200  # m/s

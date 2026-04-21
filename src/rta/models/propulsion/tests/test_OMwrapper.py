@@ -8,7 +8,7 @@ from rta.models.propulsion.tests.dummy_components.propulsion_system_OMwrapper im
 
 
 def test_PropulsionSystemOMComponent():
-    """Tests ManualRubberEngine component"""
+    """Tests PropulsionSystemOMComponent component"""
 
     engine = PropulsionSystemOMComponent()
 

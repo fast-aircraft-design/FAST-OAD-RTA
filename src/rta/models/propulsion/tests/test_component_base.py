@@ -95,7 +95,7 @@ def test_compute_perfo_list_of_flight_points():
     expected_power1 = (50000.0 * 200.0) / 0.85
     assert flightpoints[0].gearbox_shaft_power == pytest.approx(expected_power1, rel=1e-6)
 
-    # Second result: (60000 * 250) / 0.90
+    # Second result: (60000 * 250) / 0.85
     expected_power2 = (60000.0 * 250.0) / 0.85
     assert flightpoints[1].gearbox_shaft_power == pytest.approx(expected_power2, rel=1e-6)
 

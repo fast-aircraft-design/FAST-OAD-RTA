@@ -56,8 +56,8 @@ def test_propulsion_system_module_compute_single_flight_point():
     # = (50000 * 200) / 0.85 = 11764705.88... W
     expected_gearbox_shaft_power = (50000.0 * 200.0) / 0.85
 
-    # Step 2: Gearbox computes TPshaft_power = gearbox_shaft_power * efficiency
-    # = 11764705.88 * 0.95 = 11176470.59... W
+    # Step 2: Gearbox computes TPshaft_power = gearbox_shaft_power / efficiency
+    # = 11764705.88 / 0.95 = 12383901.98... W
     expected_tpshaft_power = expected_gearbox_shaft_power / 0.95
 
     # Step 3: Fuel flow = PSFC * TPshaft_power
@@ -102,7 +102,7 @@ def test_propulsion_system_module_compute_list_of_flight_points():
     # First flight point
     # Propeller: gearbox_shaft_power = (50000 * 200) / 0.85
     expected_gearbox_shaft_power1 = (50000.0 * 200.0) / 0.85
-    # Gearbox: TPshaft_power = gearbox_shaft_power * 0.90
+    # Gearbox: TPshaft_power = gearbox_shaft_power / 0.90
     expected_tpshaft_power1 = expected_gearbox_shaft_power1 / 0.90
     # Fuel flow
     psfc_kg_per_w_s = 0.250 / (1000.0 * 3600.0)
@@ -117,7 +117,7 @@ def test_propulsion_system_module_compute_list_of_flight_points():
     # Second flight point
     # Propeller: gearbox_shaft_power = (60000 * 250) / 0.85
     expected_gearbox_shaft_power2 = (60000.0 * 250.0) / 0.85
-    # Gearbox: TPshaft_power = gearbox_shaft_power * 0.90
+    # Gearbox: TPshaft_power = gearbox_shaft_power / 0.90
     expected_tpshaft_power2 = expected_gearbox_shaft_power2 / 0.90
     # Fuel flow
     expected_fuel_flow2 = psfc_kg_per_w_s * expected_tpshaft_power2

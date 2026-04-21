@@ -137,14 +137,14 @@ class PropulsionSystemOMComponent(ExplicitComponent):
         self.declare_partials("*", "*", method="fd")
 
     def compute(self, inputs, outputs, discrete_inputs=None, discrete_outputs=None):
-        wrapper = self.get_wrapper().get_model(inputs)
+        engine_set = self.get_wrapper().get_model(inputs)
 
         airspeed = inputs["data:propulsion:true_airspeed"]
         thrusts = inputs["data:propulsion:thrust"]
 
         flight_points = FlightPoint(true_airspeed=airspeed, thrust=thrusts)
 
-        wrapper.compute_flight_points(flight_points)
+        engine_set.compute_flight_points(flight_points)
 
         outputs["data:propulsion:sfc"] = flight_points.sfc
         outputs["data:propulsion:gearbox_shaft_power"] = flight_points.gearbox_shaft_power

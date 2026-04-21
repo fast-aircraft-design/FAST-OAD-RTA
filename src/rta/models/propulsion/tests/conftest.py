@@ -21,10 +21,6 @@ after tests that instantiate AbstractPropulsiveComponent subclasses.
 import pytest
 from fastoad.model_base.flight_point import FlightPoint
 
-# Capture the initial state of FlightPoint fields at module load time
-# This ensures we only clean up fields that were NOT present when the module loaded
-_INITIAL_FLIGHTPOINT_FIELDS = set(FlightPoint.__dataclass_fields__.keys())
-
 
 @pytest.fixture(autouse=True)
 def cleanup_flight_point_fields():
@@ -36,9 +32,9 @@ def cleanup_flight_point_fields():
     subclasses) are removed after the test completes. This prevents field
     pollution between tests.
 
-    Only fields that were NOT present when this module was loaded will be
+    Only fields that were NOT present at the start of the current test will be
     removed. This preserves fields that are legitimately needed by multiple
-    tests.
+    tests and any shared fields added during test-module import.
 
     Usage:
         This fixture is automatically applied to all tests in this directory
@@ -53,12 +49,15 @@ def cleanup_flight_point_fields():
             # ... test logic ...
         # FlightPoint fields are automatically cleaned up here
     """
+    # Snapshot the FlightPoint fields at the start of the current test.
+    initial_fields = set(FlightPoint.__dataclass_fields__.keys())
+
     # Run the test
     yield
 
-    # After the test, clean up any new fields that were added (not in initial state)
+    # After the test, clean up only fields that were added during this test.
     current_fields = set(FlightPoint.__dataclass_fields__.keys())
-    new_fields = current_fields - _INITIAL_FLIGHTPOINT_FIELDS
+    new_fields = current_fields - initial_fields
 
     for field_name in new_fields:
         try:
