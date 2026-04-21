@@ -84,12 +84,12 @@ class AbstractPropulsiveComponent(ABC):
                 warnings.warn(
                     f"Component '{self.name}' attempts to expand FlightPoint with "
                     f"field '{field_name}' but it is already present. "
-                    f"Check for redondant declarations."
+                    f"Check for redundant declarations."
                 )
             else:
                 FlightPoint.add_field(field_name, unit=unit)
 
-    def _check_input_fields_fields(self) -> None:
+    def _check_input_fields(self) -> None:
         """
         Check that all fields declared in input_fields are part of the FlightPoint class.
         Raises:
@@ -128,7 +128,7 @@ class AbstractPropulsiveComponent(ABC):
                                  compute_single_point().
         """
         # Check that all required input fields exist in FlightPoint class
-        self._check_input_fields_fields()
+        self._check_input_fields()
 
         if isinstance(flight_point, list):
             for fp in flight_point:

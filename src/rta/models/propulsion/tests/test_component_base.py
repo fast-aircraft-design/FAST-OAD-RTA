@@ -54,7 +54,7 @@ def test_flight_point_expansion_only_once():
 
     # Verify that a warning was issued about redundant declarations
     assert len(record) == 1
-    assert "redondant declarations" in str(record[0].message)
+    assert "redundant declarations" in str(record[0].message)
     assert "gearbox_shaft_power" in str(record[0].message)
 
 

@@ -3,14 +3,14 @@ import openmdao.api as om
 from fastoad.testing import run_system
 
 from rta.models.propulsion.tests.dummy_components.propulsion_system_OMwrapper import (
-    OMPropulsionSystemComponent,
+    PropulsionSystemOMComponent,
 )
 
 
-def test_OMPropulsionSystemComponent():
+def test_PropulsionSystemOMComponent():
     """Tests ManualRubberEngine component"""
 
-    engine = OMPropulsionSystemComponent()
+    engine = PropulsionSystemOMComponent()
 
     true_airspeed = [15, 30, 60, 90, 120]
     thrusts = [10e3, 7.5e3, 5e3, 2.5e3, 1.0e3]
@@ -23,7 +23,7 @@ def test_OMPropulsionSystemComponent():
     ivc = om.IndepVarComp()
     ivc.add_output("data:propulsion:gearbox:efficiency", gearbox_efficiency)
     ivc.add_output("data:propulsion:propeller:efficiency", propeller_efficiency)
-    ivc.add_output("data:propulsion:count", val=engine_count)
+    ivc.add_output("data:propulsion:engine_count", val=engine_count)
 
     ivc.add_output("data:propulsion:true_airspeed", true_airspeed, units="m/s")
     ivc.add_output("data:propulsion:thrust", thrusts, units="N")

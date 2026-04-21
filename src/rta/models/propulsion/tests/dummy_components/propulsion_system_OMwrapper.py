@@ -66,7 +66,7 @@ class PropulsionSystemOMWrapper(IOMPropulsionWrapper):
             component.add_input(var.name, np.nan, units=var.units)
 
     @staticmethod
-    def get_model(inputs, engine_count) -> FuelEngineSet:
+    def get_model(inputs) -> FuelEngineSet:
         """
         Create and configure the propulsion system model instance.
 
@@ -101,11 +101,13 @@ class PropulsionSystemOMWrapper(IOMPropulsionWrapper):
             gearbox=gearbox,
         )
 
+        engine_count = inputs["data:propulsion:engine_count"]
+
         # Return a FuelEngineSet with the propulsion system as engine
         return FuelEngineSet(engine=propulsion_system, engine_count=engine_count)
 
 
-class OMPropulsionSystemComponent(ExplicitComponent):
+class PropulsionSystemOMComponent(ExplicitComponent):
     """
     Parametric engine model as OpenMDAO component. Used for unit and integration tests.
 
@@ -119,7 +121,7 @@ class OMPropulsionSystemComponent(ExplicitComponent):
         self.add_input("data:propulsion:true_airspeed", np.nan, units="m/s", shape_by_conn=True)
         self.add_input("data:propulsion:thrust", np.nan, units="N", shape_by_conn=True)
         self.add_input(
-            "data:propulsion:count",
+            "data:propulsion:engine_count",
             val=np.nan,
         )
 
@@ -135,9 +137,7 @@ class OMPropulsionSystemComponent(ExplicitComponent):
         self.declare_partials("*", "*", method="fd")
 
     def compute(self, inputs, outputs, discrete_inputs=None, discrete_outputs=None):
-        engine_count = inputs["data:propulsion:count"]
-
-        wrapper = self.get_wrapper().get_model(inputs, engine_count)
+        wrapper = self.get_wrapper().get_model(inputs)
 
         airspeed = inputs["data:propulsion:true_airspeed"]
         thrusts = inputs["data:propulsion:thrust"]
