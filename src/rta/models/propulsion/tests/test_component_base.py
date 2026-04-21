@@ -38,9 +38,9 @@ def test_flight_point_fields_expanded_at_instantiation():
 
     # After instantiation, the output field should be available on FlightPoint
     fp = FlightPoint()
-    assert hasattr(
-        fp, "gearbox_shaft_power"
-    ), "FlightPoint should have gearbox_shaft_power attribute after component instantiation"
+    assert hasattr(fp, "gearbox_shaft_power"), (
+        "FlightPoint should have gearbox_shaft_power attribute after component instantiation"
+    )
 
 
 def test_flight_point_expansion_only_once():
