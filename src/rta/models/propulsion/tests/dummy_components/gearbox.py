@@ -19,12 +19,14 @@ based on input power and gearbox efficiency.
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import numpy as np
-from fastoad.model_base.flight_point import FlightPoint
+from dataclasses import dataclass
+from fastoad.model_base.flight_point import FlightPoint, _FieldDescriptor
 from fastoad.openmdao.variables import VariableList, Variable
 
 from rta.models.propulsion.component_base import AbstractPropulsiveComponent
 
 
+@dataclass
 class GearboxComponent(AbstractPropulsiveComponent):
     """
     Component for gearbox power transmission calculations.
@@ -53,7 +55,7 @@ class GearboxComponent(AbstractPropulsiveComponent):
 
     name = "GearboxComponent"
 
-    input_parameters = VariableList(
+    _input_parameters = VariableList(
         [
             Variable(
                 "data:propulsion:gearbox:efficiency",
@@ -65,20 +67,20 @@ class GearboxComponent(AbstractPropulsiveComponent):
     )
 
     # Dictionary of FlightPoint fields required as input (field_name: unit)
-    input_fields = {
-        "gearbox_shaft_power": "W",
+    _input_fields = {
+        "gearbox_shaft_power": _FieldDescriptor(unit="W"),
     }
 
     # Dictionary of FlightPoint fields to be computed (field_name: unit)
-    output_fields = {
-        "TPshaft_power": "W",
+    _output_fields = {
+        "TPshaft_power": _FieldDescriptor(unit="W"),
     }
 
     def compute_single_point(self, flight_point: FlightPoint):
         """
-        Compute output shaft power for a single flight point.
+        Compute input shaft power for a single flight point.
 
-        Output Power = Input Power * Efficiency
+        Input Power = Output Power / Efficiency
 
         Args:
             flight_point: FlightPoint with gearbox_shaft_power and efficiency set.
@@ -86,8 +88,8 @@ class GearboxComponent(AbstractPropulsiveComponent):
         Returns:
             FlightPoint with TPshaft_power computed.
         """
-        input_power = flight_point.gearbox_shaft_power
+        output_power = flight_point.gearbox_shaft_power
         efficiency = self.input_parameters["data:propulsion:gearbox:efficiency"].get_val()
 
         # Compute output power
-        flight_point.TPshaft_power = input_power / efficiency
+        flight_point.TPshaft_power = output_power / efficiency

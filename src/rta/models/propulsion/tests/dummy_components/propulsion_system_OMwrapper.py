@@ -58,11 +58,11 @@ class PropulsionSystemOMWrapper(IOMPropulsionWrapper):
             component: The OpenMDAO component where inputs will be declared.
         """
         # Declare inputs from PropellerPowerCalculator
-        for var in PropellerPowerCalculator.input_parameters:
+        for var in PropellerPowerCalculator._input_parameters:
             component.add_input(var.name, np.nan, units=var.units)
 
         # Declare inputs from GearboxComponent
-        for var in GearboxComponent.input_parameters:
+        for var in GearboxComponent._input_parameters:
             component.add_input(var.name, np.nan, units=var.units)
 
     @staticmethod

@@ -6,6 +6,8 @@ including FlightPoint field expansion, compute_perfo() method, and
 VariableList updates.
 """
 
+import numpy as np
+import pandas as pd
 #  This file is part of FAST : A framework for rapid Overall Aircraft Design
 #  Copyright (C) 2020  ONERA & ISAE-SUPAERO
 #  FAST is free software: you can redistribute it and/or modify
@@ -22,7 +24,7 @@ VariableList updates.
 import pytest
 
 
-from fastoad.model_base.flight_point import FlightPoint
+from fastoad.model_base.flight_point import FlightPoint, _FieldDescriptor
 from fastoad.openmdao.variables import VariableList, Variable
 
 from rta.models.propulsion.tests.dummy_components.propeller_power_calculator import (
@@ -38,9 +40,35 @@ def test_flight_point_fields_expanded_at_instantiation():
 
     # After instantiation, the output field should be available on FlightPoint
     fp = FlightPoint()
-    assert hasattr(fp, "gearbox_shaft_power"), (
-        "FlightPoint should have gearbox_shaft_power attribute after component instantiation"
+    # assert hasattr(fp, "gearbox_shaft_power"), (
+    #     "FlightPoint should have gearbox_shaft_power attribute after component instantiation"
+    # )
+    # assert fp.is_cumulative("gearbox_shaft_power"), 'The added field should have metadata "is_cumulative"=True'
+    # Now lets try to redefine at instantiation
+
+    # test the input / output fields can be modified at instantiation
+    new_input_fields = {"overdrive_power": _FieldDescriptor(unit="GW", is_cumulative=False)}
+    new_output_fields = {"overdrive_waste_heat": _FieldDescriptor(unit="PW", is_cumulative=True)}
+
+    prop = PropellerPowerCalculator(input_fields=new_input_fields, output_fields=new_output_fields)
+
+    fp = FlightPoint()
+
+    assert "overdrive_power" in prop.input_fields.keys(), (
+        "The instance has not been initialised with new_fields"
     )
+    assert "thrust" not in prop.input_fields.keys(), (
+        "The instance has been initialised with new_fields, but the default ones are still present"
+    )
+
+    assert hasattr(fp, "overdrive_waste_heat"), (
+        "FlightPoint should have overdrive_power attribute after component instantiation"
+    )
+    assert fp.is_cumulative("overdrive_waste_heat"), (
+        'The added field should have metadata "is_cumulative"=True'
+    )
+
+    # Test inproper definition
 
 
 def test_flight_point_expansion_only_once():
@@ -88,16 +116,15 @@ def test_compute_perfo_list_of_flight_points():
     fp2.thrust = 60000.0
     fp2.true_airspeed = 250.0
 
-    flightpoints = [fp1, fp2]
+    flightpoints = pd.DataFrame([fp1, fp2])
     component.compute_perfo(flightpoints)
 
     # First result: (50000 * 200) / 0.85
     expected_power1 = (50000.0 * 200.0) / 0.85
-    assert flightpoints[0].gearbox_shaft_power == pytest.approx(expected_power1, rel=1e-6)
-
     # Second result: (60000 * 250) / 0.85
     expected_power2 = (60000.0 * 250.0) / 0.85
-    assert flightpoints[1].gearbox_shaft_power == pytest.approx(expected_power2, rel=1e-6)
+    expected = [expected_power1, expected_power2]
+    assert np.allclose(flightpoints.gearbox_shaft_power.to_list(), expected, rtol=1e-6)
 
 
 def test_inputs_can_be_updated_using_update():

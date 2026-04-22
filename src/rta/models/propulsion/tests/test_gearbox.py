@@ -5,6 +5,8 @@ This module tests the functionality of the GearboxComponent including
 power transmission calculations.
 """
 
+import numpy as np
+import pandas as pd
 #  This file is part of FAST : A framework for rapid Overall Aircraft Design
 #  Copyright (C) 2020  ONERA & ISAE-SUPAERO
 #  FAST is free software: you can redistribute it and/or modify
@@ -55,12 +57,12 @@ def test_gearbox_compute_perfo_list_of_flight_points():
     fp2 = FlightPoint()
     fp2.gearbox_shaft_power = 2000000.0
 
-    gearbox.compute_perfo([fp1, fp2])
+    flight_points = pd.DataFrame([fp1, fp2])
+    gearbox.compute_perfo(flight_points)
 
     # First result: 1000000 / 0.95
     expected_power1 = 1000000.0 / 0.95
-    assert fp1.TPshaft_power == pytest.approx(expected_power1, rel=1e-6)
-
     # Second result: 2000000 / 0.95
     expected_power2 = 2000000.0 / 0.95
-    assert fp2.TPshaft_power == pytest.approx(expected_power2, rel=1e-6)
+    expected = [expected_power1, expected_power2]
+    assert np.allclose(flight_points.TPshaft_power.to_list(), expected, rtol=1e-6)

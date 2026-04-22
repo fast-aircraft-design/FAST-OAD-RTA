@@ -5,6 +5,8 @@ This module demonstrates how to create concrete propulsive components by
 inheriting from AbstractPropulsiveComponent.
 """
 
+from dataclasses import dataclass
+
 #  This file is part of FAST : A framework for rapid Overall Aircraft Design
 #  Copyright (C) 2020  ONERA & ISAE-SUPAERO
 #  FAST is free software: you can redistribute it and/or modify
@@ -19,12 +21,25 @@ inheriting from AbstractPropulsiveComponent.
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import numpy as np
-from fastoad.model_base.flight_point import FlightPoint
+from fastoad.model_base.flight_point import FlightPoint, _FieldDescriptor
 from fastoad.openmdao.variables import VariableList, Variable
 
 from rta.models.propulsion.component_base import AbstractPropulsiveComponent
 
 
+INPUT_PARAMETERS = VariableList(
+    [
+        Variable(
+            "data:propulsion:propeller:efficiency",
+            val=np.nan,
+            units="unitless",
+            desc="Propeller efficiency (0-1)",
+        )
+    ]
+)
+
+
+@dataclass
 class PropellerPowerCalculator(AbstractPropulsiveComponent):
     """
     Example component for turboprop shaft power calculations.
@@ -55,26 +70,17 @@ class PropellerPowerCalculator(AbstractPropulsiveComponent):
 
     name = "PropellerPowerCalculator"
 
-    input_parameters = VariableList(
-        [
-            Variable(
-                "data:propulsion:propeller:efficiency",
-                val=np.nan,
-                units="unitless",
-                desc="Propeller efficiency (0-1)",
-            )
-        ]
-    )
+    _input_parameters = INPUT_PARAMETERS
 
     # Dictionary of FlightPoint fields required as input (field_name: unit)
-    input_fields = {
-        "thrust": "N",
-        "true_airspeed": "m/s",
+    _input_fields = {
+        "thrust": _FieldDescriptor(unit="N"),
+        "true_airspeed": _FieldDescriptor(unit="m/s"),
     }
 
     # Dictionary of FlightPoint fields to be computed (field_name: unit)
-    output_fields = {
-        "gearbox_shaft_power": "W",
+    _output_fields = {
+        "gearbox_shaft_power": _FieldDescriptor(unit="W", is_cumulative=True),
     }
 
     def compute_single_point(self, flight_point: FlightPoint) -> FlightPoint:

@@ -5,6 +5,8 @@ This module tests the functionality of the PropulsionSystemModule including
 the complete propulsion chain: propeller -> gearbox -> fuel flow -> SFC.
 """
 
+import numpy as np
+import pandas as pd
 #  This file is part of FAST : A framework for rapid Overall Aircraft Design
 #  Copyright (C) 2020  ONERA & ISAE-SUPAERO
 #  FAST is free software: you can redistribute it and/or modify
@@ -97,7 +99,8 @@ def test_propulsion_system_module_compute_list_of_flight_points():
     fp2.thrust = 60000.0  # N
     fp2.true_airspeed = 250.0  # m/s
 
-    module.compute_flight_points([fp1, fp2])
+    flight_points = pd.DataFrame([fp1, fp2])
+    module.compute_flight_points(flight_points)
 
     # First flight point
     # Propeller: gearbox_shaft_power = (50000 * 200) / 0.85
@@ -110,10 +113,6 @@ def test_propulsion_system_module_compute_list_of_flight_points():
     # SFC
     expected_sfc1 = expected_fuel_flow1 / 50000.0
 
-    assert fp1.gearbox_shaft_power == pytest.approx(expected_gearbox_shaft_power1, rel=1e-6)
-    assert fp1.TPshaft_power == pytest.approx(expected_tpshaft_power1, rel=1e-6)
-    assert fp1.sfc == pytest.approx(expected_sfc1, rel=1e-6)
-
     # Second flight point
     # Propeller: gearbox_shaft_power = (60000 * 250) / 0.85
     expected_gearbox_shaft_power2 = (60000.0 * 250.0) / 0.85
@@ -124,6 +123,12 @@ def test_propulsion_system_module_compute_list_of_flight_points():
     # SFC
     expected_sfc2 = expected_fuel_flow2 / 60000.0
 
-    assert fp2.gearbox_shaft_power == pytest.approx(expected_gearbox_shaft_power2, rel=1e-6)
-    assert fp2.TPshaft_power == pytest.approx(expected_tpshaft_power2, rel=1e-6)
-    assert fp2.sfc == pytest.approx(expected_sfc2, rel=1e-6)
+    expected_gearbox_shaft_power = [expected_gearbox_shaft_power1, expected_gearbox_shaft_power2]
+    expected_tpshaft_power = [expected_tpshaft_power1, expected_tpshaft_power2]
+    expected_sfc = [expected_sfc1, expected_sfc2]
+
+    assert np.allclose(
+        expected_gearbox_shaft_power, flight_points.gearbox_shaft_power.to_list(), rtol=1e-6
+    )
+    assert np.allclose(expected_tpshaft_power, flight_points.TPshaft_power.to_list(), rtol=1e-6)
+    assert np.allclose(expected_sfc, flight_points.sfc.to_list(), rtol=1e-6)
