@@ -81,7 +81,7 @@ def run_non_regression_test(
 
     om.view_connections(
         problem,
-        outfile="./results/connections.html",
+        outfile=(results_folder_path / "connections.html").as_posix(),
         show_browser=False,
     )
 
