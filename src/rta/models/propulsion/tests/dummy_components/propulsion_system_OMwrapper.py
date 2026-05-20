@@ -140,9 +140,9 @@ class PropulsionSystemOMComponent(ExplicitComponent):
         engine_set = self.get_wrapper().get_model(inputs)
 
         airspeed = inputs["data:propulsion:true_airspeed"]
-        thrusts = inputs["data:propulsion:thrust"]
+        thrust = inputs["data:propulsion:thrust"]
 
-        flight_points = FlightPoint(true_airspeed=airspeed, thrust=thrusts)
+        flight_points = FlightPoint(true_airspeed=airspeed, thrust=thrust)
 
         engine_set.compute_flight_points(flight_points)
 
