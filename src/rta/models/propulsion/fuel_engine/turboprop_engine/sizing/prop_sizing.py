@@ -15,10 +15,10 @@ Propeller sizing model
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import numpy as np
-from openmdao.core.explicitcomponent import ExplicitComponent
-from scipy import constants
 from fastoad.module_management.constants import ModelDomain
 from fastoad.module_management.service_registry import RegisterOpenMDAOSystem
+from openmdao.core.explicitcomponent import ExplicitComponent
+from scipy import constants
 
 
 @RegisterOpenMDAOSystem("rta.propulsion.propeller_sizing", domain=ModelDomain.PROPULSION)

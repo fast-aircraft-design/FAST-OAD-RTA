@@ -40,14 +40,12 @@ from fastoad_cs25.models.geometry.geom_components.wing.components.compute_x_wing
 from fastoad_cs25.models.geometry.geom_components.wing.components.compute_y_wing import (
     ComputeYWing,
 )
+from openmdao.api import Group
 
 from .components.compute_toc_wing_rta import ComputeToCWingRTA
 from .components.compute_wet_area_wing_rta import (
     ComputeWetAreaWingRTA,
 )
-
-from openmdao.api import Group
-
 
 RegisterSubmodel.active_models[SERVICE_WING_GEOMETRY] = "rta.submodel.geometry.wing"
 

@@ -1,4 +1,4 @@
-from typing import Sequence, Union
+from collections.abc import Sequence
 
 import numpy as np
 from fastoad._utils.arrays import scalarize
@@ -6,8 +6,10 @@ from scipy import constants
 from scipy.optimize import fsolve
 from stdatm import AtmosphereSI
 
+LOW_SPEED_MACH_LIMIT = 0.2
 
-class Propeller(object):
+
+class Propeller:
     def select(self, function, fidelity, data, atmosphere, mach, P_T):
         func = getattr(self, function + "_" + fidelity)
 
@@ -17,8 +19,8 @@ class Propeller(object):
         self,
         data,
         atmosphere: AtmosphereSI,
-        mach: Union[float, Sequence[float]],
-        shaft_power: Union[float, Sequence[float]],
+        mach: float | Sequence[float],
+        shaft_power: float | Sequence[float],
     ) -> tuple:
         """
         Computation of propeller thrust given propeller shaft power.
@@ -43,21 +45,21 @@ class Propeller(object):
                 1 + (1 + (T_prop / (0.5 * rho * constants.pi / 4 * d**2 * V_TAS**2))) ** 0.5
             )
 
-        if mach < 0.2:
+        if mach < LOW_SPEED_MACH_LIMIT:
             # Formulation for low speed operation
 
-            # static thrust
+            # Static thrust
+            # Skellett, A. M. National Advisory Committee for Aeronautics,
+            # Nineteenth Annual Report. Report n447
             eta = 0.0
-            T_prop_0 = (
-                55000 * shp_prop / (1200 * d / constants.foot) * constants.pound_force
-            )  # Skellett, A. M. National Advisory Committee for Aeronautics, Nineteenth Annual Report. Report n447
+            T_prop_0 = 55000 * shp_prop / (1200 * d / constants.foot) * constants.pound_force
 
-            # thrust at mach=0.2
-            T_prop_ref = fsolve(P_to_T, 1, args=(shp_prop, 0.2 * a, rho, d))[0]
+            # thrust at mach=LOW_SPEED_MACH_LIMIT
+            T_prop_ref = fsolve(P_to_T, 1, args=(shp_prop, LOW_SPEED_MACH_LIMIT * a, rho, d))[0]
             T_prop_ref = T_prop_ref * k_corr * data.k_prop
 
-            # Interpol while mach is between [0,0.2]
-            x = [0, 0.2]
+            # Interpol while mach is between [0,LOW_SPEED_MACH_LIMIT]
+            x = [0, LOW_SPEED_MACH_LIMIT]
             y = [scalarize(T_prop_0), scalarize(T_prop_ref)]
 
             T_prop = np.interp(scalarize(mach), x, y)
@@ -73,8 +75,8 @@ class Propeller(object):
         self,
         data,
         atmosphere: AtmosphereSI,
-        mach: Union[float, Sequence[float]],
-        thrust: Union[float, Sequence],
+        mach: float | Sequence[float],
+        thrust: float | Sequence,
     ) -> tuple:
         """
         Computation of propeller shaft power given propeller thrust WITHOUT FR.

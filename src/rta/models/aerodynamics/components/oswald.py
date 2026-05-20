@@ -20,7 +20,6 @@ from fastoad.module_management.service_registry import RegisterSubmodel
 from fastoad_cs25.models.aerodynamics.constants import SERVICE_INDUCED_DRAG_COEFFICIENT
 from openmdao.core.explicitcomponent import ExplicitComponent
 
-
 RegisterSubmodel.active_models[SERVICE_INDUCED_DRAG_COEFFICIENT] = (
     "rta.submodel.aerodynamics.induced_drag_coefficient.legacy"
 )

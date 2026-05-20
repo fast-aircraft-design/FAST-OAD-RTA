@@ -18,8 +18,8 @@ Estimation of propulsion center of gravity
 import numpy as np
 from fastoad.module_management.service_registry import RegisterSubmodel
 from openmdao.core.explicitcomponent import ExplicitComponent
-from ..constants import SERVICE_PROPULSION_CG
 
+from ..constants import SERVICE_PROPULSION_CG
 
 RegisterSubmodel.active_models[SERVICE_PROPULSION_CG] = "rta.submodel.weight.cg.propulsion"
 

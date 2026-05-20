@@ -1,5 +1,6 @@
-import os.path as pth
+import contextlib
 import shutil
+from pathlib import Path
 from shutil import rmtree
 
 import numpy as np
@@ -15,8 +16,8 @@ from numpy.testing import assert_allclose
 FastoadLoader()
 
 
-DATA_FOLDER_PATH = pth.join(pth.dirname(__file__), "data")
-RESULTS_FOLDER_PATH = pth.join(pth.dirname(__file__), "results")
+DATA_FOLDER_PATH = Path(__file__).parent.resolve() / "data"
+RESULTS_FOLDER_PATH = Path(__file__).parent.resolve() / "results"
 CONFIGURATION_FILE = "oad_process.yml"
 MISSION_FILE = "sizing_mission_R.yml"
 SOURCE_FILE = "problem_outputs.xml"
@@ -42,25 +43,26 @@ def run_non_regression_test(
     conf_file,
     legacy_result_file,
     result_dir,
+    *,
     check_only_mtow=False,
     tolerance=5.0e-3,
 ):
-    results_folder_path = pth.join(RESULTS_FOLDER_PATH, result_dir)
-    configuration_file_path = pth.join(results_folder_path, conf_file)
+    results_folder_path = RESULTS_FOLDER_PATH / result_dir
+    configuration_file_path = results_folder_path / conf_file
 
     # Copy of configuration file and generation of problem instance ------------------
     api.generate_configuration_file(
         configuration_file_path, distribution_name="FAST-OAD-RTA"
     )  # just ensure folders are created...
-    shutil.copy(pth.join(DATA_FOLDER_PATH, conf_file), configuration_file_path)
+    shutil.copy(DATA_FOLDER_PATH / conf_file, configuration_file_path)
     shutil.copy(
-        pth.join(DATA_FOLDER_PATH, MISSION_FILE),
-        pth.join(results_folder_path, MISSION_FILE),
+        DATA_FOLDER_PATH / MISSION_FILE,
+        results_folder_path / MISSION_FILE,
     )
     configurator = FASTOADProblemConfigurator(configuration_file_path)
 
     # Generation and reading of inputs ----------------------------------------
-    ref_inputs = pth.join(DATA_FOLDER_PATH, legacy_result_file)
+    ref_inputs = DATA_FOLDER_PATH / legacy_result_file
     configurator.write_needed_inputs(ref_inputs)
     problem = configurator.get_problem()
     problem.read_inputs()
@@ -70,17 +72,16 @@ def run_non_regression_test(
     problem.run_model()
     problem.write_outputs()
 
-    try:
+    with contextlib.suppress(AttributeError):
         problem.model.performance.flight_points.to_csv(
-            pth.join(results_folder_path, "flight_points.csv"),
+            results_folder_path / "flight_points.csv",
             sep="\t",
             decimal=",",
         )
-    except AttributeError:
-        pass
+
     om.view_connections(
         problem,
-        outfile=pth.join(results_folder_path, "connections.html"),
+        outfile=results_folder_path / "connections.html",
         show_browser=False,
     )
 
@@ -101,7 +102,7 @@ def run_non_regression_test(
     )
 
     ref_var_list = VariableIO(
-        pth.join(DATA_FOLDER_PATH, legacy_result_file),
+        DATA_FOLDER_PATH / legacy_result_file,
     ).read()
 
     row_list = []

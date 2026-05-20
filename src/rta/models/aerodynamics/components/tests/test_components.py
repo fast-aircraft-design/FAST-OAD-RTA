@@ -15,45 +15,44 @@ test module for modules in aerodynamics/components
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import os.path as pth
+from pathlib import Path
 
 import numpy as np
-from fastoad.testing import run_system
 from fastoad.io import VariableIO
-from openmdao.core.group import Group
-from pytest import approx
-from scipy.interpolate import interp1d
-from numpy.testing import assert_allclose
-
-from ..cd0_fuselage import Cd0Fuselage
-from ..cd0_wing import Cd0Wing
-from ..cd0_total import Cd0Total
-from ..cd0_nacelle_pylons_tp import Cd0NacelleAndPylonsTP
-from ..oei_effect import ComputeDeltaOEI
-from ..initialize_in import InitializeIN
-from ..lg_effect import ComputeDeltaLg
-from rta.models.aerodynamics.constants import ALPHA_POINT_COUNT, POLAR_POINT_COUNT
-
-from fastoad_cs25.models.aerodynamics.components.oswald import (
-    OswaldCoefficient,
-    InducedDragCoefficient,
-)
+from fastoad.testing import run_system
+from fastoad_cs25.models.aerodynamics.components.cd_trim import CdTrim
 from fastoad_cs25.models.aerodynamics.components.compute_polar import ComputePolar
 from fastoad_cs25.models.aerodynamics.components.compute_reynolds import ComputeReynolds
 from fastoad_cs25.models.aerodynamics.components.high_lift_aero import (
     ComputeDeltaHighLift,
 )
 from fastoad_cs25.models.aerodynamics.components.initialize_cl import InitializeClPolar
-from fastoad_cs25.models.aerodynamics.components.cd_trim import CdTrim
+from fastoad_cs25.models.aerodynamics.components.oswald import (
+    InducedDragCoefficient,
+    OswaldCoefficient,
+)
 from fastoad_cs25.models.aerodynamics.constants import PolarType
+from numpy.testing import assert_allclose
+from openmdao.core.group import Group
+from pytest import approx
+from scipy.interpolate import interp1d
+
+from rta.models.aerodynamics.constants import ALPHA_POINT_COUNT, POLAR_POINT_COUNT
+
+from ..cd0_fuselage import Cd0Fuselage
+from ..cd0_nacelle_pylons_tp import Cd0NacelleAndPylonsTP
+from ..cd0_total import Cd0Total
+from ..cd0_wing import Cd0Wing
+from ..initialize_in import InitializeIN
+from ..lg_effect import ComputeDeltaLg
+from ..oei_effect import ComputeDeltaOEI
 
 
 def get_indep_var_comp(var_names):
     """Reads required input data and returns an IndepVarcomp() instance"""
-    reader = VariableIO(pth.join(pth.dirname(__file__), "data", "ref_aerodynamics.xml"))
+    reader = VariableIO(Path(__file__).parent.resolve() / "data" / "ref_aerodynamics.xml")
     reader.path_separator = ":"
-    ivc = reader.read(only=var_names).to_ivc()
-    return ivc
+    return reader.read(only=var_names).to_ivc()
 
 
 def test_fuselage_cd0():
@@ -142,7 +141,7 @@ def test_oswald_coefficient():
         "data:geometry:wing:sweep_25",
     ]
 
-    def get_coeff(mach, low_speed_aero=False):
+    def get_coeff(mach, *, low_speed_aero=False):
         ivc = get_indep_var_comp(input_list)
         if low_speed_aero:
             ivc.add_output("data:aerodynamics:aircraft:takeoff:mach", mach)
@@ -151,12 +150,11 @@ def test_oswald_coefficient():
         problem = run_system(OswaldCoefficient(low_speed_aero=low_speed_aero), ivc)
         if low_speed_aero:
             return problem["data:aerodynamics:aircraft:low_speed:oswald_coefficient"]
-        else:
-            return problem["data:aerodynamics:aircraft:cruise:oswald_coefficient"]
+        return problem["data:aerodynamics:aircraft:cruise:oswald_coefficient"]
 
-    assert get_coeff(0.2, True) == approx(0.89549 / 0.95 * 0.9, abs=1e-4)
+    assert get_coeff(0.2, low_speed_aero=True) == approx(0.89549 / 0.95 * 0.9, abs=1e-4)
 
-    assert get_coeff(0.45, False) == approx(0.89549 / 0.95 * 0.9, abs=1e-4)
+    assert get_coeff(0.45, low_speed_aero=False) == approx(0.89549 / 0.95 * 0.9, abs=1e-4)
 
 
 def test_polar_high_speed():

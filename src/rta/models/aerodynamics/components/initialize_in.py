@@ -18,11 +18,10 @@ import numpy as np
 from openmdao.core.explicitcomponent import ExplicitComponent
 
 from rta.models.aerodynamics.constants import (
-    CT_POINT_COUNT,
     ALPHA_POINT_COUNT,
+    CT_POINT_COUNT,
     H_POINT_COUNT,
 )
-
 
 """
 Unknown usage for CT, alpha list and H_list

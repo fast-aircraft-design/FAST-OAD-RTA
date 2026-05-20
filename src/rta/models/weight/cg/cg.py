@@ -16,21 +16,20 @@ FAST - Copyright (c) 2025 ONERA ISAE
 
 import openmdao.api as om
 from fastoad.module_management.service_registry import RegisterSubmodel
-from fastoad_cs25.models.weight.constants import SERVICE_CENTERS_OF_GRAVITY
-
 from fastoad_cs25.models.weight.cg.constants import (
     SERVICE_AIRCRAFT_CG,
     SERVICE_FLIGHT_CONTROLS_CG,
+    SERVICE_GLOBAL_CG,
     SERVICE_HORIZONTAL_TAIL_CG,
     SERVICE_MLG_CG,
+    SERVICE_OTHERS_CG,
     SERVICE_TANKS_CG,
     SERVICE_VERTICAL_TAIL_CG,
     SERVICE_WING_CG,
-    SERVICE_OTHERS_CG,
-    SERVICE_GLOBAL_CG,
 )
-from .constants import SERVICE_PROPULSION_CG
+from fastoad_cs25.models.weight.constants import SERVICE_CENTERS_OF_GRAVITY
 
+from .constants import SERVICE_PROPULSION_CG
 
 RegisterSubmodel.active_models[SERVICE_CENTERS_OF_GRAVITY] = "rta.submodel.weight.cg.legacy"
 

@@ -15,8 +15,8 @@ from fastoad.testing import run_system
 from openmdao.api import IndepVarComp
 from pytest import approx
 
-from ..operational_items_weight import OperationalItemsWeight
 from ..operational_equipment_weight import OperationalEquipmentsWeight
+from ..operational_items_weight import OperationalItemsWeight
 
 
 def test_items_weight():

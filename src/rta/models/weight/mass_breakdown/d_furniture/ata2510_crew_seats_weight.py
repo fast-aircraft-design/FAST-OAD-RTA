@@ -15,8 +15,9 @@ Estimation of life crew accomodation weight
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import numpy as np
-from openmdao.core.explicitcomponent import ExplicitComponent
 from fastoad.module_management.service_registry import RegisterSubmodel
+from openmdao.core.explicitcomponent import ExplicitComponent
+
 from rta.models.weight.mass_breakdown.d_furniture.constants import SERVICE_MASS_ATA2510
 
 

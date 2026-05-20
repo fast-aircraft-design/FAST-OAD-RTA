@@ -279,7 +279,7 @@ class ComputeFuselageGeometryCabinSizing(ExplicitComponent):
         h_f = b_f + 0.14
         lav = 1.7 * h_f
 
-        if n_engines == 3.0:
+        if n_engines == 3.0:  # noqa
             lar = 3.0 * h_f
         else:
             lar = 3.60 * h_f

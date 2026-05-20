@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Created on Mon Sep 14 10:12:50 2020
 
@@ -20,7 +19,7 @@ class TurbopropWeight(ExplicitComponent):
     """
     Weight estimation for turboprop propulsion systems
     Ref. Teeuwen, Y., “Propeller Design for Conceptual Turboprop Aircraft,”
-    Master’s thesis, Delft University of Technology, 2017.
+    Master's thesis, Delft University of Technology, 2017.
 
 
     """

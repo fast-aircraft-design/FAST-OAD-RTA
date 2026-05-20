@@ -16,9 +16,9 @@ Estimation of nacelle and pylon geometry
 
 import numpy as np
 import openmdao.api as om
-import scipy.constants as constants
 from fastoad.module_management.service_registry import RegisterSubmodel
 from fastoad_cs25.models.geometry.constants import SERVICE_NACELLE_PYLON_GEOMETRY
+from scipy import constants
 
 RegisterSubmodel.active_models[SERVICE_NACELLE_PYLON_GEOMETRY] = "rta.submodel.geometry.nacelles"
 

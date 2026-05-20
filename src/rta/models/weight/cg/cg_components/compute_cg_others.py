@@ -15,10 +15,9 @@ Estimation of other components center of gravities
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 import numpy as np
-from openmdao.core.explicitcomponent import ExplicitComponent
 from fastoad.module_management.service_registry import RegisterSubmodel
 from fastoad_cs25.models.weight.cg.constants import SERVICE_OTHERS_CG
-
+from openmdao.core.explicitcomponent import ExplicitComponent
 
 RegisterSubmodel.active_models[SERVICE_OTHERS_CG] = "rta.submodel.weight.cg.others.legacy"
 
@@ -28,7 +27,7 @@ class ComputeOthersCG(ExplicitComponent):
     # TODO: Document equations. Cite sources
     """Other components center of gravities estimation"""
 
-    def setup(self):
+    def setup(self):  # noqa
         self.add_input("data:geometry:wing:MAC:leading_edge:x:local", val=np.nan, units="m")
         self.add_input("data:geometry:wing:MAC:length", val=np.nan, units="m")
         self.add_input("data:geometry:wing:root:chord", val=np.nan, units="m")
@@ -191,7 +190,7 @@ class ComputeOthersCG(ExplicitComponent):
             method="fd",
         )
 
-    def compute(self, inputs, outputs):
+    def compute(self, inputs, outputs):  # noqa
         x0_wing = inputs["data:geometry:wing:MAC:leading_edge:x:local"]
         l0_wing = inputs["data:geometry:wing:MAC:length"]
         l2_wing = inputs["data:geometry:wing:root:chord"]

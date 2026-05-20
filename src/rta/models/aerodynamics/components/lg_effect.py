@@ -18,7 +18,6 @@ Computation of Oswald coefficient
 import numpy as np
 from openmdao.core.explicitcomponent import ExplicitComponent
 
-
 from rta.models.aerodynamics.constants import ALPHA_POINT_COUNT
 
 """

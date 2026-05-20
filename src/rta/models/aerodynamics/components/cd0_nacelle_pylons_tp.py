@@ -17,10 +17,10 @@ FAST - Copyright (c) 2025 ONERA ISAE
 
 import numpy as np
 from fastoad.module_management.service_registry import RegisterSubmodel
-from fastoad_cs25.models.aerodynamics.constants import SERVICE_CD0_NACELLES_PYLONS
 from fastoad_cs25.models.aerodynamics.components.utils.friction_drag import (
     get_flat_plate_friction_drag_coefficient,
 )
+from fastoad_cs25.models.aerodynamics.constants import SERVICE_CD0_NACELLES_PYLONS
 from openmdao.core.explicitcomponent import ExplicitComponent
 
 RegisterSubmodel.active_models[SERVICE_CD0_NACELLES_PYLONS] = (
