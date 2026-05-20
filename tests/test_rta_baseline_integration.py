@@ -16,8 +16,8 @@ from numpy.testing import assert_allclose
 FastoadLoader()
 
 
-DATA_FOLDER_PATH = Path(__file__).parent.resolve() / "data"
-RESULTS_FOLDER_PATH = Path(__file__).parent.resolve() / "results"
+DATA_FOLDER_PATH = Path(__file__).parent / "data"
+RESULTS_FOLDER_PATH = Path(__file__).parent / "results"
 CONFIGURATION_FILE = "oad_process.yml"
 MISSION_FILE = "sizing_mission_R.yml"
 SOURCE_FILE = "problem_outputs.xml"
@@ -81,7 +81,7 @@ def run_non_regression_test(
 
     om.view_connections(
         problem,
-        outfile=results_folder_path / "connections.html",
+        outfile="./results/connections.html",
         show_browser=False,
     )
 
