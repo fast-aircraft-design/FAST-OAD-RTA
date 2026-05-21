@@ -16,8 +16,8 @@ Estimation of propulsion center of gravity
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import numpy as np
+import openmdao.api as om
 from fastoad.module_management.service_registry import RegisterSubmodel
-from openmdao.core.explicitcomponent import ExplicitComponent
 
 from ..constants import SERVICE_PROPULSION_CG
 
@@ -25,7 +25,7 @@ RegisterSubmodel.active_models[SERVICE_PROPULSION_CG] = "rta.submodel.weight.cg.
 
 
 @RegisterSubmodel(SERVICE_PROPULSION_CG, "rta.submodel.weight.cg.propulsion")
-class ComputePropulsionCG_RTA(ExplicitComponent):
+class ComputePropulsionCG_RTA(om.ExplicitComponent):
     """Propulsion center of gravity estimation as a function of wing position"""
 
     def setup(self):

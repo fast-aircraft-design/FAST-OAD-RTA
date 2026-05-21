@@ -16,12 +16,12 @@ Estimation of geometry of fuselase part A - Cabin (Commercial)
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import numpy as np
+import openmdao.api as om
 from fastoad.module_management.service_registry import RegisterSubmodel
 from fastoad_cs25.models.geometry.constants import (
     SERVICE_FUSELAGE_GEOMETRY_BASIC,
     SERVICE_FUSELAGE_GEOMETRY_WITH_CABIN_SIZING,
 )
-from openmdao.core.explicitcomponent import ExplicitComponent
 
 RegisterSubmodel.active_models[SERVICE_FUSELAGE_GEOMETRY_BASIC] = (
     "rta.submodel.geometry.fuselage.basic"
@@ -32,7 +32,7 @@ RegisterSubmodel.active_models[SERVICE_FUSELAGE_GEOMETRY_WITH_CABIN_SIZING] = (
 
 
 @RegisterSubmodel(SERVICE_FUSELAGE_GEOMETRY_BASIC, "rta.submodel.geometry.fuselage.basic")
-class ComputeFuselageGeometryBasic(ExplicitComponent):
+class ComputeFuselageGeometryBasic(om.ExplicitComponent):
     # TODO: Document equations. Cite sources
     """Geometry of fuselage part A - Cabin (Commercial) estimation"""
 
@@ -123,7 +123,7 @@ class ComputeFuselageGeometryBasic(ExplicitComponent):
     SERVICE_FUSELAGE_GEOMETRY_WITH_CABIN_SIZING,
     "rta.submodel.geometry.fuselage.with_cabin_sizing",
 )
-class ComputeFuselageGeometryCabinSizing(ExplicitComponent):
+class ComputeFuselageGeometryCabinSizing(om.ExplicitComponent):
     # TODO: Document equations. Cite sources
     """Geometry of fuselage part A - Cabin (Commercial) estimation"""
 

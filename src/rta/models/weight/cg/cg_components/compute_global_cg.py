@@ -15,9 +15,9 @@ Estimation of global center of gravity
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+import openmdao.api as om
 from fastoad.module_management.service_registry import RegisterSubmodel
 from fastoad_cs25.models.weight.cg.constants import SERVICE_GLOBAL_CG
-from openmdao.api import Group
 
 from .compute_cg_loadcase1 import ComputeCGLoadCase1
 from .compute_cg_loadcase2 import ComputeCGLoadCase2
@@ -29,7 +29,7 @@ RegisterSubmodel.active_models[SERVICE_GLOBAL_CG] = "rta.submodel.weight.cg.glob
 
 
 @RegisterSubmodel(SERVICE_GLOBAL_CG, "rta.submodel.weight.cg.global.legacy")
-class ComputeGlobalCG(Group):
+class ComputeGlobalCG(om.Group):
     # TODO: Document equations. Cite sources
     """Global center of gravity estimation"""
 

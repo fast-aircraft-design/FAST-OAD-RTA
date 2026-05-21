@@ -15,15 +15,15 @@ FAST - Copyright (c) 2025 ONERA ISAE
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import numpy as np
+import openmdao.api as om
 from fastoad.module_management.service_registry import RegisterSubmodel
 from fastoad_cs25.models.aerodynamics.constants import SERVICE_CD0_FUSELAGE
-from openmdao.core.explicitcomponent import ExplicitComponent
 
 RegisterSubmodel.active_models[SERVICE_CD0_FUSELAGE] = "rta.submodel.aerodynamics.CD0.fuselage"
 
 
 @RegisterSubmodel(SERVICE_CD0_FUSELAGE, "rta.submodel.aerodynamics.CD0.fuselage")
-class Cd0Fuselage(ExplicitComponent):
+class Cd0Fuselage(om.ExplicitComponent):
     def initialize(self):
         self.options.declare("low_speed_aero", default=False, types=bool)
 

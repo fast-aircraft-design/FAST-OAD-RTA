@@ -14,14 +14,14 @@ Estimation of fire protection weight
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+import openmdao.api as om
 from fastoad.module_management.service_registry import RegisterSubmodel
-from openmdao.core.explicitcomponent import ExplicitComponent
 
 from rta.models.weight.mass_breakdown.c_systems.constants import SERVICE_MASS_ATA26
 
 
 @RegisterSubmodel(SERVICE_MASS_ATA26, "rta.submodel.mass.system.ata26")
-class FireSystemWeight(ExplicitComponent):
+class FireSystemWeight(om.ExplicitComponent):
     """
     Weight estimation for fire protection systems
 

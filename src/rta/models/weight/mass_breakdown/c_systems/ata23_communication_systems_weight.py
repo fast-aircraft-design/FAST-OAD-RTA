@@ -14,17 +14,17 @@ Estimation of communication systems weight
 #  GNU General Public License for more details.
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
+import openmdao.api as om
 from fastoad.module_management.service_registry import RegisterSubmodel
 from fastoad_cs25.models.weight.mass_breakdown.c_systems.c4_transmissions_systems_weight import (
     TransmissionSystemsWeight,
 )
-from openmdao.core.group import Group
 
 from rta.models.weight.mass_breakdown.c_systems.constants import SERVICE_MASS_ATA23
 
 
 @RegisterSubmodel(SERVICE_MASS_ATA23, "rta.submodel.mass.system.ata23")
-class CommunicationSystemWeightLegacy(Group):
+class CommunicationSystemWeightLegacy(om.Group):
     """Weight estimation for communication systems, based on CS25 transmission model"""
 
     def setup(self):

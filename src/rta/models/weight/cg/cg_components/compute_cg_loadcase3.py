@@ -15,10 +15,10 @@ Estimation of center of gravity for load case 3.
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 import numpy as np
-from openmdao.core.explicitcomponent import ExplicitComponent
+import openmdao.api as om
 
 
-class ComputeCGLoadCase3(ExplicitComponent):
+class ComputeCGLoadCase3(om.ExplicitComponent):
     # TODO: Document equations. Cite sources
     """Center of gravity estimation for load case 3"""
 

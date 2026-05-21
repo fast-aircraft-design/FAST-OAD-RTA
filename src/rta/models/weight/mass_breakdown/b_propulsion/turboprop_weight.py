@@ -5,8 +5,8 @@ Created on Mon Sep 14 10:12:50 2020
 """
 
 import numpy as np
+import openmdao.api as om
 from fastoad.module_management.service_registry import RegisterSubmodel
-from openmdao.core.explicitcomponent import ExplicitComponent
 from scipy import constants
 
 from rta.models.weight.mass_breakdown.b_propulsion.constants import (
@@ -15,7 +15,7 @@ from rta.models.weight.mass_breakdown.b_propulsion.constants import (
 
 
 @RegisterSubmodel(SERVICE_TURBOPROP_MASS, "rta.submodel.weight.mass.propulsion.turboprop.legacy")
-class TurbopropWeight(ExplicitComponent):
+class TurbopropWeight(om.ExplicitComponent):
     """
     Weight estimation for turboprop propulsion systems
     Ref. Teeuwen, Y., “Propeller Design for Conceptual Turboprop Aircraft,”

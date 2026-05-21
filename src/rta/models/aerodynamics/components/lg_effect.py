@@ -16,7 +16,7 @@ Computation of Oswald coefficient
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import numpy as np
-from openmdao.core.explicitcomponent import ExplicitComponent
+import openmdao.api as om
 
 from rta.models.aerodynamics.constants import ALPHA_POINT_COUNT
 
@@ -25,7 +25,7 @@ Undocumented
 """
 
 
-class ComputeDeltaLg(ExplicitComponent):
+class ComputeDeltaLg(om.ExplicitComponent):
     """Computes landing gear extension effect on Cl and Cd"""
 
     def initialize(self):

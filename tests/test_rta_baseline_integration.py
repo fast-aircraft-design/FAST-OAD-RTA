@@ -87,17 +87,18 @@ def run_non_regression_test(
 
     # Check that weight-performances loop correctly converged
     assert_allclose(
-        problem["data:weight:aircraft:OWE"],
-        problem["data:weight:airframe:mass"]
-        + problem["data:weight:propulsion:mass"]
-        + problem["data:weight:systems:mass"]
-        + problem["data:weight:furniture:mass"]
-        + problem["data:weight:operational:mass"],
+        problem.get_val("data:weight:aircraft:OWE", units="kg"),
+        problem.get_val("data:weight:airframe:mass", units="kg")
+        + problem.get_val("data:weight:propulsion:mass", units="kg")
+        + problem.get_val("data:weight:systems:mass", units="kg")
+        + problem.get_val("data:weight:furniture:mass", units="kg")
+        + problem.get_val("data:weight:operational:mass", units="kg"),
         atol=1,
     )
     assert_allclose(
-        problem["data:weight:aircraft:MZFW"],
-        problem["data:weight:aircraft:OWE"] + problem["data:weight:aircraft:max_payload"],
+        problem.get_val("data:weight:aircraft:MZFW", units="kg"),
+        problem.get_val("data:weight:aircraft:OWE", units="kg")
+        + problem.get_val("data:weight:aircraft:max_payload", units="kg"),
         atol=1,
     )
 

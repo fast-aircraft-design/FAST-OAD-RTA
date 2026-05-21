@@ -15,14 +15,14 @@ Estimation of hydraulic power systems weight
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import numpy as np
+import openmdao.api as om
 from fastoad.module_management.service_registry import RegisterSubmodel
-from openmdao.core.explicitcomponent import ExplicitComponent
 
 from rta.models.weight.mass_breakdown.c_systems.constants import SERVICE_MASS_ATA29
 
 
 @RegisterSubmodel(SERVICE_MASS_ATA29, "rta.submodel.mass.system.ata29")
-class HydraulicPowerSystemWeight(ExplicitComponent):
+class HydraulicPowerSystemWeight(om.ExplicitComponent):
     """
     Weight estimation for hydraulic power systems (generation and distribution)
 

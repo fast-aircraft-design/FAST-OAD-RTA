@@ -16,13 +16,13 @@ Computation of Oswald coefficient
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import numpy as np
-from openmdao.core.explicitcomponent import ExplicitComponent
+import openmdao.api as om
 from scipy import constants
 
 from rta.models.aerodynamics.constants import CT_POINT_COUNT
 
 
-class ComputeDeltaOEI(ExplicitComponent):
+class ComputeDeltaOEI(om.ExplicitComponent):
     """
     Computes One engine inoperative effect on Cd. Based on Raymer page 290 eq 12.40
     Trim effects calculation is not referenced

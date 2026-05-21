@@ -58,7 +58,7 @@ class Propeller:
             T_prop_ref = fsolve(P_to_T, 1, args=(shp_prop, LOW_SPEED_MACH_LIMIT * a, rho, d))[0]
             T_prop_ref = T_prop_ref * k_corr * data.k_prop
 
-            # Interpol while mach is between [0,LOW_SPEED_MACH_LIMIT]
+            # Interpolate while mach is between [0,LOW_SPEED_MACH_LIMIT]
             x = [0, LOW_SPEED_MACH_LIMIT]
             y = [scalarize(T_prop_0), scalarize(T_prop_ref)]
 

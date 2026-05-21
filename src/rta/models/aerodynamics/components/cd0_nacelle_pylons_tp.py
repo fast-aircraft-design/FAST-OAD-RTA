@@ -16,12 +16,12 @@ FAST - Copyright (c) 2025 ONERA ISAE
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import numpy as np
+import openmdao.api as om
 from fastoad.module_management.service_registry import RegisterSubmodel
 from fastoad_cs25.models.aerodynamics.components.utils.friction_drag import (
     get_flat_plate_friction_drag_coefficient,
 )
 from fastoad_cs25.models.aerodynamics.constants import SERVICE_CD0_NACELLES_PYLONS
-from openmdao.core.explicitcomponent import ExplicitComponent
 
 RegisterSubmodel.active_models[SERVICE_CD0_NACELLES_PYLONS] = (
     "rta.submodel.aerodynamics.CD0.nacelles"
@@ -29,7 +29,7 @@ RegisterSubmodel.active_models[SERVICE_CD0_NACELLES_PYLONS] = (
 
 
 @RegisterSubmodel(SERVICE_CD0_NACELLES_PYLONS, "rta.submodel.aerodynamics.CD0.nacelles")
-class Cd0NacelleAndPylonsTP(ExplicitComponent):
+class Cd0NacelleAndPylonsTP(om.ExplicitComponent):
     def initialize(self):
         self.options.declare("low_speed_aero", default=False, types=bool)
 

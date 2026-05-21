@@ -14,8 +14,8 @@ Estimation of flight furnishing systems weight
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+import openmdao.api as om
 from fastoad.module_management.service_registry import RegisterSubmodel
-from openmdao.core.explicitcomponent import ExplicitComponent
 
 from rta.models.weight.mass_breakdown.c_systems.constants import (
     SERVICE_MASS_ATA25_SYSTEM,
@@ -23,7 +23,7 @@ from rta.models.weight.mass_breakdown.c_systems.constants import (
 
 
 @RegisterSubmodel(SERVICE_MASS_ATA25_SYSTEM, "rta.submodel.mass.system.ata25")
-class FlightFurnishingWeight(ExplicitComponent):
+class FlightFurnishingWeight(om.ExplicitComponent):
     """
     Weight estimation for flight compartment furnishing
 

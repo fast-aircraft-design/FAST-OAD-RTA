@@ -15,19 +15,19 @@ FAST - Copyright (c) 2025 ONERA ISAE
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import numpy as np
+import openmdao.api as om
 from fastoad.module_management.service_registry import RegisterSubmodel
 from fastoad_cs25.models.aerodynamics.components.utils.cd0_lifting_surface import (
     LiftingSurfaceGeometry,
     compute_cd0_lifting_surface,
 )
 from fastoad_cs25.models.aerodynamics.constants import SERVICE_CD0_WING
-from openmdao.core.explicitcomponent import ExplicitComponent
 
 RegisterSubmodel.active_models[SERVICE_CD0_WING] = "rta.submodel.aerodynamics.CD0.wing"
 
 
 @RegisterSubmodel(SERVICE_CD0_WING, "rta.submodel.aerodynamics.CD0.wing")
-class Cd0Wing(ExplicitComponent):
+class Cd0Wing(om.ExplicitComponent):
     def initialize(self):
         self.options.declare("low_speed_aero", default=False, types=bool)
 
