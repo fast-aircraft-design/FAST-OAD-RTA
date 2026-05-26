@@ -40,7 +40,7 @@ INPUT_PARAMETERS = VariableList(
 
 
 @dataclass
-class PropellerPowerCalculator(AbstractPropulsiveComponent):
+class PropellerComponent(AbstractPropulsiveComponent):
     """
     Example component for turboprop shaft power calculations.
 
@@ -58,12 +58,12 @@ class PropellerPowerCalculator(AbstractPropulsiveComponent):
         - gearbox_shaft_power: Shaft power [W]
 
     Usage:
-        >>> propeller = PropellerPowerCalculator()
+        >>> propeller = PropellerComponent()
         >>> propeller.input_parameters["data:propulsion:propeller:efficiency"].value = 0.85
         >>> fp = FlightPoint()
         >>> fp.thrust = 5000  # N
         >>> fp.true_airspeed = 200  # m/s
-        >>> propeller.compute_perfo(fp)
+        >>> propeller.compute_performances(fp)
         >>> print(fp.gearbox_shaft_power)
         1176470.588...
     """
@@ -103,6 +103,6 @@ class PropellerPowerCalculator(AbstractPropulsiveComponent):
         if efficiency == 0:
             flight_point.gearbox_shaft_power = float("inf")
         else:
-            flight_point.gearbox_shaft_power = (thrust * true_airspeed) / efficiency
+            flight_point.gearbox_shaft_power = np.divide(thrust * true_airspeed, efficiency)
 
         return flight_point

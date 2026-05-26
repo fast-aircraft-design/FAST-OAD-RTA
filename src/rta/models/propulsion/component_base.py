@@ -24,7 +24,9 @@ from dataclasses import dataclass
 
 import pandas as pd
 from openmdao.vectors.default_vector import DefaultVector
+from openmdao.core.component import Component
 from typing import ClassVar, Union
+from copy import deepcopy
 
 from fastoad.model_base.flight_point import FlightPoint, _FieldDescriptor
 from fastoad.openmdao.variables import VariableList
@@ -70,51 +72,58 @@ class AbstractPropulsiveComponent(ABC):
     _output_fields: ClassVar[dict] = None
 
     def __init_subclass__(cls, **kwargs):
+        """
+        This function is called when initializing subclasses.
+        It makes sure that the child class has declared the following
+        default attributes:
+        _input_parameters, _input_fields and _output_fields.
+        """
         super().__init_subclass__(**kwargs)
-        # Check that default are always provided in the child class
-        if cls._input_parameters is AbstractPropulsiveComponent._input_parameters:
+        if not hasattr(cls, "_input_parameters"):
             raise ValueError(f"The classe {cls.__name__} must define _input_parameters")
-        if cls._input_fields is AbstractPropulsiveComponent._input_fields:
+        if not hasattr(cls, "_input_fields"):
             raise ValueError(f"The classe {cls.__name__} must define _input_fields")
-        if cls._output_fields is AbstractPropulsiveComponent._output_fields:
+        if not hasattr(cls, "_output_fields"):
             raise ValueError(f"The classe {cls.__name__} must define _output_fields")
 
     def __post_init__(self):
         """
         Initialize the component and automatically expand FlightPoint with output fields.
+
+        We use default attributes defined by child class, unless new attributes
+        are provided at instantiation.
         """
 
-        # If no argument were passed at instanciation, use default from child class
-        if getattr(self, "input_parameters", None) is None:
-            setattr(self, "input_parameters", self._input_parameters)
+        if self.input_parameters is None:
+            self.input_parameters = deepcopy(self._input_parameters)
 
-        if getattr(self, "input_fields", None) is None:
-            self._check_fields_definition(self._input_fields)
-            setattr(self, "input_fields", self._input_fields)
+        if self.input_fields is None:
+            self.input_fields = deepcopy(self._input_fields)
 
-        if getattr(self, "output_fields", None) is None:
-            self._check_fields_definition(self._output_fields)
-            setattr(self, "output_fields", self._output_fields)
+        if self.output_fields is None:
+            self.output_fields = deepcopy(self._output_fields)
 
         # Automatically expand FlightPoint class with output fields
         self._expand_flight_point()
 
     @staticmethod
     def _check_fields_definition(fields: dict):
-        """Raises a TypeError is the fields in dictionary are not declared using _FieldDescriptor"""
+        """Raises a TypeError if the fields in dictionary are not declared using _FieldDescriptor"""
         bad_fields = []
         for field_name, metadata in fields.items():
             if not isinstance(metadata, _FieldDescriptor):
                 bad_fields.append(field_name)
 
         if bad_fields:
-            raise TypeError(f"The fields '{bad_fields}' must be declared using _FieldDescriptor")
+            raise TypeError(
+                f"The fields {', '.join(bad_fields)} must be declared using _FieldDescriptor"
+            )
 
     def _expand_flight_point(self) -> None:
         """
         Automatically expand FlightPoint class with component's output fields.
 
-        This method is called automatically during initialization. It adds the
+        This method is called automatically during instantiation. It adds the
         necessary fields to the FlightPoint class. If a field already exists,
         a warning is issued to alert about potential redundant declarations.
 
@@ -130,7 +139,10 @@ class AbstractPropulsiveComponent(ABC):
                 )
             else:
                 FlightPoint.add_field(
-                    field_name, unit=metadata.unit, is_cumulative=metadata.is_cumulative
+                    field_name,
+                    unit=metadata.unit,
+                    is_cumulative=metadata.is_cumulative,
+                    integrates_from=metadata.integrates_from,
                 )
 
     def _check_input_fields(self) -> None:
@@ -163,7 +175,7 @@ class AbstractPropulsiveComponent(ABC):
                 f"Please ensure units consistency between input and output fields."
             )
 
-    def compute_perfo(self, flight_point: Union[FlightPoint, pd.DataFrame]):
+    def compute_performances(self, flight_point: Union[FlightPoint, pd.DataFrame]):
         """
         Compute the performance of the component for given flight point(s).
 
@@ -180,8 +192,6 @@ class AbstractPropulsiveComponent(ABC):
             NotImplementedError: If the subclass has not implemented
                                  compute_single_point().
         """
-        # Check that all required input fields exist in FlightPoint class
-        self._check_input_fields()
 
         if isinstance(flight_point, pd.DataFrame):
             # Default inefficient but functional way of handling dataframe.
@@ -220,3 +230,21 @@ class AbstractPropulsiveComponent(ABC):
 
         for name in self.input_parameters.names():
             self.input_parameters[name].value = inputs[name]
+
+    def declare_openmdao_inputs(self, component: Component):
+        """
+        For use with openmdao wrapper, declares the input parameters as openmdao inputs with units check
+        """
+        faulty_units = []
+        for var in self._input_parameters:
+            if var not in component.list_inputs():
+                component.add_input(var.name, var.value, units=var.units)
+            elif var.units != component._get_var_meta(var, "units"):
+                faulty_units.append(var)
+
+        if faulty_units:
+            raise ValueError(
+                f"The variables {', '.join(faulty_units)} declared in component '{self.name}' has"
+                f"already been added as openmdao input with different units,"
+                f"check units consistency"
+            )

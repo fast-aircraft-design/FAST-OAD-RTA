@@ -19,7 +19,7 @@ for integration with FAST-OAD's OpenMDAO-based workflow.
 
 import numpy as np
 from fastoad.model_base import FlightPoint
-from openmdao.api import ExplicitComponent
+import openmdao.api as om
 from openmdao.core.component import Component
 
 from fastoad.model_base.propulsion import (
@@ -28,7 +28,7 @@ from fastoad.model_base.propulsion import (
 )
 
 from .gearbox import GearboxComponent
-from .propeller_power_calculator import PropellerPowerCalculator
+from .propeller_power_calculator import PropellerComponent
 from .propulsion_system_module import PropulsionSystemModule
 
 
@@ -57,13 +57,13 @@ class PropulsionSystemOMWrapper(IOMPropulsionWrapper):
         Args:
             component: The OpenMDAO component where inputs will be declared.
         """
-        # Declare inputs from PropellerPowerCalculator
-        for var in PropellerPowerCalculator._input_parameters:
-            component.add_input(var.name, np.nan, units=var.units)
+        # Declare default inputs from PropellerPowerCalculator
+        propeller = PropellerComponent()
+        propeller.declare_openmdao_inputs(component)
 
         # Declare inputs from GearboxComponent
-        for var in GearboxComponent._input_parameters:
-            component.add_input(var.name, np.nan, units=var.units)
+        gearbox = GearboxComponent()
+        gearbox.declare_openmdao_inputs(component)
 
     @staticmethod
     def get_model(inputs) -> FuelEngineSet:
@@ -84,7 +84,7 @@ class PropulsionSystemOMWrapper(IOMPropulsionWrapper):
         """
 
         # Instantiate the propeller power calculator
-        propeller = PropellerPowerCalculator()
+        propeller = PropellerComponent()
 
         # Instantiate the gearbox
         gearbox = GearboxComponent()
@@ -107,7 +107,7 @@ class PropulsionSystemOMWrapper(IOMPropulsionWrapper):
         return FuelEngineSet(engine=propulsion_system, engine_count=engine_count)
 
 
-class PropulsionSystemOMComponent(ExplicitComponent):
+class PropulsionSystemOMComponent(om.ExplicitComponent):
     """
     Parametric engine model as OpenMDAO component. Used for unit and integration tests.
 

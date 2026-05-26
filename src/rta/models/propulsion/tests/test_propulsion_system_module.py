@@ -22,20 +22,40 @@ import pandas as pd
 
 import pytest
 
-from fastoad.model_base.flight_point import FlightPoint
+from fastoad.model_base.flight_point import FlightPoint, _FieldDescriptor
 
 from rta.models.propulsion.tests.dummy_components.gearbox import GearboxComponent
 from rta.models.propulsion.tests.dummy_components.propeller_power_calculator import (
-    PropellerPowerCalculator,
+    PropellerComponent,
 )
 from rta.models.propulsion.tests.dummy_components.propulsion_system_module import (
     PropulsionSystemModule,
 )
 
 
+def test_incoherent_input_definition():
+    new_input_fields = {
+        "thrust": _FieldDescriptor(unit="kN"),
+        "true_airspeed": _FieldDescriptor(unit="m/s"),
+    }
+    propeller = PropellerComponent(input_fields=new_input_fields)
+    gearbox = GearboxComponent()
+
+    with pytest.raises(ValueError) as record:
+        _ = PropulsionSystemModule(
+            propeller_power_calculator=propeller,
+            gearbox=gearbox,
+        )
+
+    assert (
+        "Component 'PropellerPowerCalculator': The following input fields: thrust asked for the following units : kN"
+        in str(record.value)
+    )
+
+
 def test_propulsion_system_module_compute_single_flight_point():
     """Test compute_flight_points() with a single FlightPoint."""
-    propeller = PropellerPowerCalculator()
+    propeller = PropellerComponent()
     gearbox = GearboxComponent()
 
     # Set propeller efficiency to 0.85
@@ -78,7 +98,7 @@ def test_propulsion_system_module_compute_single_flight_point():
 
 def test_propulsion_system_module_compute_list_of_flight_points():
     """Test compute_flight_points() with a list of FlightPoints."""
-    propeller = PropellerPowerCalculator()
+    propeller = PropellerComponent()
     gearbox = GearboxComponent()
 
     # Set propeller efficiency to 0.85

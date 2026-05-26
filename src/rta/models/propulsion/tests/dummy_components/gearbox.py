@@ -20,6 +20,8 @@ based on input power and gearbox efficiency.
 
 import numpy as np
 from dataclasses import dataclass
+
+from fastoad._utils.arrays import scalarize
 from fastoad.model_base.flight_point import FlightPoint, _FieldDescriptor
 from fastoad.openmdao.variables import VariableList, Variable
 
@@ -35,7 +37,7 @@ class GearboxComponent(AbstractPropulsiveComponent):
     input power and gearbox efficiency.
 
     input_parameters:
-        - data:propulsion:gearbox:efficiency: Gearbox efficiency [1]
+        - data:propulsion:gearbox:efficiency: Gearbox efficiency [0-1]
 
     FlightPoint input fields:
         - gearbox_shaft_power: Input shaft power [W]
@@ -48,9 +50,9 @@ class GearboxComponent(AbstractPropulsiveComponent):
         >>> fp = FlightPoint()
         >>> fp.gearbox_shaft_power = 1000000  # W
         >>> gearbox.input_parameters["data:propulsion:gearbox:efficiency"].value = 0.95
-        >>> gearbox.compute_perfo(fp)
+        >>> gearbox.compute_performances(fp)
         >>> print(fp.TPshaft_power)
-        950000.0
+        1052631.6
     """
 
     name = "GearboxComponent"
@@ -89,7 +91,9 @@ class GearboxComponent(AbstractPropulsiveComponent):
             FlightPoint with TPshaft_power computed.
         """
         output_power = flight_point.gearbox_shaft_power
-        efficiency = self.input_parameters["data:propulsion:gearbox:efficiency"].get_val()
+        efficiency = scalarize(
+            self.input_parameters["data:propulsion:gearbox:efficiency"].get_val()
+        )
 
         # Compute output power
         flight_point.TPshaft_power = output_power / efficiency

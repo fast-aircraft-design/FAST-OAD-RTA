@@ -2,7 +2,7 @@
 Tests for the AbstractPropulsiveComponent base class.
 
 This module tests the functionality of the AbstractPropulsiveComponent
-including FlightPoint field expansion, compute_perfo() method, and
+including FlightPoint field expansion, compute_performances() method, and
 VariableList updates.
 """
 
@@ -28,7 +28,7 @@ from fastoad.model_base.flight_point import FlightPoint, _FieldDescriptor
 from fastoad.openmdao.variables import VariableList, Variable
 
 from rta.models.propulsion.tests.dummy_components.propeller_power_calculator import (
-    PropellerPowerCalculator,
+    PropellerComponent,
 )
 
 
@@ -36,21 +36,24 @@ def test_flight_point_fields_expanded_at_instantiation():
     """Test that FlightPoint fields are expanded when component is instantiated."""
     # Before instantiation, check that the output field doesn't exist
     # We use a fresh FlightPoint to verify the field is added
-    _ = PropellerPowerCalculator()
+    _ = PropellerComponent()
 
     # After instantiation, the output field should be available on FlightPoint
     fp = FlightPoint()
-    # assert hasattr(fp, "gearbox_shaft_power"), (
-    #     "FlightPoint should have gearbox_shaft_power attribute after component instantiation"
-    # )
-    # assert fp.is_cumulative("gearbox_shaft_power"), 'The added field should have metadata "is_cumulative"=True'
+    assert hasattr(fp, "gearbox_shaft_power"), (
+        "FlightPoint should have gearbox_shaft_power attribute after component instantiation"
+    )
+    assert fp.is_cumulative("gearbox_shaft_power"), (
+        'The added field should have metadata "is_cumulative"=True'
+    )
+
     # Now lets try to redefine at instantiation
 
     # test the input / output fields can be modified at instantiation
     new_input_fields = {"overdrive_power": _FieldDescriptor(unit="GW", is_cumulative=False)}
     new_output_fields = {"overdrive_waste_heat": _FieldDescriptor(unit="PW", is_cumulative=True)}
 
-    prop = PropellerPowerCalculator(input_fields=new_input_fields, output_fields=new_output_fields)
+    prop = PropellerComponent(input_fields=new_input_fields, output_fields=new_output_fields)
 
     fp = FlightPoint()
 
@@ -68,17 +71,15 @@ def test_flight_point_fields_expanded_at_instantiation():
         'The added field should have metadata "is_cumulative"=True'
     )
 
-    # Test inproper definition
-
 
 def test_flight_point_expansion_only_once():
     """Test that FlightPoint fields are only added once (not duplicated)."""
     # Create first component - should add fields without warning
-    _ = PropellerPowerCalculator()
+    _ = PropellerComponent()
 
     # Create second component of same type - should trigger warning for redundant field
     with pytest.warns(UserWarning) as record:
-        _ = PropellerPowerCalculator()
+        _ = PropellerComponent()
 
     # Verify that a warning was issued about redundant declarations
     assert len(record) == 1
@@ -87,15 +88,15 @@ def test_flight_point_expansion_only_once():
 
 
 def test_compute_perfo_single_flight_point():
-    """Test compute_perfo() with a single FlightPoint."""
-    component = PropellerPowerCalculator()
+    """Test compute_performances() with a single FlightPoint."""
+    component = PropellerComponent()
 
     fp = FlightPoint()
     fp.thrust = 50000.0  # N
     fp.true_airspeed = 200.0  # m/s
     component.input_parameters["data:propulsion:propeller:efficiency"].value = 0.85
 
-    component.compute_perfo(fp)
+    component.compute_performances(fp)
 
     # Expected: (50000 * 200) / 0.85 = 11764705.88...
     expected_power = (50000.0 * 200.0) / 0.85
@@ -103,8 +104,8 @@ def test_compute_perfo_single_flight_point():
 
 
 def test_compute_perfo_list_of_flight_points():
-    """Test compute_perfo() with a list of FlightPoints."""
-    component = PropellerPowerCalculator()
+    """Test compute_performances() with a list of FlightPoints."""
+    component = PropellerComponent()
 
     component.input_parameters["data:propulsion:propeller:efficiency"].value = 0.85
 
@@ -117,7 +118,7 @@ def test_compute_perfo_list_of_flight_points():
     fp2.true_airspeed = 250.0
 
     flightpoints = pd.DataFrame([fp1, fp2])
-    component.compute_perfo(flightpoints)
+    component.compute_performances(flightpoints)
 
     # First result: (50000 * 200) / 0.85
     expected_power1 = (50000.0 * 200.0) / 0.85
@@ -129,7 +130,7 @@ def test_compute_perfo_list_of_flight_points():
 
 def test_inputs_can_be_updated_using_update():
     """Test that inputs can be updated using VariableList.update()."""
-    component = PropellerPowerCalculator()
+    component = PropellerComponent()
 
     # Create new input variables to add
     new_inputs = VariableList()
@@ -140,3 +141,21 @@ def test_inputs_can_be_updated_using_update():
 
     # Verify
     assert component.input_parameters["data:propulsion:propeller:efficiency"].get_val() == 0.5
+
+
+def test_inputs_units_incorrect():
+    """Test  _check_input_unit function"""
+
+    new_input_fields = {
+        "thrust": _FieldDescriptor(unit="kN"),
+        "true_airspeed": _FieldDescriptor(unit="m/s"),
+    }
+    propeller = PropellerComponent(input_fields=new_input_fields)
+
+    with pytest.raises(ValueError) as record:
+        propeller._check_input_fields()
+
+    assert (
+        "Component 'PropellerPowerCalculator': The following input fields: thrust asked for the following units : kN"
+        in str(record.value)
+    )

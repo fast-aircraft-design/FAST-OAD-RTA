@@ -28,7 +28,7 @@ from rta.models.propulsion.tests.dummy_components.gearbox import GearboxComponen
 
 
 def test_gearbox_compute_perfo_single_flight_point():
-    """Test compute_perfo() with a single FlightPoint."""
+    """Test compute_performances() with a single FlightPoint."""
     # Add the input field for gearbox
     FlightPoint.add_field(name="gearbox_shaft_power", unit="W")
     gearbox = GearboxComponent()
@@ -37,7 +37,7 @@ def test_gearbox_compute_perfo_single_flight_point():
     fp = FlightPoint()
     fp.gearbox_shaft_power = 500000.0  # W
 
-    gearbox.compute_perfo(fp)
+    gearbox.compute_performances(fp)
 
     # Expected: 500000 / 0.90 = 550000
     expected_power = 500000.0 / 0.90
@@ -45,7 +45,7 @@ def test_gearbox_compute_perfo_single_flight_point():
 
 
 def test_gearbox_compute_perfo_list_of_flight_points():
-    """Test compute_perfo() with a list of FlightPoints."""
+    """Test compute_performances() with a list of FlightPoints."""
     # Add the input field for gearbox
     FlightPoint.add_field(name="gearbox_shaft_power", unit="W")
     gearbox = GearboxComponent()
@@ -58,7 +58,7 @@ def test_gearbox_compute_perfo_list_of_flight_points():
     fp2.gearbox_shaft_power = 2000000.0
 
     flight_points = pd.DataFrame([fp1, fp2])
-    gearbox.compute_perfo(flight_points)
+    gearbox.compute_performances(flight_points)
 
     # First result: 1000000 / 0.95
     expected_power1 = 1000000.0 / 0.95

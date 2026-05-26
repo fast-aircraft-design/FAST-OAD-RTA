@@ -22,12 +22,10 @@ from typing import Union
 import pandas as pd
 from fastoad.model_base.flight_point import FlightPoint
 
-from rta.models.propulsion.fuel_engine.turboprop_engine.base import (
-    AbstractFuelPropulsion,
-)
+from rta.models.propulsion.propulsion_system_base import PropulsionSystem
 
 
-class PropulsionSystemModule(AbstractFuelPropulsion):
+class PropulsionSystemModule(PropulsionSystem):
     """
     Propulsion system module that combines propeller, gearbox, and fuel flow calculations.
 
@@ -39,15 +37,14 @@ class PropulsionSystemModule(AbstractFuelPropulsion):
         - gearbox: An instance of GearboxComponent
 
     The compute_flight_points method will:
-        1. Call compute_perfo of the propeller instance first
-        2. Then call compute_perfo of the gearbox instance
+        1. Call compute_performances of the propeller instance first
+        2. Then call compute_performances of the gearbox instance
         3. Calculate fuel flow as PSFC * TPshaft_power with PSFC = 0.250 [kg/kWh]
         4. Calculate SFC from fuel flow / thrust
 
     Attributes:
         propeller_power_calculator: Instance of propeller power calculator component.
         gearbox: Instance of gearbox component.
-        PSFC: Specific fuel consumption constant [kg/kWh].
     """
 
     def __init__(
@@ -64,16 +61,19 @@ class PropulsionSystemModule(AbstractFuelPropulsion):
         """
         self.propeller_power_calculator = propeller_power_calculator
         self.gearbox = gearbox
-        # PSFC = 0.250 kg/kWh (specific fuel consumption constant)
         self.PSFC = 0.250  # kg/kWh
+
+    def get_consumed_mass(self, flight_point: FlightPoint, time_step: float) -> float:
+        """Definition is mandatory but it is not used in this exemple"""
+        return 0.0
 
     def compute_flight_points(self, flight_points: Union[FlightPoint, pd.DataFrame]):
         """
         Compute propulsion performance for flight point(s).
 
         This method orchestrates the computation chain:
-        1. Call propeller compute_perfo to compute gearbox_shaft_power
-        2. Call gearbox compute_perfo to compute TPshaft_power
+        1. Call propeller compute_performances to compute gearbox_shaft_power
+        2. Call gearbox compute_performances to compute TPshaft_power
         3. Calculate fuel flow as PSFC * TPshaft_power
         4. Calculate SFC as fuel_flow / thrust
 
@@ -86,32 +86,14 @@ class PropulsionSystemModule(AbstractFuelPropulsion):
                 - thrust: Thrust [N] (from input flight point)
                 - sfc: Specific fuel consumption [kg/N/s]
         """
-        #     # Handle both single FlightPoint and DataFrame cases
-        #     if isinstance(flight_points, FlightPoint):
-        #         self._compute_single_flight_point(flight_points)
-        #     elif isinstance(flight_points, pd.DataFrame):
-        #         for idx in flight_points.index:
-        #             flight_point = flight_points.loc[idx]
-        #             self._compute_single_flight_point(flight_point)
-        #     else:
-        #         # Assume it's a list or array of FlightPoints
-        #         for flight_point in flight_points:
-        #             self._compute_single_flight_point(flight_point)
-        #
-        # def _compute_single_flight_point(self, flight_point: FlightPoint):
-        """
-        Compute propulsion performance for a single flight point.
 
-        Args:
-            flight_point: A FlightPoint instance with required inputs set.
-        """
         # Step 1: Call propeller compute_perfo first
         # This computes gearbox_shaft_power from thrust and true_airspeed
-        self.propeller_power_calculator.compute_perfo(flight_points)
+        self.propeller_power_calculator.compute_performances(flight_points)
 
         # Step 2: Call gearbox compute_perfo
         # This computes TPshaft_power from gearbox_shaft_power
-        self.gearbox.compute_perfo(flight_points)
+        self.gearbox.compute_performances(flight_points)
 
         # Step 3: Calculate fuel flow
         # fuel_flow = PSFC * TPshaft_power
