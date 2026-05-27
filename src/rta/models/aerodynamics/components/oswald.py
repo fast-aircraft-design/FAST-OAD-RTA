@@ -16,10 +16,9 @@ Computation of Oswald coefficient
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import numpy as np
+import openmdao.api as om
 from fastoad.module_management.service_registry import RegisterSubmodel
 from fastoad_cs25.models.aerodynamics.constants import SERVICE_INDUCED_DRAG_COEFFICIENT
-from openmdao.core.explicitcomponent import ExplicitComponent
-
 
 RegisterSubmodel.active_models[SERVICE_INDUCED_DRAG_COEFFICIENT] = (
     "rta.submodel.aerodynamics.induced_drag_coefficient.legacy"
@@ -30,7 +29,7 @@ RegisterSubmodel.active_models[SERVICE_INDUCED_DRAG_COEFFICIENT] = (
     SERVICE_INDUCED_DRAG_COEFFICIENT,
     "rta.submodel.aerodynamics.induced_drag_coefficient.legacy",
 )
-class InducedDragCoefficient(ExplicitComponent):
+class InducedDragCoefficient(om.ExplicitComponent):
     """
     Computes the coefficient that should be multiplied by CL**2 to get induced drag.
     Let the dihedral angle appear explicitly as an input variable.

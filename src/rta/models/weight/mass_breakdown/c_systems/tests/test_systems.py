@@ -12,12 +12,12 @@
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 # pylint: disable=redefined-outer-name  # needed for pytest fixtures
-import os.path as pth
+from pathlib import Path
 
-from fastoad.testing import run_system
 from fastoad.io import VariableIO
-from pytest import approx
+from fastoad.testing import run_system
 from openmdao.api import IndepVarComp
+from pytest import approx
 
 from ..ata21_environmental_control_systems_weight import ECSWeight
 from ..ata22_autoflight_systems_weight import AutoFlightSystemWeight
@@ -34,10 +34,9 @@ from ..ata49_auxiliary_power_systems_weight import APUWeight
 
 def get_indep_var_comp(var_names):
     """Reads required input data and returns an IndepVarcomp() instance"""
-    reader = VariableIO(pth.join(pth.dirname(__file__), "data", "ref_weight.xml"))
+    reader = VariableIO(Path(__file__).parent.resolve() / "data" / "ref_weight.xml")
     reader.path_separator = ":"
-    ivc = reader.read(only=var_names).to_ivc()
-    return ivc
+    return reader.read(only=var_names).to_ivc()
 
 
 def test_ecs_weight():

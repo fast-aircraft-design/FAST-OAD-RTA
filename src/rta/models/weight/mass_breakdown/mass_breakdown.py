@@ -13,15 +13,13 @@
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import openmdao.api as om
-
 from fastoad.module_management.service_registry import RegisterSubmodel
-
 from fastoad_cs25.models.weight.mass_breakdown.constants import (
-    SERVICE_SYSTEMS_MASS,
+    SERVICE_AIRFRAME_MASS,
     SERVICE_FURNITURE_MASS,
     SERVICE_OWE,
-    SERVICE_AIRFRAME_MASS,
     SERVICE_PROPULSION_MASS,
+    SERVICE_SYSTEMS_MASS,
 )
 
 from rta.models.weight.mass_breakdown.constants import SERVICE_OPERATIONAL_MASS

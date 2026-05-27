@@ -15,12 +15,15 @@ Estimation of center of gravity for load case 2.
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 import numpy as np
-from openmdao.core.explicitcomponent import ExplicitComponent
+import openmdao.api as om
 
 
-class ComputeCGLoadCase2(ExplicitComponent):
+class ComputeCGLoadCase2(om.ExplicitComponent):
     # TODO: Document equations. Cite sources
-    """Center of gravity estimation for load case 2: add cargo weight (50-50) + fuel weight to OWE"""
+    """
+    Center of gravity estimation for load case 2:
+    add cargo weight (50-50) + fuel weight to OWE.
+    """
 
     def setup(self):
         self.add_input("data:geometry:wing:MAC:length", val=np.nan, units="m")

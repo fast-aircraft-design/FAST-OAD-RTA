@@ -14,13 +14,14 @@ Estimation of automatic flight systems weight
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-from openmdao.core.explicitcomponent import ExplicitComponent
+import openmdao.api as om
 from fastoad.module_management.service_registry import RegisterSubmodel
+
 from rta.models.weight.mass_breakdown.c_systems.constants import SERVICE_MASS_ATA22
 
 
 @RegisterSubmodel(SERVICE_MASS_ATA22, "rta.submodel.mass.system.ata22")
-class AutoFlightSystemWeight(ExplicitComponent):
+class AutoFlightSystemWeight(om.ExplicitComponent):
     """
     Weight estimation for automatic flight systems
 

@@ -23,9 +23,9 @@ from fastoad_cs25.models.aerodynamics.constants import (
     PolarType,
 )
 
-from .components.oei_effect import ComputeDeltaOEI
 from .components.initialize_in import InitializeIN
 from .components.lg_effect import ComputeDeltaLg
+from .components.oei_effect import ComputeDeltaOEI
 
 
 @RegisterOpenMDAOSystem("rta.aerodynamics.takeoff", domain=ModelDomain.AERODYNAMICS)

@@ -17,6 +17,7 @@ Estimation of passenger seats weight
 import numpy as np
 import openmdao.api as om
 from fastoad.module_management.service_registry import RegisterSubmodel
+
 from rta.models.weight.mass_breakdown.d_furniture.constants import (
     SERVICE_MASS_ATA25_FURNISHING,
 )

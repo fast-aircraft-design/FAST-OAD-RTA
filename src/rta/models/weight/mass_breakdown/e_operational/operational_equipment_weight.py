@@ -15,10 +15,10 @@ Estimation of crew weight
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import numpy as np
-from openmdao.core.explicitcomponent import ExplicitComponent
+import openmdao.api as om
 
 
-class OperationalEquipmentsWeight(ExplicitComponent):
+class OperationalEquipmentsWeight(om.ExplicitComponent):
     """
     Weight estimation for aircraft operational equipment. It includes:
 

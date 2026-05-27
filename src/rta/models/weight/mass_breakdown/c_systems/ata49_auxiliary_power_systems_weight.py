@@ -15,13 +15,14 @@ Estimation of Auxiliary Power Unit (APU) weight
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import numpy as np
-from openmdao.core.explicitcomponent import ExplicitComponent
+import openmdao.api as om
 from fastoad.module_management.service_registry import RegisterSubmodel
+
 from rta.models.weight.mass_breakdown.c_systems.constants import SERVICE_MASS_ATA49
 
 
 @RegisterSubmodel(SERVICE_MASS_ATA49, "rta.submodel.mass.system.ata49")
-class APUWeight(ExplicitComponent):
+class APUWeight(om.ExplicitComponent):
     """
     Weight estimation for Auxiliary Power Unit (APU)
 

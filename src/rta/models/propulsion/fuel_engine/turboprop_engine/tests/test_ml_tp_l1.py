@@ -1,4 +1,4 @@
-import os.path as pth
+from pathlib import Path
 
 import numpy as np
 from fastoad.constants import EngineSetting
@@ -7,8 +7,8 @@ from fastoad.model_base import FlightPoint
 
 from ..ml_tp_l1 import ML_TP_L1
 
-DATA_FOLDER_PATH = pth.join(pth.dirname(__file__), "data")
-RESULTS_FOLDER_PATH = pth.join(pth.dirname(__file__), "results")
+DATA_FOLDER_PATH = Path(__file__).parent.resolve() / "data"
+RESULTS_FOLDER_PATH = Path(__file__).parent.resolve() / "results"
 CONFIGURATION_FILE = "oad_sizing.toml"
 SOURCE_FILE = "problem_outputs.xml"
 RESULTS_FOLDER = "problem_folder"
@@ -32,7 +32,7 @@ def test_ML_TP_L1():
     for var, name in engine_params.items():
         var_name.append(name)
 
-    input_data = VariableIO(pth.join(DATA_FOLDER_PATH, SOURCE_FILE)).read(only=var_name)
+    input_data = VariableIO(DATA_FOLDER_PATH / SOURCE_FILE).read(only=var_name)
 
     argument = {}
     for var, name in engine_params.items():

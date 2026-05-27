@@ -15,21 +15,20 @@ FAST - Copyright (c) 2025 ONERA ISAE
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import numpy as np
-from openmdao.core.explicitcomponent import ExplicitComponent
+import openmdao.api as om
 
 from rta.models.aerodynamics.constants import (
-    CT_POINT_COUNT,
     ALPHA_POINT_COUNT,
+    CT_POINT_COUNT,
     H_POINT_COUNT,
 )
-
 
 """
 Unknown usage for CT, alpha list and H_list
 """
 
 
-class InitializeIN(ExplicitComponent):
+class InitializeIN(om.ExplicitComponent):
     def setup(self):
         self.add_output("data:aerodynamics:aircraft:low_speed:CT", shape=CT_POINT_COUNT)
         self.add_output(

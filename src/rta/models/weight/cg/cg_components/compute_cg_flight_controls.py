@@ -14,13 +14,12 @@ Estimation of control surfaces center of gravity
 #  GNU General Public License for more details.
 #  You should have received a copy of the GNU General Public License
 
+import openmdao.api as om
 from fastoad.module_management.service_registry import RegisterSubmodel
-from fastoad_cs25.models.weight.cg.constants import SERVICE_FLIGHT_CONTROLS_CG
-from openmdao.core.group import Group
-
 from fastoad_cs25.models.weight.cg.cg_components.compute_cg_control_surfaces import (
     ComputeControlSurfacesCG,
 )
+from fastoad_cs25.models.weight.cg.constants import SERVICE_FLIGHT_CONTROLS_CG
 
 """
 Uses new CS25 models with improved behavior if no kink
@@ -32,7 +31,7 @@ RegisterSubmodel.active_models[SERVICE_FLIGHT_CONTROLS_CG] = (
 
 
 @RegisterSubmodel(SERVICE_FLIGHT_CONTROLS_CG, "rta.submodel.cg.wing.control_surfaces.legacy")
-class ComputeFlightControlCG(Group):
+class ComputeFlightControlCG(om.Group):
     def setup(self):
         self.add_subsystem("compute_flight_control_cg", ComputeControlSurfacesCG())
 

@@ -14,6 +14,7 @@ Estimation of wing geometry
 #  GNU General Public License for more details.
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
+import openmdao.api as om
 from fastoad.module_management.service_registry import RegisterSubmodel
 from fastoad_cs25.models.geometry.constants import SERVICE_WING_GEOMETRY
 from fastoad_cs25.models.geometry.geom_components.wing.components.compute_b_50 import (
@@ -46,14 +47,11 @@ from .components.compute_wet_area_wing_rta import (
     ComputeWetAreaWingRTA,
 )
 
-from openmdao.api import Group
-
-
 RegisterSubmodel.active_models[SERVICE_WING_GEOMETRY] = "rta.submodel.geometry.wing"
 
 
 @RegisterSubmodel(SERVICE_WING_GEOMETRY, "rta.submodel.geometry.wing")
-class ComputeWingGeometryRTA(Group):
+class ComputeWingGeometryRTA(om.Group):
     # TODO: Document equations. Cite sources
     """Wing geometry estimation"""
 

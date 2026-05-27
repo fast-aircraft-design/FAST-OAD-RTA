@@ -15,45 +15,44 @@ test module for modules in aerodynamics/components
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import os.path as pth
+from pathlib import Path
 
 import numpy as np
-from fastoad.testing import run_system
+import openmdao.api as om
 from fastoad.io import VariableIO
-from openmdao.core.group import Group
-from pytest import approx
-from scipy.interpolate import interp1d
-from numpy.testing import assert_allclose
-
-from ..cd0_fuselage import Cd0Fuselage
-from ..cd0_wing import Cd0Wing
-from ..cd0_total import Cd0Total
-from ..cd0_nacelle_pylons_tp import Cd0NacelleAndPylonsTP
-from ..oei_effect import ComputeDeltaOEI
-from ..initialize_in import InitializeIN
-from ..lg_effect import ComputeDeltaLg
-from rta.models.aerodynamics.constants import ALPHA_POINT_COUNT, POLAR_POINT_COUNT
-
-from fastoad_cs25.models.aerodynamics.components.oswald import (
-    OswaldCoefficient,
-    InducedDragCoefficient,
-)
+from fastoad.testing import run_system
+from fastoad_cs25.models.aerodynamics.components.cd_trim import CdTrim
 from fastoad_cs25.models.aerodynamics.components.compute_polar import ComputePolar
 from fastoad_cs25.models.aerodynamics.components.compute_reynolds import ComputeReynolds
 from fastoad_cs25.models.aerodynamics.components.high_lift_aero import (
     ComputeDeltaHighLift,
 )
 from fastoad_cs25.models.aerodynamics.components.initialize_cl import InitializeClPolar
-from fastoad_cs25.models.aerodynamics.components.cd_trim import CdTrim
+from fastoad_cs25.models.aerodynamics.components.oswald import (
+    InducedDragCoefficient,
+    OswaldCoefficient,
+)
 from fastoad_cs25.models.aerodynamics.constants import PolarType
+from numpy.testing import assert_allclose
+from pytest import approx
+from scipy.interpolate import interp1d
+
+from rta.models.aerodynamics.constants import ALPHA_POINT_COUNT, POLAR_POINT_COUNT
+
+from ..cd0_fuselage import Cd0Fuselage
+from ..cd0_nacelle_pylons_tp import Cd0NacelleAndPylonsTP
+from ..cd0_total import Cd0Total
+from ..cd0_wing import Cd0Wing
+from ..initialize_in import InitializeIN
+from ..lg_effect import ComputeDeltaLg
+from ..oei_effect import ComputeDeltaOEI
 
 
 def get_indep_var_comp(var_names):
     """Reads required input data and returns an IndepVarcomp() instance"""
-    reader = VariableIO(pth.join(pth.dirname(__file__), "data", "ref_aerodynamics.xml"))
+    reader = VariableIO(Path(__file__).parent.resolve() / "data" / "ref_aerodynamics.xml")
     reader.path_separator = ":"
-    ivc = reader.read(only=var_names).to_ivc()
-    return ivc
+    return reader.read(only=var_names).to_ivc()
 
 
 def test_fuselage_cd0():
@@ -83,17 +82,19 @@ def test_fuselage_cd0():
 
     prob = run_system(Cd0Fuselage(low_speed_aero=True), inputs)
 
-    assert prob["data:aerodynamics:fuselage:low_speed:CD0"][0] == approx(0.01117, abs=1e-4)
-    assert prob["data:aerodynamics:fuselage:low_speed:CD0"][35] == approx(0.01011, abs=1e-4)
-    assert prob["data:aerodynamics:fuselage:low_speed:CD0"][120] == approx(0.01145, abs=1e-4)
+    assert prob.get_val("data:aerodynamics:fuselage:low_speed:CD0")[0] == approx(0.01117, abs=1e-4)
+    assert prob.get_val("data:aerodynamics:fuselage:low_speed:CD0")[35] == approx(0.01011, abs=1e-4)
+    assert prob.get_val("data:aerodynamics:fuselage:low_speed:CD0")[120] == approx(
+        0.01145, abs=1e-4
+    )
 
     inputs = get_indep_var_comp(input_list_cruise)
 
     prob = run_system(Cd0Fuselage(low_speed_aero=False), inputs)
 
-    assert prob["data:aerodynamics:fuselage:cruise:CD0"][0] == approx(0.01073, abs=1e-4)
-    assert prob["data:aerodynamics:fuselage:cruise:CD0"][35] == approx(0.01009, abs=1e-4)
-    assert prob["data:aerodynamics:fuselage:cruise:CD0"][120] == approx(0.0095, abs=1e-4)
+    assert prob.get_val("data:aerodynamics:fuselage:cruise:CD0")[0] == approx(0.01073, abs=1e-4)
+    assert prob.get_val("data:aerodynamics:fuselage:cruise:CD0")[35] == approx(0.01009, abs=1e-4)
+    assert prob.get_val("data:aerodynamics:fuselage:cruise:CD0")[120] == approx(0.0095, abs=1e-4)
 
 
 def test_nacelle_cd0():
@@ -122,12 +123,12 @@ def test_nacelle_cd0():
     inputs = get_indep_var_comp(input_list_low_speed)
     prob = run_system(Cd0NacelleAndPylonsTP(low_speed_aero=True), inputs)
 
-    assert prob["data:aerodynamics:nacelles:low_speed:CD0"] == approx(0.00147, abs=1e-5)
+    assert prob.get_val("data:aerodynamics:nacelles:low_speed:CD0") == approx(0.00147, abs=1e-5)
 
     inputs = get_indep_var_comp(input_list_cruise)
     prob = run_system(Cd0NacelleAndPylonsTP(low_speed_aero=False), inputs)
 
-    assert prob["data:aerodynamics:nacelles:cruise:CD0"] == approx(0.00145, abs=1e-5)
+    assert prob.get_val("data:aerodynamics:nacelles:cruise:CD0") == approx(0.00145, abs=1e-5)
 
 
 def test_oswald_coefficient():
@@ -142,7 +143,7 @@ def test_oswald_coefficient():
         "data:geometry:wing:sweep_25",
     ]
 
-    def get_coeff(mach, low_speed_aero=False):
+    def get_coeff(mach, *, low_speed_aero=False):
         ivc = get_indep_var_comp(input_list)
         if low_speed_aero:
             ivc.add_output("data:aerodynamics:aircraft:takeoff:mach", mach)
@@ -150,13 +151,12 @@ def test_oswald_coefficient():
             ivc.add_output("data:TLAR:cruise_mach", mach)
         problem = run_system(OswaldCoefficient(low_speed_aero=low_speed_aero), ivc)
         if low_speed_aero:
-            return problem["data:aerodynamics:aircraft:low_speed:oswald_coefficient"]
-        else:
-            return problem["data:aerodynamics:aircraft:cruise:oswald_coefficient"]
+            return problem.get_val("data:aerodynamics:aircraft:low_speed:oswald_coefficient")
+        return problem.get_val("data:aerodynamics:aircraft:cruise:oswald_coefficient")
 
-    assert get_coeff(0.2, True) == approx(0.89549 / 0.95 * 0.9, abs=1e-4)
+    assert get_coeff(0.2, low_speed_aero=True) == approx(0.89549 / 0.95 * 0.9, abs=1e-4)
 
-    assert get_coeff(0.45, False) == approx(0.89549 / 0.95 * 0.9, abs=1e-4)
+    assert get_coeff(0.45, low_speed_aero=False) == approx(0.89549 / 0.95 * 0.9, abs=1e-4)
 
 
 def test_polar_high_speed():
@@ -199,7 +199,7 @@ def test_polar_high_speed():
     ivc.add_output("data:aerodynamics:aircraft:low_speed:CL", np.arange(0.0, 1.5, 0.01))
     ivc.add_output("tuning:aerodynamics:aircraft:cruise:CD:winglet_effect:k", 0.9474)
 
-    group = Group()
+    group = om.Group()
     group.add_subsystem("reynolds", ComputeReynolds(), promotes=["*"])
     group.add_subsystem("oswald", OswaldCoefficient(), promotes=["*"])
     group.add_subsystem("induce_drag", InducedDragCoefficient(), promotes=["*"])
@@ -210,16 +210,18 @@ def test_polar_high_speed():
     group.add_subsystem("polar", ComputePolar(polar_type=PolarType.HIGH_SPEED), promotes=["*"])
     problem = run_system(group, ivc)
 
-    cd = problem["data:aerodynamics:aircraft:cruise:CD"]
-    cl = problem["data:aerodynamics:aircraft:cruise:CL"]
+    cd = problem.get_val("data:aerodynamics:aircraft:cruise:CD")
+    cl = problem.get_val("data:aerodynamics:aircraft:cruise:CL")
 
     assert cd[cl == 0.0] == approx(0.027555, abs=1e-5)
     assert cd[cl == 0.2] == approx(0.02835, abs=1e-5)
     assert cd[cl == 0.42] == approx(0.03206, abs=1e-5)
     assert cd[cl == 0.85] == approx(0.04786, abs=1e-5)
 
-    assert problem["data:aerodynamics:aircraft:cruise:optimal_CL"] == approx(0.94, abs=1e-3)
-    assert problem["data:aerodynamics:aircraft:cruise:optimal_CD"] == approx(0.05262, abs=1e-5)
+    assert problem.get_val("data:aerodynamics:aircraft:cruise:optimal_CL") == approx(0.94, abs=1e-3)
+    assert problem.get_val("data:aerodynamics:aircraft:cruise:optimal_CD") == approx(
+        0.05262, abs=1e-5
+    )
 
 
 def test_polar_low_speed():
@@ -264,7 +266,7 @@ def test_polar_low_speed():
     ivc = get_indep_var_comp(input_list)
     ivc.add_output("tuning:aerodynamics:aircraft:cruise:CD:winglet_effect:k", 0.9474)
 
-    group = Group()
+    group = om.Group()
     group.add_subsystem("reynolds", ComputeReynolds(low_speed_aero=True), promotes=["*"])
     group.add_subsystem("oswald", OswaldCoefficient(low_speed_aero=True), promotes=["*"])
     group.add_subsystem("induce_drag", InducedDragCoefficient(low_speed_aero=True), promotes=["*"])
@@ -279,8 +281,8 @@ def test_polar_low_speed():
     group.add_subsystem("polar", ComputePolar(polar_type=PolarType.LOW_SPEED), promotes=["*"])
     problem = run_system(group, ivc)
 
-    cd = problem["data:aerodynamics:aircraft:low_speed:CD"]
-    cl = problem["data:aerodynamics:aircraft:low_speed:CL"]
+    cd = problem.get_val("data:aerodynamics:aircraft:low_speed:CD")
+    cl = problem.get_val("data:aerodynamics:aircraft:low_speed:CL")
 
     assert cd[cl == 0.0] == approx(0.02877, abs=1e-5)
     assert cd[cl == 0.2] == approx(0.02957, abs=1e-5)
@@ -340,7 +342,7 @@ def test_polar_high_lift():
         "tuning:aerodynamics:aircraft:low_speed:CD:winglet_effect:offset",
     ]
 
-    group = Group()
+    group = om.Group()
     group.add_subsystem("reynolds", ComputeReynolds(low_speed_aero=True), promotes=["*"])
     group.add_subsystem("oswald", OswaldCoefficient(low_speed_aero=True), promotes=["*"])
     group.add_subsystem("induce_drag", InducedDragCoefficient(low_speed_aero=True), promotes=["*"])
@@ -353,8 +355,8 @@ def test_polar_high_lift():
 
     problem = run_system(group, ivc)
 
-    cd = problem["data:aerodynamics:aircraft:takeoff:CD"]
-    cl = problem["data:aerodynamics:aircraft:takeoff:CL"]
+    cd = problem.get_val("data:aerodynamics:aircraft:takeoff:CD")
+    cl = problem.get_val("data:aerodynamics:aircraft:takeoff:CL")
 
     # Interpolate because delta_CD and CL are not rounded to 0.01
     CD = interp1d(cl, cd)
@@ -382,9 +384,9 @@ def test_cd_OEI():
 
     problem = run_system(component, ivc)
 
-    cd_feather = problem["data:aerodynamics:aircraft:low_speed:DCD_feather"]
-    cd_landing = problem["data:aerodynamics:aircraft:landing:OEI_effect:DCD"]
-    ct = problem["data:aerodynamics:aircraft:low_speed:CT"]
+    cd_feather = problem.get_val("data:aerodynamics:aircraft:low_speed:DCD_feather")
+    cd_landing = problem.get_val("data:aerodynamics:aircraft:landing:OEI_effect:DCD")
+    ct = problem.get_val("data:aerodynamics:aircraft:low_speed:CT")
     ct_test = [-1.5, -0.75, 0.75, 1.5]
 
     assert cd_feather == approx(0.004811, rel=1e-3)
@@ -413,7 +415,7 @@ def test_cd0_wing():
 
     problem_low_speed = run_system(component, ivc)
 
-    cd = problem_low_speed["data:aerodynamics:wing:low_speed:CD0"]
+    cd = problem_low_speed.get_val("data:aerodynamics:wing:low_speed:CD0")
 
     test_val = [0.008356] * POLAR_POINT_COUNT
 
@@ -423,7 +425,7 @@ def test_cd0_wing():
 
     problem_high_speed = run_system(component, ivc)
 
-    cd = problem_high_speed["data:aerodynamics:wing:cruise:CD0"]
+    cd = problem_high_speed.get_val("data:aerodynamics:wing:cruise:CD0")
 
     test_val = [0.00794] * POLAR_POINT_COUNT
 
@@ -440,10 +442,14 @@ def test_cd_landing_gear():
     test_val = [0.02] * ALPHA_POINT_COUNT
 
     assert_allclose(
-        problem_landing["data:aerodynamics:aircraft:landing:lg_effect:DCL"], test_val, atol=1e-6
+        problem_landing.get_val("data:aerodynamics:aircraft:landing:lg_effect:DCL"),
+        test_val,
+        atol=1e-6,
     )
     assert_allclose(
-        problem_landing["data:aerodynamics:aircraft:landing:lg_effect:DCD"], test_val, atol=1e-6
+        problem_landing.get_val("data:aerodynamics:aircraft:landing:lg_effect:DCD"),
+        test_val,
+        atol=1e-6,
     )
 
     component = ComputeDeltaLg(landing_flag=False)
@@ -451,10 +457,14 @@ def test_cd_landing_gear():
     problem_takeoff = run_system(component, ivc)
 
     assert_allclose(
-        problem_takeoff["data:aerodynamics:aircraft:takeoff:lg_effect:DCL"], test_val, atol=1e-6
+        problem_takeoff.get_val("data:aerodynamics:aircraft:takeoff:lg_effect:DCL"),
+        test_val,
+        atol=1e-6,
     )
     assert_allclose(
-        problem_takeoff["data:aerodynamics:aircraft:takeoff:lg_effect:DCD"], test_val, atol=1e-6
+        problem_takeoff.get_val("data:aerodynamics:aircraft:takeoff:lg_effect:DCD"),
+        test_val,
+        atol=1e-6,
     )
 
 
@@ -465,9 +475,9 @@ def test_initialize_in():
 
     problem = run_system(component, ivc)
 
-    CT_list = problem["data:aerodynamics:aircraft:low_speed:CT"]
-    alpha_list = problem["data:aerodynamics:aircraft:low_speed:alpha"]
-    H_list = problem["data:aerodynamics:aircraft:low_speed:H"]
+    CT_list = problem.get_val("data:aerodynamics:aircraft:low_speed:CT")
+    alpha_list = problem.get_val("data:aerodynamics:aircraft:low_speed:alpha")
+    H_list = problem.get_val("data:aerodynamics:aircraft:low_speed:H")
 
     assert CT_list[0] == approx(-2, rel=1e-4)
     assert CT_list[50] == approx(-0.6577, rel=1e-4)
