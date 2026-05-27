@@ -155,5 +155,5 @@ def test_inputs_units_incorrect():
 
     assert (
         "Component 'PropellerPowerCalculator': The following input fields:"
-        "thrust asked for the following units : kN" in str(record.value)
+        " thrust asked for the following units : kN" in str(record.value)
     )

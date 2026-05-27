@@ -60,7 +60,7 @@ def test_incoherent_input_definition():
 
     assert (
         "Component 'PropellerPowerCalculator': The following input fields:"
-        "thrust asked for the following units : kN" in str(record.value)
+        " thrust asked for the following units : kN" in str(record.value)
     )
 
 

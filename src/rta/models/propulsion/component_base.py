@@ -175,7 +175,7 @@ class AbstractPropulsiveComponent(ABC):
         if unit_inconsistency:
             raise ValueError(
                 f"Component '{self.name}': The following input fields: {', '.join(fields)}"
-                f" asked for the following units: {', '.join(unit_inconsistency)} which are"
+                f" asked for the following units : {', '.join(unit_inconsistency)} which are"
                 f" inconsistent with the units already declared in FlightPoint."
                 f" Please ensure units consistency between input and output fields."
             )

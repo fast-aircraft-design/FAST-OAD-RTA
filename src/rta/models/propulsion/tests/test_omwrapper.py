@@ -34,9 +34,9 @@ def test_PropulsionSystemOMComponent():
     psfc = 0.250 / (1000.0 * 3600.0)
 
     ivc = om.IndepVarComp()
-    ivc.add_output("data:propulsion:gearbox:efficiency", gearbox_efficiency)
-    ivc.add_output("data:propulsion:propeller:efficiency", propeller_efficiency)
-    ivc.add_output("data:propulsion:engine_count", val=engine_count)
+    ivc.add_output("data:propulsion:gearbox:efficiency", gearbox_efficiency, units="unitless")
+    ivc.add_output("data:propulsion:propeller:efficiency", propeller_efficiency, units="unitless")
+    ivc.add_output("data:propulsion:engine_count", val=engine_count, units="unitless")
 
     ivc.add_output("data:propulsion:true_airspeed", true_airspeed, units="m/s")
     ivc.add_output("data:propulsion:thrust", thrusts, units="N")
