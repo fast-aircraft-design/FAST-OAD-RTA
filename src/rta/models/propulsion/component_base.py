@@ -5,8 +5,8 @@ This module provides a standardized interface for implementing propulsive
 components that can be used in aircraft performance calculations.
 """
 
-#  This file is part of FAST : A framework for rapid Overall Aircraft Design
-#  Copyright (C) 2020  ONERA & ISAE-SUPAERO
+#  This file is part of FAST-OAD : A framework for rapid Overall Aircraft Design
+#  Copyright (C) 2026 ONERA & ISAE-SUPAERO
 #  FAST is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
 #  the Free Software Foundation, either version 3 of the License, or
@@ -20,16 +20,15 @@ components that can be used in aircraft performance calculations.
 
 import warnings
 from abc import ABC, abstractmethod
+from copy import deepcopy
 from dataclasses import dataclass
+from typing import ClassVar
 
 import pandas as pd
-from openmdao.vectors.default_vector import DefaultVector
-from openmdao.core.component import Component
-from typing import ClassVar, Union
-from copy import deepcopy
-
 from fastoad.model_base.flight_point import FlightPoint, _FieldDescriptor
 from fastoad.openmdao.variables import VariableList
+from openmdao.core.component import Component
+from openmdao.vectors.default_vector import DefaultVector
 
 
 @dataclass
@@ -41,11 +40,13 @@ class AbstractPropulsiveComponent(ABC):
     standardized interface for performance computation.
 
     Subclasses must:
-        1. Define class-level `name` as a string identifying the component
-        2. Define class-level `_input_parameters` as VariableList instance with default variables names
+        1. Define class-level `name` as a string identifying the component.
+        2. Define class-level `_input_parameters` as VariableList instance with default
+        variables names, units and value.
         3. Define class-level `_input_fields` and `_output_fields` as dictionaries
-           mapping FlightPoint field names to a FieldDescriptor (units and is_cumulative) with default field names
-        4. Implement the `compute_single_point()` method with their specific logic
+           mapping FlightPoint field names to a FieldDescriptor (units and is_cumulative)
+           with default field names.
+        4. Implement the `compute_single_point()` method with their specific logic.
 
     Attributes:
         name: Class-level string identifying the component name (used in error messages).
@@ -57,13 +58,14 @@ class AbstractPropulsiveComponent(ABC):
     # Name of the component
     name: ClassVar[str] = None
 
-    # Input parameters, all parameters defining the components and required for calculation of FlightPoint
+    # Input parameters:
+    # All parameters defining the components and required for calculation of FlightPoint
     input_parameters: VariableList = None
 
-    # Inputs fields that should be present in the FlightPoint class to compute component performances
+    # Inputs fields: should be present in the FlightPoint class to compute component performances
     input_fields: dict = None
 
-    # Output fields that will be added to the FlightPoint class and computed by the components
+    # Output fields: will be added to the FlightPoint class and computed by the components
     output_fields: dict = None
 
     # Subclasses must declare these with default variable and field names
@@ -108,7 +110,9 @@ class AbstractPropulsiveComponent(ABC):
 
     @staticmethod
     def _check_fields_definition(fields: dict):
-        """Raises a TypeError if the fields in dictionary are not declared using _FieldDescriptor"""
+        """
+        Raises a TypeError if the fields in dictionary are not declared using _FieldDescriptor
+        """
         bad_fields = []
         for field_name, metadata in fields.items():
             if not isinstance(metadata, _FieldDescriptor):
@@ -154,7 +158,7 @@ class AbstractPropulsiveComponent(ABC):
         missing_fields = []
         fields = []
         unit_inconsistency = []
-        for field_name in self.input_fields.keys():
+        for field_name in self.input_fields:
             if not hasattr(FlightPoint, field_name):
                 missing_fields.append(field_name)
             elif FlightPoint.get_unit(field_name) != self.input_fields[field_name].unit:
@@ -168,14 +172,15 @@ class AbstractPropulsiveComponent(ABC):
                 f"Please ensure these fields are properly defined in the FlightPoint class "
                 f"or remove them from the input_fields dictionary."
             )
-        elif unit_inconsistency:
+        if unit_inconsistency:
             raise ValueError(
-                f"Component '{self.name}': The following input fields: {', '.join(fields)} asked for the following units "
-                f": {', '.join(unit_inconsistency)} which are inconsistent with the units already declared in FlightPoint"
-                f"Please ensure units consistency between input and output fields."
+                f"Component '{self.name}': The following input fields: {', '.join(fields)}"
+                f" asked for the following units: {', '.join(unit_inconsistency)} which are"
+                f" inconsistent with the units already declared in FlightPoint."
+                f" Please ensure units consistency between input and output fields."
             )
 
-    def compute_performances(self, flight_point: Union[FlightPoint, pd.DataFrame]):
+    def compute_performances(self, flight_point: FlightPoint | pd.DataFrame):
         """
         Compute the performance of the component for given flight point(s).
 
@@ -195,7 +200,8 @@ class AbstractPropulsiveComponent(ABC):
 
         if isinstance(flight_point, pd.DataFrame):
             # Default inefficient but functional way of handling dataframe.
-            # User should redefine the method if relying heavily on dataframe, which is not the default case
+            # User should redefine the method if relying heavily on dataframe,
+            # which is not the default case
             for idx in flight_point.index:
                 fp = FlightPoint.create(flight_point.iloc[idx])
                 self.compute_single_point(fp)
@@ -233,7 +239,8 @@ class AbstractPropulsiveComponent(ABC):
 
     def declare_openmdao_inputs(self, component: Component):
         """
-        For use with openmdao wrapper, declares the input parameters as openmdao inputs with units check
+        For use with openmdao wrapper.
+        Declares the input parameters as openmdao inputs with units check
         """
         faulty_units = []
         for var in self._input_parameters:

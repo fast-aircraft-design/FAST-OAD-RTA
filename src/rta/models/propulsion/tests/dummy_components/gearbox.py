@@ -5,8 +5,8 @@ This module provides a gearbox component that computes output shaft power
 based on input power and gearbox efficiency.
 """
 
-#  This file is part of FAST : A framework for rapid Overall Aircraft Design
-#  Copyright (C) 2020  ONERA & ISAE-SUPAERO
+#  This file is part of FAST-OAD : A framework for rapid Overall Aircraft Design
+#  Copyright (C) 2026 ONERA & ISAE-SUPAERO
 #  FAST is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
 #  the Free Software Foundation, either version 3 of the License, or
@@ -18,12 +18,13 @@ based on input power and gearbox efficiency.
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import numpy as np
 from dataclasses import dataclass
+from typing import ClassVar
 
+import numpy as np
 from fastoad._utils.arrays import scalarize
 from fastoad.model_base.flight_point import FlightPoint, _FieldDescriptor
-from fastoad.openmdao.variables import VariableList, Variable
+from fastoad.openmdao.variables import Variable, VariableList
 
 from rta.models.propulsion.component_base import AbstractPropulsiveComponent
 
@@ -57,7 +58,7 @@ class GearboxComponent(AbstractPropulsiveComponent):
 
     name = "GearboxComponent"
 
-    _input_parameters = VariableList(
+    _input_parameters: ClassVar[list] = VariableList(
         [
             Variable(
                 "data:propulsion:gearbox:efficiency",
@@ -69,12 +70,12 @@ class GearboxComponent(AbstractPropulsiveComponent):
     )
 
     # Dictionary of FlightPoint fields required as input (field_name: unit)
-    _input_fields = {
+    _input_fields: ClassVar[dict] = {
         "gearbox_shaft_power": _FieldDescriptor(unit="W"),
     }
 
     # Dictionary of FlightPoint fields to be computed (field_name: unit)
-    _output_fields = {
+    _output_fields: ClassVar[dict] = {
         "TPshaft_power": _FieldDescriptor(unit="W"),
     }
 

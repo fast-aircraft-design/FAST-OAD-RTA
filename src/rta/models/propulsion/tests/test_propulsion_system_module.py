@@ -4,9 +4,22 @@ Tests for the PropulsionSystemModule.
 This module tests the functionality of the PropulsionSystemModule including
 the complete propulsion chain: propeller -> gearbox -> fuel flow -> SFC.
 """
+#  This file is part of FAST-OAD : A framework for rapid Overall Aircraft Design
+#  Copyright (C) 2026 ONERA & ISAE-SUPAERO
+#  FAST is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#  You should have received a copy of the GNU General Public License
+#  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import numpy as np
 import pandas as pd
+
 #  This file is part of FAST : A framework for rapid Overall Aircraft Design
 #  Copyright (C) 2020  ONERA & ISAE-SUPAERO
 #  FAST is free software: you can redistribute it and/or modify
@@ -19,13 +32,11 @@ import pandas as pd
 #  GNU General Public License for more details.
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
 import pytest
-
 from fastoad.model_base.flight_point import FlightPoint, _FieldDescriptor
 
 from rta.models.propulsion.tests.dummy_components.gearbox import GearboxComponent
-from rta.models.propulsion.tests.dummy_components.propeller_power_calculator import (
+from rta.models.propulsion.tests.dummy_components.propeller import (
     PropellerComponent,
 )
 from rta.models.propulsion.tests.dummy_components.propulsion_system_module import (
@@ -48,8 +59,8 @@ def test_incoherent_input_definition():
         )
 
     assert (
-        "Component 'PropellerPowerCalculator': The following input fields: thrust asked for the following units : kN"
-        in str(record.value)
+        "Component 'PropellerPowerCalculator': The following input fields:"
+        "thrust asked for the following units : kN" in str(record.value)
     )
 
 
@@ -83,7 +94,6 @@ def test_propulsion_system_module_compute_single_flight_point():
     expected_tpshaft_power = expected_gearbox_shaft_power / 0.95
 
     # Step 3: Fuel flow = PSFC * TPshaft_power
-    # PSFC = 0.250 kg/kWh = 0.250 / (1000 * 3600) kg/W/s
     psfc_kg_per_w_s = 0.250 / (1000.0 * 3600.0)
     expected_fuel_flow = psfc_kg_per_w_s * expected_tpshaft_power
 
@@ -123,10 +133,9 @@ def test_propulsion_system_module_compute_list_of_flight_points():
     module.compute_flight_points(flight_points)
 
     # First flight point
-    # Propeller: gearbox_shaft_power = (50000 * 200) / 0.85
     expected_gearbox_shaft_power1 = (50000.0 * 200.0) / 0.85
-    # Gearbox: TPshaft_power = gearbox_shaft_power / 0.90
     expected_tpshaft_power1 = expected_gearbox_shaft_power1 / 0.90
+
     # Fuel flow
     psfc_kg_per_w_s = 0.250 / (1000.0 * 3600.0)
     expected_fuel_flow1 = psfc_kg_per_w_s * expected_tpshaft_power1
@@ -134,10 +143,9 @@ def test_propulsion_system_module_compute_list_of_flight_points():
     expected_sfc1 = expected_fuel_flow1 / 50000.0
 
     # Second flight point
-    # Propeller: gearbox_shaft_power = (60000 * 250) / 0.85
     expected_gearbox_shaft_power2 = (60000.0 * 250.0) / 0.85
-    # Gearbox: TPshaft_power = gearbox_shaft_power / 0.90
     expected_tpshaft_power2 = expected_gearbox_shaft_power2 / 0.90
+
     # Fuel flow
     expected_fuel_flow2 = psfc_kg_per_w_s * expected_tpshaft_power2
     # SFC

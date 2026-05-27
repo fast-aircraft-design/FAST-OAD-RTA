@@ -5,8 +5,10 @@ This module provides fixtures to ensure proper cleanup of FlightPoint fields
 after tests that instantiate AbstractPropulsiveComponent subclasses.
 """
 
-#  This file is part of FAST : A framework for rapid Overall Aircraft Design
-#  Copyright (C) 2020  ONERA & ISAE-SUPAERO
+import contextlib
+
+#  This file is part of FAST-OAD : A framework for rapid Overall Aircraft Design
+#  Copyright (C) 2026 ONERA & ISAE-SUPAERO
 #  FAST is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
 #  the Free Software Foundation, either version 3 of the License, or
@@ -17,7 +19,6 @@ after tests that instantiate AbstractPropulsiveComponent subclasses.
 #  GNU General Public License for more details.
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
 import pytest
 from fastoad.model_base.flight_point import FlightPoint
 
@@ -60,8 +61,5 @@ def cleanup_flight_point_fields():
     new_fields = current_fields - initial_fields
 
     for field_name in new_fields:
-        try:
+        with contextlib.suppress(AttributeError, KeyError):
             FlightPoint.remove_field(field_name)
-        except (AttributeError, KeyError):
-            # Field might have already been removed or doesn't exist
-            pass

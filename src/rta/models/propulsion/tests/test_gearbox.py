@@ -5,8 +5,22 @@ This module tests the functionality of the GearboxComponent including
 power transmission calculations.
 """
 
+#  This file is part of FAST-OAD : A framework for rapid Overall Aircraft Design
+#  Copyright (C) 2026 ONERA & ISAE-SUPAERO
+#  FAST is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#  You should have received a copy of the GNU General Public License
+#  along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
 import numpy as np
 import pandas as pd
+
 #  This file is part of FAST : A framework for rapid Overall Aircraft Design
 #  Copyright (C) 2020  ONERA & ISAE-SUPAERO
 #  FAST is free software: you can redistribute it and/or modify
@@ -19,9 +33,7 @@ import pandas as pd
 #  GNU General Public License for more details.
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
 import pytest
-
 from fastoad.model_base.flight_point import FlightPoint
 
 from rta.models.propulsion.tests.dummy_components.gearbox import GearboxComponent
@@ -39,7 +51,7 @@ def test_gearbox_compute_perfo_single_flight_point():
 
     gearbox.compute_performances(fp)
 
-    # Expected: 500000 / 0.90 = 550000
+    # The expected results is: 500000 / 0.90 = 550000
     expected_power = 500000.0 / 0.90
     assert fp.TPshaft_power == pytest.approx(expected_power, rel=1e-6)
 

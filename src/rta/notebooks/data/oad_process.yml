@@ -28,31 +28,31 @@ model:
 
     geometry:
       id: fastoad.geometry.legacy
-    propeller:
-      # This model may be placed before the main iterative loop as
-      # it does not share coupled variables with the other models.
-      id: rta.propulsion.propeller_sizing
-    loads:
-      id: fastoad.loads.legacy
-    weight:
-      id: fastoad.weight.legacy
-      payload_from_npax: false
-    mtow:
-      id: fastoad.mass_performances.compute_MTOW
-    hq_tail_sizing:
-      id: fastoad.handling_qualities.tail_sizing
-    hq_static_margin:
-      id: fastoad.handling_qualities.static_margin
-    wing_position:
-      id: fastoad.loop.wing_position
-    aerodynamics_highspeed:
-      id: fastoad.aerodynamics.highspeed.legacy
-    aerodynamics_lowspeed:
-      id: fastoad.aerodynamics.lowspeed.legacy
-    aerodynamics_takeoff:
-      id: rta.aerodynamics.takeoff
-    wing_area:
-      id: fastoad.loop.wing_area
+#    propeller:
+#      # This model may be placed before the main iterative loop as
+#      # it does not share coupled variables with the other models.
+#      id: rta.propulsion.propeller_sizing
+#    loads:
+#      id: fastoad.loads.legacy
+#    weight:
+#      id: fastoad.weight.legacy
+#      payload_from_npax: false
+#    mtow:
+#      id: fastoad.mass_performances.compute_MTOW
+#    hq_tail_sizing:
+#      id: fastoad.handling_qualities.tail_sizing
+#    hq_static_margin:
+#      id: fastoad.handling_qualities.static_margin
+#    wing_position:
+#      id: fastoad.loop.wing_position
+#    aerodynamics_highspeed:
+#      id: fastoad.aerodynamics.highspeed.legacy
+#    aerodynamics_lowspeed:
+#      id: fastoad.aerodynamics.lowspeed.legacy
+#    aerodynamics_takeoff:
+#      id: rta.aerodynamics.takeoff
+#    wing_area:
+#      id: fastoad.loop.wing_area
   performance:
     id: fastoad.performances.mission
     propulsion_id: rta.wrapper.propulsion.ML_TP_L1

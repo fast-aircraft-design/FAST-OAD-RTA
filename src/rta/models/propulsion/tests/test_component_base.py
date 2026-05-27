@@ -8,6 +8,7 @@ VariableList updates.
 
 import numpy as np
 import pandas as pd
+
 #  This file is part of FAST : A framework for rapid Overall Aircraft Design
 #  Copyright (C) 2020  ONERA & ISAE-SUPAERO
 #  FAST is free software: you can redistribute it and/or modify
@@ -20,14 +21,11 @@ import pandas as pd
 #  GNU General Public License for more details.
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
 import pytest
-
-
 from fastoad.model_base.flight_point import FlightPoint, _FieldDescriptor
-from fastoad.openmdao.variables import VariableList, Variable
+from fastoad.openmdao.variables import Variable, VariableList
 
-from rta.models.propulsion.tests.dummy_components.propeller_power_calculator import (
+from rta.models.propulsion.tests.dummy_components.propeller import (
     PropellerComponent,
 )
 
@@ -57,10 +55,10 @@ def test_flight_point_fields_expanded_at_instantiation():
 
     fp = FlightPoint()
 
-    assert "overdrive_power" in prop.input_fields.keys(), (
+    assert "overdrive_power" in prop.input_fields, (
         "The instance has not been initialised with new_fields"
     )
-    assert "thrust" not in prop.input_fields.keys(), (
+    assert "thrust" not in prop.input_fields, (
         "The instance has been initialised with new_fields, but the default ones are still present"
     )
 
@@ -156,6 +154,6 @@ def test_inputs_units_incorrect():
         propeller._check_input_fields()
 
     assert (
-        "Component 'PropellerPowerCalculator': The following input fields: thrust asked for the following units : kN"
-        in str(record.value)
+        "Component 'PropellerPowerCalculator': The following input fields:"
+        "thrust asked for the following units : kN" in str(record.value)
     )
