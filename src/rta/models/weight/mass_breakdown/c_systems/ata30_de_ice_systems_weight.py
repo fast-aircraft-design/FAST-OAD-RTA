@@ -15,14 +15,15 @@ Estimation of de-icing systems weight
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import numpy as np
-from openmdao.core.explicitcomponent import ExplicitComponent
-from scipy.constants import degree
+import openmdao.api as om
 from fastoad.module_management.service_registry import RegisterSubmodel
+from scipy.constants import degree
+
 from rta.models.weight.mass_breakdown.c_systems.constants import SERVICE_MASS_ATA30
 
 
 @RegisterSubmodel(SERVICE_MASS_ATA30, "rta.submodel.mass.system.ata30")
-class DeIceSystemWeight(ExplicitComponent):
+class DeIceSystemWeight(om.ExplicitComponent):
     """
     Weight estimation for de-icing systems
 

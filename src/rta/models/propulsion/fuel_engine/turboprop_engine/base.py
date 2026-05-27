@@ -17,7 +17,6 @@ from abc import ABC
 from fastoad.model_base.flight_point import FlightPoint
 from fastoad.model_base.propulsion import IPropulsion
 
-
 FlightPoint.add_field("TPshaft_power", unit="W")
 FlightPoint.add_field("TP_power_rate")
 FlightPoint.add_field("psfc", unit="kg/W/s")

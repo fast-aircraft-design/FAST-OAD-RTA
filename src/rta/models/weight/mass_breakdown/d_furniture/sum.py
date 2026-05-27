@@ -7,9 +7,9 @@ from rta.models.weight.mass_breakdown.d_furniture.constants import (
     SERVICE_MASS_ATA33,
     SERVICE_MASS_ATA35,
     SERVICE_MASS_ATA38,
+    SERVICE_MASS_ATA2510,
     SERVICE_MASS_ATA2580,
     SERVICE_MASS_ATA5345,
-    SERVICE_MASS_ATA2510,
 )
 
 RegisterSubmodel.active_models[SERVICE_FURNITURE_MASS] = "rta.submodel.weight.mass.furniture.legacy"

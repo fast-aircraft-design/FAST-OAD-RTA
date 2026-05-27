@@ -13,11 +13,11 @@
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import logging
-from typing import Optional, Sequence, Tuple, Union
+from collections.abc import Sequence
 
 import numpy as np
 import pandas as pd
-from fastoad.constants import FlightPhase
+from fastoad.constants import EngineSetting, FlightPhase
 from fastoad.model_base.flight_point import FlightPoint
 from fastoad_cs25.models.propulsion.fuel_propulsion.rubber_engine.exceptions import (
     FastRubberEngineInconsistentInputParametersError,
@@ -33,7 +33,7 @@ _LOGGER = logging.getLogger(__name__)
 
 
 class ML_TP_L1(AbstractFuelPropulsion):
-    def __init__(
+    def __init__(  # noqa
         self,
         RTO_power: float,
         power_offtake: float,
@@ -56,7 +56,7 @@ class ML_TP_L1(AbstractFuelPropulsion):
         un avion regional a faibles emissions" phd thesis, p72
 
         The power ratings (k_gb_TRO/NTO/MCR/MCL) are based on:
-        O. Majeed, ‘Parametric specific fuel consumtption analysis of the PW120A Turboprop engine’,
+        O. Majeed, 'Parametric specific fuel consumtption analysis of the PW120A Turboprop engine',
         Specific Range Solutions Ltd., Technical Report SRS-TSD-002 rev 1, Jul. 2009.
 
 
@@ -75,7 +75,7 @@ class ML_TP_L1(AbstractFuelPropulsion):
         self.k_psfc = k_psfc
         self.k_prop = k_prop
 
-    def compute_flight_points(self, flight_points: Union[FlightPoint, pd.DataFrame]):
+    def compute_flight_points(self, flight_points: FlightPoint | pd.DataFrame):  # noqa
         """
         Same as :meth:`compute_flight_points`
         """
@@ -97,11 +97,9 @@ class ML_TP_L1(AbstractFuelPropulsion):
             thrust_is_regulated, thrust_rate, thrust
         )
         thrust_is_regulated = np.asarray(np.round(thrust_is_regulated, 0), dtype=bool)
-        max_shaft_power, max_thermo_power, gearbox_limit_power = self.max_power(
-            atmosphere, mach, phase
-        )
+        max_shaft_power, max_thermo_power, _ = self.max_power(atmosphere, mach, phase)
 
-        T_prop, eta = Propeller().select(
+        T_prop, _ = Propeller().select(
             "power_to_thrust", Prop_fid, self, atmosphere, mach, max_shaft_power
         )
         FR = self.compute_engine_point(mach, T_prop=T_prop)
@@ -115,14 +113,14 @@ class ML_TP_L1(AbstractFuelPropulsion):
                 thrust = thrust_rate * max_thrust
             else:
                 thrust = thrust_rate * max_thrust
-                shaft_power, eta = Propeller().select(
+                shaft_power, _ = Propeller().select(
                     "thrust_to_power", Prop_fid, self, atmosphere, mach, thrust
                 )
 
                 power_rate = shaft_power / max_shaft_power
         else:
             power_rate = thrust_rate
-            shaft_power, eta = Propeller().select(
+            shaft_power, _ = Propeller().select(
                 "thrust_to_power", Prop_fid, self, atmosphere, mach, thrust
             )
 
@@ -185,11 +183,11 @@ class ML_TP_L1(AbstractFuelPropulsion):
         flight_points.sfc = tsfc
 
     @staticmethod
-    def _check_thrust_inputs(
-        thrust_is_regulated: Optional[Union[float, Sequence]],
-        thrust_rate: Optional[Union[float, Sequence]],
-        thrust: Optional[Union[float, Sequence]],
-    ) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
+    def _check_thrust_inputs(  # noqa
+        thrust_is_regulated: float | Sequence | None,
+        thrust_rate: float | Sequence | None,
+        thrust: float | Sequence | None,
+    ) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
         """
         Checks that inputs are consistent and return them in proper shape.
 
@@ -262,9 +260,9 @@ class ML_TP_L1(AbstractFuelPropulsion):
     def psfc(
         self,
         atmosphere: AtmosphereSI,
-        mach: Union[float, Sequence[float]],
-        power_rate: Union[float, Sequence[float]],
-        phase: Union[FlightPhase, Sequence],
+        mach: float | Sequence[float],
+        power_rate: float | Sequence[float],
+        phase: FlightPhase | Sequence,
     ) -> np.ndarray:
         """
         :param atmosphere: Atmosphere instance at intended altitude (should be <=20km)
@@ -321,13 +319,13 @@ class ML_TP_L1(AbstractFuelPropulsion):
             + c19 * power_rate**3
         )
 
-        return psfc
+        return psfc  # noqa
 
     def max_power(
         self,
         atmosphere: AtmosphereSI,
-        mach: Union[float, Sequence[float]],
-        phase: Union[FlightPhase, Sequence],
+        mach: float | Sequence[float],
+        phase: FlightPhase | Sequence,
     ) -> tuple:
         """
         Computation of maximum available power.
@@ -335,7 +333,7 @@ class ML_TP_L1(AbstractFuelPropulsion):
         :param atmosphere: Atmosphere instance at intended altitude (should be <=20km)
         :param mach: Mach number(s) (should be between 0.05 and 1.0)
         :param phase: flight phase which influences engine rating (max mechanical power)
-        :return: (m)aximum shaft power, maximum thermal power, maximum rated power) (in W)
+        :return: maximum shaft power, maximum thermal power, maximum rated power) (in W)
         """
         """
         TAXI_IN = 0
@@ -347,16 +345,16 @@ class ML_TP_L1(AbstractFuelPropulsion):
         altitude = atmosphere.get_altitude(altitude_in_feet=True)
         mach = np.asarray(mach)
 
-        if phase == 2:  # 'MCL'
+        if phase == EngineSetting.CLIMB:  # 'MCL'
             max_power_rating = self.k_gb_MCL * self.RTO_power / constants.hp  # *1.05
 
-        elif phase == 1:  # 'TO'
+        elif phase == EngineSetting.TAKEOFF:  # 'TO'
             max_power_rating = self.k_gb_NTO * self.RTO_power / constants.hp
 
-        elif phase == 3:  # 'CRZ'
+        elif phase == EngineSetting.CRUISE:  # 'CRZ'
             max_power_rating = self.k_gb_MCR * self.RTO_power / constants.hp
 
-        elif phase == 8:  # 'RTO'
+        elif phase == 8:  # noqa 'RTO'
             max_power_rating = self.k_gb_RTO * self.RTO_power / constants.hp  # Watt =2400. hp
 
         else:
@@ -373,7 +371,7 @@ class ML_TP_L1(AbstractFuelPropulsion):
         c8 = 1.919e-5
         c9 = -3.257e-1
 
-        K_powerlapse = (
+        k_powerlapse = (
             c0
             + c1 * altitude
             + c2 * mach
@@ -397,7 +395,7 @@ class ML_TP_L1(AbstractFuelPropulsion):
         density_ratio = (atmosphere.density / density_ground_isa0) ** 0.7
         k_isa = (density_ratio / density_ratio_isa0) ** 0.7
 
-        max_thermo_power = max_power_rating * K_powerlapse * k_isa
+        max_thermo_power = max_power_rating * k_powerlapse * k_isa
 
         if max_thermo_power > max_power_rating:
             max_shaft_power = max_power_rating  # hp #gearbox mechanical limit
@@ -412,13 +410,12 @@ class ML_TP_L1(AbstractFuelPropulsion):
 
     def compute_engine_point(
         self,
-        mach: Union[float, Sequence[float]],
+        mach: float | Sequence[float],
         T_prop=1,
     ) -> np.ndarray:
         """Based on correlation provided by J. D. Anderson, Aircraft Performance and Design p183"""
 
-        # With: ratio = Tjet/(Tjet+Tprop)
+        # This is computed assuming that: ratio = Tjet/(Tjet+Tprop)
         ratio = np.interp(mach, [0, 0.5], [0.02, 0.06])
 
-        Tjet = T_prop * ratio / (1 - ratio)
-        return Tjet
+        return T_prop * ratio / (1 - ratio)

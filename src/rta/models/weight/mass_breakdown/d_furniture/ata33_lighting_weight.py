@@ -15,13 +15,14 @@ Estimation of lighting systems weight
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import numpy as np
-from openmdao.core.explicitcomponent import ExplicitComponent
+import openmdao.api as om
 from fastoad.module_management.service_registry import RegisterSubmodel
+
 from rta.models.weight.mass_breakdown.d_furniture.constants import SERVICE_MASS_ATA33
 
 
 @RegisterSubmodel(SERVICE_MASS_ATA33, "rta.submodel.mass.furniture.ata33")
-class LightsWeight(ExplicitComponent):
+class LightsWeight(om.ExplicitComponent):
     """
     Weight estimation for lighting systems
 

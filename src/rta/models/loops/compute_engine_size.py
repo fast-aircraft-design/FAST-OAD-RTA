@@ -66,7 +66,7 @@ class ComputeEngineSize(om.ExplicitComponent):
             previous_RTO_power = self.previous_RTO_power
 
         delta_TOD = 1500 * (TOD - TOD_target)  # 1500
-        if abs(max(TOD - TOD_target)) < 10:  # 10m, 10s, 0.0
+        if abs(max(TOD - TOD_target)) < 10:  # noqa 10m, 10s, 0.0
             RTO_power = previous_RTO_power
         else:
             RTO_power = previous_RTO_power + delta_TOD

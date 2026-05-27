@@ -16,33 +16,33 @@ Test module for geometry functions of cg components
 
 # pylint: disable=redefined-outer-name  # needed for pytest fixtures
 
+from pathlib import Path
+
 import openmdao.api as om
 import pytest
-import os.path as pth
 from fastoad.io import VariableIO
 from fastoad.testing import run_system
-from pytest import approx
 from openmdao.api import IndepVarComp
+from pytest import approx
 
-from ..cg_components.compute_cg_others import ComputeOthersCG
-from ..cg_components.compute_cg_ratio_aft import ComputeCGRatioAft
-from ..cg_components.compute_propulsion_cg import ComputePropulsionCG_RTA
-from ..cg_components.compute_max_cg_ratio import ComputeMaxCGratio
+from ..cg_components.compute_cg_flight_controls import (
+    ComputeFlightControlCG,
+)
 from ..cg_components.compute_cg_loadcase1 import ComputeCGLoadCase1
 from ..cg_components.compute_cg_loadcase2 import ComputeCGLoadCase2
 from ..cg_components.compute_cg_loadcase3 import ComputeCGLoadCase3
 from ..cg_components.compute_cg_loadcase4 import ComputeCGLoadCase4
-from ..cg_components.compute_cg_flight_controls import (
-    ComputeFlightControlCG,
-)
+from ..cg_components.compute_cg_others import ComputeOthersCG
+from ..cg_components.compute_cg_ratio_aft import ComputeCGRatioAft
+from ..cg_components.compute_max_cg_ratio import ComputeMaxCGratio
+from ..cg_components.compute_propulsion_cg import ComputePropulsionCG_RTA
 
 
 def get_indep_var_comp(var_names):
     """Reads required input data and returns an IndepVarcomp() instance"""
-    reader = VariableIO(pth.join(pth.dirname(__file__), "data", "ref_cg.xml"))
+    reader = VariableIO(Path(__file__).parent.resolve() / "data" / "ref_cg.xml")
     reader.path_separator = ":"
-    ivc = reader.read(only=var_names).to_ivc()
-    return ivc
+    return reader.read(only=var_names).to_ivc()
 
 
 def test_compute_flight_control_cg():

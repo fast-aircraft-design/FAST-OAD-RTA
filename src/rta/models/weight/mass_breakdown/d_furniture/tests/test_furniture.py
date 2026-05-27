@@ -12,28 +12,27 @@
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 # pylint: disable=redefined-outer-name  # needed for pytest fixtures
-import os.path as pth
+from pathlib import Path
 
+from fastoad.io import VariableIO
 from fastoad.testing import run_system
 from openmdao.api import IndepVarComp
-from fastoad.io import VariableIO
 from pytest import approx
 
-from ..ata38_water_weight import WaterWeight
 from ..ata25_furnishing_weight import FurnishingWeight
-from ..ata35_oxygen_weight import OxygenWeight
 from ..ata33_lighting_weight import LightsWeight
-from ..ata2580_insulation_weight import InsulationWeight
+from ..ata35_oxygen_weight import OxygenWeight
+from ..ata38_water_weight import WaterWeight
 from ..ata2510_crew_seats_weight import SeatsCrewWeight
+from ..ata2580_insulation_weight import InsulationWeight
 from ..ata5345_5347_interior_weight import InteriorIntegrationWeight
 
 
 def get_indep_var_comp(var_names):
     """Reads required input data and returns an IndepVarcomp() instance"""
-    reader = VariableIO(pth.join(pth.dirname(__file__), "data", "ref_weight.xml"))
+    reader = VariableIO(Path(__file__).parent.resolve() / "data" / "ref_weight.xml")
     reader.path_separator = ":"
-    ivc = reader.read(only=var_names).to_ivc()
-    return ivc
+    return reader.read(only=var_names).to_ivc()
 
 
 def test_water_weight():
