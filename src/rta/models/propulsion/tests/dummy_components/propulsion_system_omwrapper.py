@@ -57,7 +57,7 @@ class PropulsionSystemOMWrapper(IOMPropulsionWrapper):
         Args:
             component: The OpenMDAO component where inputs will be declared.
         """
-        # Declare default inputs from PropellerPowerCalculator
+        # Declare default inputs from PropellerComponent
         propeller = PropellerComponent()
         propeller.declare_openmdao_inputs(component)
 

@@ -1,11 +1,3 @@
-import numpy as np
-import openmdao.api as om
-from fastoad.testing import run_system
-
-from rta.models.propulsion.tests.dummy_components.propulsion_system_omwrapper import (
-    PropulsionSystemOMComponent,
-)
-
 #  This file is part of FAST-OAD : A framework for rapid Overall Aircraft Design
 #  Copyright (C) 2026 ONERA & ISAE-SUPAERO
 #  FAST is free software: you can redistribute it and/or modify
@@ -18,6 +10,14 @@ from rta.models.propulsion.tests.dummy_components.propulsion_system_omwrapper im
 #  GNU General Public License for more details.
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+import numpy as np
+import openmdao.api as om
+from fastoad.testing import run_system
+
+from rta.models.propulsion.tests.dummy_components.propulsion_system_omwrapper import (
+    PropulsionSystemOMComponent,
+)
 
 
 def test_PropulsionSystemOMComponent():
@@ -45,20 +45,10 @@ def test_PropulsionSystemOMComponent():
 
     # The thrust is distributed equally between each engine
     # Propulsive components don't see the total amount of thrust or power or whatever
-    propulsive_power_per_engine = [
-        speed * thrust / engine_count for speed, thrust in zip(true_airspeed, thrusts)
-    ]
-    expected_gearbox_power = [
-        prop_power / propeller_efficiency for prop_power in propulsive_power_per_engine
-    ]
-    expected_TPpower = [
-        prop_power / propeller_efficiency / gearbox_efficiency
-        for prop_power in propulsive_power_per_engine
-    ]
-    expected_sfc = [
-        TPpower * psfc / (thrust / engine_count)
-        for TPpower, thrust in zip(expected_TPpower, thrusts)
-    ]
+    propulsive_power_per_engine = np.array(true_airspeed) * np.array(thrusts) / engine_count
+    expected_gearbox_power = propulsive_power_per_engine / propeller_efficiency
+    expected_TPpower = expected_gearbox_power / gearbox_efficiency
+    expected_sfc = expected_TPpower * psfc / (np.array(thrusts) / engine_count)
 
     sfc = problem.get_val("data:propulsion:sfc", units="kg/s/N")
     gear_shaft_power = problem.get_val("data:propulsion:gearbox_shaft_power", units="W")

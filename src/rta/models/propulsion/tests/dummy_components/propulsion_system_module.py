@@ -32,7 +32,7 @@ class PropulsionSystemModule(PropulsionSystem):
     chain: propeller -> gearbox -> fuel flow -> SFC.
 
     In its initialization, the module takes:
-        - propeller_power_calculator: An instance of PropellerPowerCalculator
+        - propeller: An instance of PropellerComponent
         - gearbox: An instance of GearboxComponent
 
     The compute_flight_points method will:
@@ -42,23 +42,23 @@ class PropulsionSystemModule(PropulsionSystem):
         4. Calculate SFC from fuel flow / thrust
 
     Attributes:
-        propeller_power_calculator: Instance of propeller power calculator component.
+        propeller: Instance of propeller component.
         gearbox: Instance of gearbox component.
     """
 
     def __init__(
         self,
-        propeller_power_calculator,
+        propeller,
         gearbox,
     ):
         """
         Initialize the propulsion system module.
 
         Args:
-            propeller_power_calculator: An instance of PropellerPowerCalculator.
+            propeller: An instance of PropellerComponent.
             gearbox: An instance of GearboxComponent.
         """
-        self.propeller_power_calculator = propeller_power_calculator
+        self.propeller = propeller
         self.gearbox = gearbox
         self.PSFC = 0.250  # kg/kWh
 
@@ -88,7 +88,7 @@ class PropulsionSystemModule(PropulsionSystem):
 
         # Step 1: Call propeller compute_perfo first
         # This computes gearbox_shaft_power from thrust and true_airspeed
-        self.propeller_power_calculator.compute_performances(flight_points)
+        self.propeller.compute_performances(flight_points)
 
         # Step 2: Call gearbox compute_perfo
         # This computes TPshaft_power from gearbox_shaft_power

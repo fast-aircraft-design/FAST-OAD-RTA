@@ -5,8 +5,6 @@ This module provides fixtures to ensure proper cleanup of FlightPoint fields
 after tests that instantiate AbstractPropulsiveComponent subclasses.
 """
 
-import contextlib
-
 #  This file is part of FAST-OAD : A framework for rapid Overall Aircraft Design
 #  Copyright (C) 2026 ONERA & ISAE-SUPAERO
 #  FAST is free software: you can redistribute it and/or modify
@@ -19,6 +17,7 @@ import contextlib
 #  GNU General Public License for more details.
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
+import contextlib
 import pytest
 from fastoad.model_base.flight_point import FlightPoint
 
