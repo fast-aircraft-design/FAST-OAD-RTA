@@ -64,7 +64,7 @@ class PropulsionSystemModule(PropulsionSystem):
 
     def get_consumed_mass(self, flight_point: FlightPoint, time_step: float) -> float:
         """Definition is mandatory but it is not used in this exemple"""
-        return 0.0
+        pass
 
     def compute_flight_points(self, flight_points: FlightPoint | pd.DataFrame):
         """

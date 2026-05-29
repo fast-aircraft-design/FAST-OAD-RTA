@@ -19,7 +19,6 @@ the complete propulsion chain: propeller -> gearbox -> fuel flow -> SFC.
 
 import numpy as np
 import pandas as pd
-
 import pytest
 from fastoad.model_base.flight_point import FlightPoint, _FieldDescriptor
 

@@ -8,7 +8,6 @@ VariableList updates.
 
 import numpy as np
 import pandas as pd
-
 import pytest
 from fastoad.model_base.flight_point import FlightPoint, _FieldDescriptor
 from fastoad.openmdao.variables import Variable, VariableList
@@ -44,14 +43,15 @@ def test_flight_point_fields_expanded_at_instantiation():
     fp = FlightPoint()
 
     assert "overdrive_power" in prop.input_fields, (
-        "The instance has not been initialised with new_fields"
+        "The instance has not been initialised with 'new_input_fields'."
     )
     assert "thrust" not in prop.input_fields, (
-        "The instance has been initialised with new_fields, but the default ones are still present"
+        "The instance has been initialised with 'new_input_fields',"
+        " but the default ones are still present."
     )
 
     assert hasattr(fp, "overdrive_waste_heat"), (
-        "FlightPoint should have overdrive_power attribute after component instantiation"
+        "FlightPoint should have 'overdrive_waste_heat' attribute after component instantiation."
     )
     assert fp.is_cumulative("overdrive_waste_heat"), (
         'The added field should have metadata "is_cumulative"=True'

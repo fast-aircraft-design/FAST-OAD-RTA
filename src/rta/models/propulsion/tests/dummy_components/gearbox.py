@@ -28,6 +28,24 @@ from fastoad.openmdao.variables import Variable, VariableList
 
 from rta.models.propulsion.component_base import AbstractPropulsiveComponent
 
+INPUT_PARAMETERS = VariableList(
+    [
+        Variable(
+            "data:propulsion:gearbox:efficiency",
+            val=np.nan,
+            units="unitless",
+            desc="Gearbox efficiency (0-1)",
+        )
+    ]
+)
+
+INPUT_FIELDS = {
+    "gearbox_shaft_power": _FieldDescriptor(unit="W"),
+}
+OUTPUT_FIELDS = {
+    "TPshaft_power": _FieldDescriptor(unit="W"),
+}
+
 
 @dataclass
 class GearboxComponent(AbstractPropulsiveComponent):
@@ -58,26 +76,13 @@ class GearboxComponent(AbstractPropulsiveComponent):
 
     name = "GearboxComponent"
 
-    _input_parameters: ClassVar[list] = VariableList(
-        [
-            Variable(
-                "data:propulsion:gearbox:efficiency",
-                val=np.nan,
-                units="unitless",
-                desc="Gearbox efficiency (0-1)",
-            )
-        ]
-    )
+    _input_parameters: ClassVar[list] = INPUT_PARAMETERS
 
     # Dictionary of FlightPoint fields required as input (field_name: unit)
-    _input_fields: ClassVar[dict] = {
-        "gearbox_shaft_power": _FieldDescriptor(unit="W"),
-    }
+    _input_fields: ClassVar[dict] = INPUT_FIELDS
 
     # Dictionary of FlightPoint fields to be computed (field_name: unit)
-    _output_fields: ClassVar[dict] = {
-        "TPshaft_power": _FieldDescriptor(unit="W"),
-    }
+    _output_fields: ClassVar[dict] = OUTPUT_FIELDS
 
     def compute_single_point(self, flight_point: FlightPoint):
         """

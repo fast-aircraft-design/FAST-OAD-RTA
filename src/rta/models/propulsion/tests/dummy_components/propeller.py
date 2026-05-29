@@ -37,6 +37,15 @@ INPUT_PARAMETERS = VariableList(
     ]
 )
 
+INPUT_FILEDS = {
+    "thrust": _FieldDescriptor(unit="N"),
+    "true_airspeed": _FieldDescriptor(unit="m/s"),
+}
+
+OUTPUT_FIELDS = {
+    "gearbox_shaft_power": _FieldDescriptor(unit="W", is_cumulative=True),
+}
+
 
 @dataclass
 class PropellerComponent(AbstractPropulsiveComponent):
@@ -72,15 +81,10 @@ class PropellerComponent(AbstractPropulsiveComponent):
     _input_parameters: ClassVar[list] = INPUT_PARAMETERS
 
     # Dictionary of FlightPoint fields required as input (field_name: unit)
-    _input_fields: ClassVar[dict] = {
-        "thrust": _FieldDescriptor(unit="N"),
-        "true_airspeed": _FieldDescriptor(unit="m/s"),
-    }
+    _input_fields: ClassVar[dict] = INPUT_FILEDS
 
     # Dictionary of FlightPoint fields to be computed (field_name: unit)
-    _output_fields: ClassVar[dict] = {
-        "gearbox_shaft_power": _FieldDescriptor(unit="W", is_cumulative=True),
-    }
+    _output_fields: ClassVar[dict] = OUTPUT_FIELDS
 
     def compute_single_point(self, flight_point: FlightPoint) -> FlightPoint:
         """
@@ -102,6 +106,6 @@ class PropellerComponent(AbstractPropulsiveComponent):
         if efficiency == 0:
             flight_point.gearbox_shaft_power = float("inf")
         else:
-            flight_point.gearbox_shaft_power = np.divide(thrust * true_airspeed, efficiency)
+            flight_point.gearbox_shaft_power = thrust * true_airspeed / efficiency
 
         return flight_point

@@ -18,6 +18,7 @@ after tests that instantiate AbstractPropulsiveComponent subclasses.
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 import contextlib
+
 import pytest
 from fastoad.model_base.flight_point import FlightPoint
 
