@@ -82,11 +82,11 @@ class AbstractPropulsiveComponent(ABC):
         """
         super().__init_subclass__(**kwargs)
         if not hasattr(cls, "_input_parameters"):
-            raise ValueError(f"The classe {cls.__name__} must define _input_parameters")
+            raise ValueError(f"The class {cls.__name__} must define _input_parameters")
         if not hasattr(cls, "_input_fields"):
-            raise ValueError(f"The classe {cls.__name__} must define _input_fields")
+            raise ValueError(f"The class {cls.__name__} must define _input_fields")
         if not hasattr(cls, "_output_fields"):
-            raise ValueError(f"The classe {cls.__name__} must define _output_fields")
+            raise ValueError(f"The class {cls.__name__} must define _output_fields")
 
     def __post_init__(self):
         """
