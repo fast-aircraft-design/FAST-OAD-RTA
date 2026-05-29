@@ -97,7 +97,7 @@ class PropulsionSystemOMWrapper(IOMPropulsionWrapper):
 
         # Create the propulsion system module with configured components
         propulsion_system = PropulsionSystemModule(
-            propeller_power_calculator=propeller,
+            propeller=propeller,
             gearbox=gearbox,
         )
 

@@ -41,7 +41,7 @@ def test_incoherent_input_definition():
 
     with pytest.raises(ValueError) as record:
         _ = PropulsionSystemModule(
-            propeller_power_calculator=propeller,
+            propeller=propeller,
             gearbox=gearbox,
         )
 
@@ -62,7 +62,7 @@ def test_propulsion_system_module_compute_single_flight_point():
     gearbox.input_parameters["data:propulsion:gearbox:efficiency"].value = 0.95
 
     module = PropulsionSystemModule(
-        propeller_power_calculator=propeller,
+        propeller=propeller,
         gearbox=gearbox,
     )
 
@@ -104,7 +104,7 @@ def test_propulsion_system_module_compute_list_of_flight_points():
     gearbox.input_parameters["data:propulsion:gearbox:efficiency"].value = 0.90
 
     module = PropulsionSystemModule(
-        propeller_power_calculator=propeller,
+        propeller=propeller,
         gearbox=gearbox,
     )
 
