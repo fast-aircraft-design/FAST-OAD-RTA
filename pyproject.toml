@@ -24,7 +24,7 @@ dynamic = ["version", "classifiers"] # Needed to use poetry-dynamic-versioning
 
 # User dependencies ------------------------------------------------------------
 dependencies = [
-    "fast-oad-core>=1.9.0,<2",
+    "fast-oad-core @ git+https://github.com/fast-aircraft-design/FAST-OAD.git",
     "fast-oad-cs25>=0.8.0,<0.9.0"
 ]
 
