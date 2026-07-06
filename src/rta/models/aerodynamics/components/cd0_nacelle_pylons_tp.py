@@ -37,13 +37,13 @@ class Cd0NacelleAndPylonsTP(om.ExplicitComponent):
         self.low_speed_aero = self.options["low_speed_aero"]
 
         if self.low_speed_aero:
-            self.add_input("data:aerodynamics:wing:low_speed:reynolds", val=np.nan)
+            self.add_input("data:aerodynamics:aircraft:low_speed:unit_reynolds", val=np.nan)
             self.add_input("data:aerodynamics:aircraft:takeoff:mach", val=np.nan)
-            self.add_output("data:aerodynamics:nacelles:low_speed:CD0")
+            self.add_output("data:aerodynamics:nacelles:low_speed:CD:CD0")
         else:
-            self.add_input("data:aerodynamics:wing:cruise:reynolds", val=np.nan)
+            self.add_input("data:aerodynamics:aircraft:high_speed:unit_reynolds", val=np.nan)
             self.add_input("data:TLAR:cruise_mach", val=np.nan)
-            self.add_output("data:aerodynamics:nacelles:cruise:CD0")
+            self.add_output("data:aerodynamics:nacelles:high_speed:CD:CD0")
 
         self.add_input("data:geometry:propulsion:nacelle:length", val=np.nan, units="m")
         self.add_input("data:geometry:propulsion:pylon:wetted_area", val=np.nan, units="m**2")
@@ -60,17 +60,17 @@ class Cd0NacelleAndPylonsTP(om.ExplicitComponent):
         wing_area = inputs["data:geometry:wing:area"]
         if self.low_speed_aero:
             mach = inputs["data:aerodynamics:aircraft:takeoff:mach"]
-            reynolds = inputs["data:aerodynamics:wing:low_speed:reynolds"]
+            unit_reynolds = inputs["data:aerodynamics:aircraft:low_speed:unit_reynolds"]
         else:
             mach = inputs["data:TLAR:cruise_mach"]
-            reynolds = inputs["data:aerodynamics:wing:cruise:reynolds"]
+            unit_reynolds = inputs["data:aerodynamics:aircraft:high_speed:unit_reynolds"]
 
-        cf_nac = get_flat_plate_friction_drag_coefficient(nac_length, mach, reynolds)
+        cf_nac = get_flat_plate_friction_drag_coefficient(nac_length, mach, unit_reynolds)
 
         cd0_int_nac = 0.0005  # subject to discussion
         cd0_nac = n_engines * (cf_nac * wet_area_nac / wing_area + cd0_int_nac)
 
         if self.low_speed_aero:
-            outputs["data:aerodynamics:nacelles:low_speed:CD0"] = cd0_nac
+            outputs["data:aerodynamics:nacelles:low_speed:CD:CD0"] = cd0_nac
         else:
-            outputs["data:aerodynamics:nacelles:cruise:CD0"] = cd0_nac
+            outputs["data:aerodynamics:nacelles:high_speed:CD:CD0"] = cd0_nac
