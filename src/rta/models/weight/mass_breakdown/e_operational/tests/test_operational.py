@@ -45,7 +45,7 @@ def test_items_weight():
 def test_equipment_weight():
     ivc = IndepVarComp()
     ivc.add_output("data:geometry:cabin:crew_count:technical", val=2.0, units="unitless")
-    ivc.add_output("data:geometry:cabin:crew_count:commercial", val=2.0)
+    ivc.add_output("data:geometry:cabin:crew_count:commercial", val=2.0, units="unitless")
 
     problem = run_system(OperationalEquipmentsWeight(), ivc)
 

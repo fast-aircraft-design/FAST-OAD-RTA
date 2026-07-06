@@ -169,7 +169,7 @@ def test_oswald_coefficient():
         if low_speed_aero:
             ivc.add_output("data:aerodynamics:aircraft:takeoff:mach", mach, units="unitless")
         else:
-            ivc.add_output("data:TLAR:cruise_mach", mach)
+            ivc.add_output("data:TLAR:cruise_mach", mach, units="unitless")
         problem = run_system(OswaldCoefficient(low_speed_aero=low_speed_aero), ivc)
         if low_speed_aero:
             return problem.get_val("data:aerodynamics:aircraft:low_speed:oswald_coefficient")
@@ -216,8 +216,12 @@ def test_polar_high_speed():
     ]
 
     ivc = get_indep_var_comp(input_list)
-    ivc.add_output("data:aerodynamics:aircraft:high_speed:CL", np.arange(0.0, 1.5, 0.01))
-    ivc.add_output("data:aerodynamics:aircraft:low_speed:CL", np.arange(0.0, 1.5, 0.01))
+    ivc.add_output(
+        "data:aerodynamics:aircraft:high_speed:CL", np.arange(0.0, 1.5, 0.01), units="unitless"
+    )
+    ivc.add_output(
+        "data:aerodynamics:aircraft:low_speed:CL", np.arange(0.0, 1.5, 0.01), units="unitless"
+    )
     ivc.add_output(
         "tuning:aerodynamics:aircraft:high_speed:CD:winglet_effect:k", 0.9474, units="unitless"
     )
