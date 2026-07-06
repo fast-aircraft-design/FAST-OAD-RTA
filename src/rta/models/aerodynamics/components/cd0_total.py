@@ -38,38 +38,72 @@ class Cd0Total(om.ExplicitComponent):
         self.low_speed_aero = self.options["low_speed_aero"]
 
         self.add_input("data:geometry:aircraft:wetted_area", val=np.nan, units="m**2")
-        self.add_input("tuning:aerodynamics:aircraft:high_speed:CD:parasite:k", val=np.nan)
+        self.add_input(
+            "tuning:aerodynamics:aircraft:high_speed:CD:parasite:k", val=np.nan, units="unitless"
+        )
 
         if self.low_speed_aero:
             self.add_input(
-                "data:aerodynamics:wing:low_speed:CD:CD0", shape_by_conn=True, val=np.nan
+                "data:aerodynamics:wing:low_speed:CD:CD0",
+                shape_by_conn=True,
+                val=np.nan,
+                units="unitless",
             )
             self.add_input(
                 "data:aerodynamics:fuselage:low_speed:CD:CD0",
                 shape_by_conn=True,
                 val=np.nan,
+                units="unitless",
             )
-            self.add_input("data:aerodynamics:horizontal_tail:low_speed:CD:CD0", val=np.nan)
-            self.add_input("data:aerodynamics:vertical_tail:low_speed:CD:CD0", val=np.nan)
-            self.add_input("data:aerodynamics:nacelles:low_speed:CD:CD0", val=np.nan)
+            self.add_input(
+                "data:aerodynamics:horizontal_tail:low_speed:CD:CD0",
+                val=np.nan,
+                units="unitless",
+            )
+            self.add_input(
+                "data:aerodynamics:vertical_tail:low_speed:CD:CD0",
+                val=np.nan,
+                units="unitless",
+            )
+            self.add_input(
+                "data:aerodynamics:nacelles:low_speed:CD:CD0", val=np.nan, units="unitless"
+            )
 
             self.add_output(
                 "data:aerodynamics:aircraft:low_speed:CD:CD0",
                 copy_shape="data:aerodynamics:wing:low_speed:CD:CD0",
+                units="unitless",
             )
         else:
             self.add_input(
-                "data:aerodynamics:wing:high_speed:CD:CD0", shape_by_conn=True, val=np.nan
+                "data:aerodynamics:wing:high_speed:CD:CD0",
+                shape_by_conn=True,
+                val=np.nan,
+                units="unitless",
             )
             self.add_input(
-                "data:aerodynamics:fuselage:high_speed:CD:CD0", shape_by_conn=True, val=np.nan
+                "data:aerodynamics:fuselage:high_speed:CD:CD0",
+                shape_by_conn=True,
+                val=np.nan,
+                units="unitless",
             )
-            self.add_input("data:aerodynamics:horizontal_tail:high_speed:CD:CD0", val=np.nan)
-            self.add_input("data:aerodynamics:vertical_tail:high_speed:CD:CD0", val=np.nan)
-            self.add_input("data:aerodynamics:nacelles:high_speed:CD:CD0", val=np.nan)
+            self.add_input(
+                "data:aerodynamics:horizontal_tail:high_speed:CD:CD0",
+                val=np.nan,
+                units="unitless",
+            )
+            self.add_input(
+                "data:aerodynamics:vertical_tail:high_speed:CD:CD0",
+                val=np.nan,
+                units="unitless",
+            )
+            self.add_input(
+                "data:aerodynamics:nacelles:high_speed:CD:CD0", val=np.nan, units="unitless"
+            )
             self.add_output(
                 "data:aerodynamics:aircraft:high_speed:CD:CD0",
                 copy_shape="data:aerodynamics:wing:high_speed:CD:CD0",
+                units="unitless",
             )
 
         self.declare_partials("*", "*", method="fd")

@@ -42,7 +42,11 @@ def get_indep_var_comp(var_names):
     """Reads required input data and returns an IndepVarcomp() instance"""
     reader = VariableIO(Path(__file__).parent.resolve() / "data" / "ref_cg.xml")
     reader.path_separator = ":"
-    return reader.read(only=var_names).to_ivc()
+    variables = reader.read(only=var_names)
+    for variable in variables:
+        if variable.units is None:
+            variable.units = "unitless"
+    return variables.to_ivc()
 
 
 def test_compute_flight_control_cg():
@@ -281,7 +285,9 @@ def test_compute_cg_others():
 
 def test_max_cg_ratio():
     ivc = IndepVarComp()
-    ivc.add_output("data:weight:aircraft:operating_empty:CG:MAC_position", val=0.0013)
+    ivc.add_output(
+        "data:weight:aircraft:operating_empty:CG:MAC_position", val=0.0013, units="unitless"
+    )
     ivc.add_output("data:weight:aircraft:load_case_1:CG:MAC_position", val=0.0570)
     ivc.add_output("data:weight:aircraft:load_case_2:CG:MAC_position", val=0.025)
     ivc.add_output("data:weight:aircraft:load_case_3:CG:MAC_position", val=0.0362)

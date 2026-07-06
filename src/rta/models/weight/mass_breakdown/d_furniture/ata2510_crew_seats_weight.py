@@ -30,10 +30,12 @@ class SeatsCrewWeight(om.ExplicitComponent):
     """
 
     def setup(self):
-        self.add_input("data:geometry:cabin:crew_count:technical", val=np.nan)
-        self.add_input("data:geometry:cabin:crew_count:commercial", val=np.nan)
+        self.add_input("data:geometry:cabin:crew_count:technical", val=np.nan, units="unitless")
+        self.add_input("data:geometry:cabin:crew_count:commercial", val=np.nan, units="unitless")
 
-        self.add_input("tuning:weight:furniture:seats_crew_accommodation:mass:k", val=1.0)
+        self.add_input(
+            "tuning:weight:furniture:seats_crew_accommodation:mass:k", val=1.0, units="unitless"
+        )
         self.add_input(
             "tuning:weight:furniture:seats_crew_accommodation:mass:offset",
             val=0.0,
