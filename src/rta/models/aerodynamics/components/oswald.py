@@ -44,11 +44,23 @@ class InducedDragCoefficient(om.ExplicitComponent):
         self.add_input("data:geometry:wing:root:dihedral", val=np.nan, units="rad")
 
         if self.options["low_speed_aero"]:
-            self.add_input("data:aerodynamics:aircraft:low_speed:oswald_coefficient", val=np.nan)
-            self.add_output("data:aerodynamics:aircraft:low_speed:CD:induced:coefficient")
+            self.add_input(
+                "data:aerodynamics:aircraft:low_speed:oswald_coefficient",
+                val=np.nan,
+                units="unitless",
+            )
+            self.add_output(
+                "data:aerodynamics:aircraft:low_speed:CD:induced:coefficient", units="unitless"
+            )
         else:
-            self.add_input("data:aerodynamics:aircraft:high_speed:oswald_coefficient", val=np.nan)
-            self.add_output("data:aerodynamics:aircraft:high_speed:CD:induced:coefficient")
+            self.add_input(
+                "data:aerodynamics:aircraft:high_speed:oswald_coefficient",
+                val=np.nan,
+                units="unitless",
+            )
+            self.add_output(
+                "data:aerodynamics:aircraft:high_speed:CD:induced:coefficient", units="unitless"
+            )
 
     def setup_partials(self):
         self.declare_partials("*", "*", method="fd")

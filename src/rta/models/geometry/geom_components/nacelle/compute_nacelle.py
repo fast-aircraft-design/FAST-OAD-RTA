@@ -29,7 +29,7 @@ class ComputeNacelleGeometry(om.ExplicitComponent):
     """Nacelle geometry estimation"""
 
     def setup(self):
-        self.add_input("data:geometry:propulsion:engine:y_ratio", val=np.nan)
+        self.add_input("data:geometry:propulsion:engine:y_ratio", val=np.nan, units="unitless")
         self.add_input("data:geometry:wing:span", val=np.nan, units="m")
         self.add_input("data:propulsion:design_thermal_power", np.nan, units="W")
         self.add_input("data:propulsion:electric_systems:design_electric_power", 0, units="W")

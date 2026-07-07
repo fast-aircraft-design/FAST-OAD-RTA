@@ -37,7 +37,7 @@ class ComputeFuselageGeometryBasic(om.ExplicitComponent):
     """Geometry of fuselage part A - Cabin (Commercial) estimation"""
 
     def setup(self):
-        self.add_input("data:geometry:cabin:NPAX1", val=np.nan)
+        self.add_input("data:geometry:cabin:NPAX1", val=np.nan, units="unitless")
         self.add_input("data:geometry:fuselage:length", val=np.nan, units="m")
         self.add_input("data:geometry:fuselage:maximum_width", val=np.nan, units="m")
         self.add_input("data:geometry:fuselage:maximum_height", val=np.nan, units="m")
@@ -50,7 +50,7 @@ class ComputeFuselageGeometryBasic(om.ExplicitComponent):
 
         self.add_output("data:geometry:cabin:length", units="m")
         self.add_output("data:geometry:fuselage:wetted_area", units="m**2")
-        self.add_output("data:geometry:cabin:crew_count:commercial")
+        self.add_output("data:geometry:cabin:crew_count:commercial", units="unitless")
 
         self.declare_partials(
             "data:weight:systems:flight_furnishing:CG:x",

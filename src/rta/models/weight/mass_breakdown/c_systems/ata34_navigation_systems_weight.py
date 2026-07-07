@@ -30,7 +30,7 @@ class NavigationSystemWeight(om.ExplicitComponent):
     def setup(self):
         self.add_input("data:geometry:fuselage:length", val=np.nan, units="m")
         self.add_input("data:geometry:wing:b_50", val=np.nan, units="m")
-        self.add_input("tuning:weight:systems:navigation:mass:k", val=1.0)
+        self.add_input("tuning:weight:systems:navigation:mass:k", val=1.0, units="unitless")
         self.add_input("tuning:weight:systems:navigation:mass:offset", val=0.0, units="kg")
 
         self.add_output("data:weight:systems:navigation:mass", units="kg")
