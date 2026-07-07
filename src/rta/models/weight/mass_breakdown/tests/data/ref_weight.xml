@@ -134,7 +134,7 @@
         <sweep_100_outer units="deg" is_input="False">-1.4220634332932096<!--sweep angle at trailing edge of wing (outer side of the kink)--></sweep_100_outer>
         <sweep_25 units="deg" is_input="True">2.3<!--sweep angle at 25% chord of wing--></sweep_25>
         <taper_ratio is_input="False">0.6400917433302213<!--taper ratio of wing--></taper_ratio>
-        <thickness_ratio is_input="False">0.14066207365003952<!--mean thickness ratio of wing--></thickness_ratio>
+        <thickness_ratio units="unitless" is_input="False">0.14066207365003952<!--mean thickness ratio of wing--></thickness_ratio>
         <virtual_taper_ratio is_input="True">0.618<!--taper ratio of wing computed from virtual root chord--></virtual_taper_ratio>
         <wetted_area units="m**2" is_input="False">108.0750492000773<!--wetted area of wing--></wetted_area>
         <MAC>
@@ -152,7 +152,7 @@
         <kink>
           <chord units="m" is_input="False">2.3991356487034716<!--chord length at wing kink--></chord>
           <span_ratio is_input="True">0.3866<!--ratio (Y-position of kink)/(semi-span)--></span_ratio>
-          <thickness_ratio is_input="False">0.14066207365003952<!--thickness ratio at wing kink--></thickness_ratio>
+          <thickness_ratio units="unitless" is_input="False">0.14066207365003952<!--thickness ratio at wing kink--></thickness_ratio>
           <y units="m" is_input="False">5.188778061126314<!--Y-position of wing kink--></y>
           <leading_edge>
             <x>
@@ -162,13 +162,13 @@
         </kink>
         <root>
           <chord units="m" is_input="False">2.6336047704229477<!--chord length at wing root--></chord>
-          <thickness_ratio is_input="False">0.18754943153338602<!--thickness ratio at wing root--></thickness_ratio>
+          <thickness_ratio units="unitless" is_input="False">0.18754943153338602<!--thickness ratio at wing root--></thickness_ratio>
           <virtual_chord units="m" is_input="False">2.7277486549236443<!--virtual chord length at wing root if sweep angle of trailing edge of outer wing part was on the whole wing (no kink)--></virtual_chord>
           <y units="m" is_input="False">1.396444<!--Y-position of wing root--></y>
         </root>
         <tip>
           <chord units="m" is_input="False">1.685748668742812<!--chord length at wing tip--></chord>
-          <thickness_ratio is_input="False">0.12503295435559067<!--thickness ratio at wing tip--></thickness_ratio>
+          <thickness_ratio units="unitless" is_input="False">0.12503295435559067<!--thickness ratio at wing tip--></thickness_ratio>
           <y units="m" is_input="False">13.421567669752493<!--Y-position of wing tip--></y>
           <leading_edge>
             <x>
@@ -898,12 +898,12 @@
         </vertical_tail>
         <wing>
           <mass>
-            <k is_input="True">1.0<!--wing (A1): correction ratio to be applied on computed mass--></k>
+            <k units="unitless" is_input="True">1.0<!--wing (A1): correction ratio to be applied on computed mass--></k>
             <offset units="kg" is_input="True">0.0<!--wing (A1): correction offset to be applied on computed mass--></offset>
           </mass>
           <bending_sizing>
             <mass>
-              <k is_input="True">1.0<!--wing bending sizing (A11): correction ratio to be applied on computed mass--></k>
+              <k units="unitless" is_input="True">1.0<!--wing bending sizing (A11): correction ratio to be applied on computed mass--></k>
               <offset units="kg" is_input="True">0.0<!--wing bending sizing (A11): correction offset to be applied on computed mass--></offset>
             </mass>
           </bending_sizing>
@@ -915,19 +915,19 @@
           </reinforcements>
           <ribs>
             <mass>
-              <k is_input="True">1.0<!--wing ribs (A13): correction ratio to be applied on computed mass--></k>
+              <k units="unitless" is_input="True">1.0<!--wing ribs (A13): correction ratio to be applied on computed mass--></k>
               <offset units="kg" is_input="True">0.0<!--wing ribs (A13): correction offset to be applied on computed mass--></offset>
             </mass>
           </ribs>
           <secondary_parts>
             <mass>
-              <k is_input="True">1.0<!--wing secondary parts (A15): correction ratio to be applied on computed mass--></k>
+              <k units="unitless" is_input="True">1.0<!--wing secondary parts (A15): correction ratio to be applied on computed mass--></k>
               <offset units="kg" is_input="True">0.0<!--wing secondary parts (A15): correction offset to be applied on computed mass--></offset>
             </mass>
           </secondary_parts>
           <shear_sizing>
             <mass>
-              <k is_input="True">1.0<!--wing shear sizing (A12): correction ratio to be applied on computed mass--></k>
+              <k units="unitless" is_input="True">1.0<!--wing shear sizing (A12): correction ratio to be applied on computed mass--></k>
               <offset units="kg" is_input="True">0.0<!--wing shear sizing (A12): correction offset to be applied on computed mass--></offset>
             </mass>
           </shear_sizing>
@@ -1115,8 +1115,8 @@
         </landing_gear>
         <wing>
           <mass>
-            <k_mvo is_input="True">0.6<!--1.39 for Airbus type aircrafts--></k_mvo>
-            <k_voil is_input="True">1.05</k_voil>
+            <k_mvo units="unitless" is_input="True">0.6<!--1.39 for Airbus type aircrafts--></k_mvo>
+            <k_voil units="unitless" is_input="True">1.05</k_voil>
           </mass>
         </wing>
       </airframe>

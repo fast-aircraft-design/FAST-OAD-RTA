@@ -31,7 +31,9 @@ class AutoFlightSystemWeight(om.ExplicitComponent):
     """
 
     def setup(self):
-        self.add_input("tuning:weight:systems:automatic_flight_system:mass:k", val=1.0)
+        self.add_input(
+            "tuning:weight:systems:automatic_flight_system:mass:k", val=1.0, units="unitless"
+        )
         self.add_input(
             "tuning:weight:systems:automatic_flight_system:mass:offset",
             val=0.0,

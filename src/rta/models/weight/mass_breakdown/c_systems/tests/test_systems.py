@@ -87,8 +87,14 @@ def test_electric_system_weight():
         val=0.0,
         units="kg",
     )
-    ivc.add_output("tuning:weight:systems:electric_systems:electric_generation:mass:k", val=1.0)
-    ivc.add_output("settings:weight:systems:electric_systems:mass:k_elec", val=1.0)
+    ivc.add_output(
+        "tuning:weight:systems:electric_systems:electric_generation:mass:k",
+        val=1.0,
+        units="unitless",
+    )
+    ivc.add_output(
+        "settings:weight:systems:electric_systems:mass:k_elec", val=1.0, units="unitless"
+    )
 
     problem = run_system(ElectricalPowerSystemWeight(), ivc)
 

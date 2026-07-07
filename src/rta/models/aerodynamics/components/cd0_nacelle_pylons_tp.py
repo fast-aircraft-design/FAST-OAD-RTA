@@ -37,18 +37,22 @@ class Cd0NacelleAndPylonsTP(om.ExplicitComponent):
         self.low_speed_aero = self.options["low_speed_aero"]
 
         if self.low_speed_aero:
-            self.add_input("data:aerodynamics:aircraft:low_speed:unit_reynolds", val=np.nan)
-            self.add_input("data:aerodynamics:aircraft:takeoff:mach", val=np.nan)
-            self.add_output("data:aerodynamics:nacelles:low_speed:CD:CD0")
+            self.add_input(
+                "data:aerodynamics:aircraft:low_speed:unit_reynolds", val=np.nan, units="unitless"
+            )
+            self.add_input("data:aerodynamics:aircraft:takeoff:mach", val=np.nan, units="unitless")
+            self.add_output("data:aerodynamics:nacelles:low_speed:CD:CD0", units="unitless")
         else:
-            self.add_input("data:aerodynamics:aircraft:high_speed:unit_reynolds", val=np.nan)
-            self.add_input("data:TLAR:cruise_mach", val=np.nan)
-            self.add_output("data:aerodynamics:nacelles:high_speed:CD:CD0")
+            self.add_input(
+                "data:aerodynamics:aircraft:high_speed:unit_reynolds", val=np.nan, units="unitless"
+            )
+            self.add_input("data:TLAR:cruise_mach", val=np.nan, units="unitless")
+            self.add_output("data:aerodynamics:nacelles:high_speed:CD:CD0", units="unitless")
 
         self.add_input("data:geometry:propulsion:nacelle:length", val=np.nan, units="m")
         self.add_input("data:geometry:propulsion:pylon:wetted_area", val=np.nan, units="m**2")
         self.add_input("data:geometry:propulsion:nacelle:wetted_area", val=np.nan, units="m**2")
-        self.add_input("data:geometry:propulsion:engine:count", val=np.nan)
+        self.add_input("data:geometry:propulsion:engine:count", val=np.nan, units="unitless")
         self.add_input("data:geometry:wing:area", val=np.nan, units="m**2")
 
         self.declare_partials("*", "*", method="fd")

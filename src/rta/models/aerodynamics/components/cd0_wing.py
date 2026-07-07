@@ -35,30 +35,40 @@ class Cd0Wing(om.ExplicitComponent):
         self.low_speed_aero = self.options["low_speed_aero"]
 
         if self.low_speed_aero:
-            self.add_input("data:aerodynamics:aircraft:low_speed:unit_reynolds", val=np.nan)
+            self.add_input(
+                "data:aerodynamics:aircraft:low_speed:unit_reynolds", val=np.nan, units="unitless"
+            )
             self.add_input(
                 "data:aerodynamics:aircraft:low_speed:CL",
                 shape_by_conn=True,
                 val=np.nan,
+                units="unitless",
             )
-            self.add_input("data:aerodynamics:aircraft:takeoff:mach", val=np.nan)
+            self.add_input("data:aerodynamics:aircraft:takeoff:mach", val=np.nan, units="unitless")
             self.add_output(
                 "data:aerodynamics:wing:low_speed:CD:CD0",
                 copy_shape="data:aerodynamics:aircraft:low_speed:CL",
+                units="unitless",
             )
         else:
-            self.add_input("data:aerodynamics:aircraft:high_speed:unit_reynolds", val=np.nan)
             self.add_input(
-                "data:aerodynamics:aircraft:high_speed:CL", shape_by_conn=True, val=np.nan
+                "data:aerodynamics:aircraft:high_speed:unit_reynolds", val=np.nan, units="unitless"
             )
-            self.add_input("data:TLAR:cruise_mach", val=np.nan)
+            self.add_input(
+                "data:aerodynamics:aircraft:high_speed:CL",
+                shape_by_conn=True,
+                val=np.nan,
+                units="unitless",
+            )
+            self.add_input("data:TLAR:cruise_mach", val=np.nan, units="unitless")
             self.add_output(
                 "data:aerodynamics:wing:high_speed:CD:CD0",
                 copy_shape="data:aerodynamics:aircraft:high_speed:CL",
+                units="unitless",
             )
 
         self.add_input("data:geometry:wing:area", val=np.nan, units="m**2")
-        self.add_input("data:geometry:wing:thickness_ratio", val=np.nan)
+        self.add_input("data:geometry:wing:thickness_ratio", val=np.nan, units="unitless")
         self.add_input("data:geometry:wing:wetted_area", val=np.nan, units="m**2")
         self.add_input("data:geometry:wing:MAC:length", val=np.nan, units="m")
         self.add_input("data:geometry:wing:sweep_25", val=np.nan, units="deg")
