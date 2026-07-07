@@ -28,11 +28,7 @@ def get_indep_var_comp(var_names):
     """Reads required input data and returns an IndepVarcomp() instance"""
     reader = VariableIO(Path(__file__).parent.resolve() / "data" / "ref_weight.xml")
     reader.path_separator = ":"
-    variables = reader.read(only=var_names)
-    for variable in variables:
-        if variable.units is None:
-            variable.units = "unitless"
-    return variables.to_ivc()
+    return reader.read(only=var_names).to_ivc()
 
 
 def test_compute_nacelle_weight():

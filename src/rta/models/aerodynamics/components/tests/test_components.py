@@ -52,18 +52,7 @@ def get_indep_var_comp(var_names):
     """Reads required input data and returns an IndepVarcomp() instance"""
     reader = VariableIO(Path(__file__).parent.resolve() / "data" / "ref_aerodynamics.xml")
     reader.path_separator = ":"
-    variables = reader.read(only=var_names)
-    for variable in variables:
-        if variable.units is None:
-            variable.units = "unitless"
-    return variables.to_ivc()
-
-
-def test_get_indep_var_comp_explicit_unitless():
-    ivc = get_indep_var_comp(["data:geometry:flap:chord_ratio", "data:geometry:wing:area"])
-
-    assert ivc._static_var_rel2meta["data:geometry:flap:chord_ratio"]["units"] == "unitless"
-    assert ivc._static_var_rel2meta["data:geometry:wing:area"]["units"] == "m**2"
+    return reader.read(only=var_names).to_ivc()
 
 
 def test_fuselage_cd0():
