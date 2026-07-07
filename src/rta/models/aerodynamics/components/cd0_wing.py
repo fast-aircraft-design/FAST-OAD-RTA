@@ -44,7 +44,7 @@ class Cd0Wing(om.ExplicitComponent):
                 val=np.nan,
                 units="unitless",
             )
-            self.add_input("data:aerodynamics:aircraft:takeoff:mach", val=np.nan, units="unitless")
+            self.add_input("data:aerodynamics:aircraft:takeoff:mach", val=np.nan)
             self.add_output(
                 "data:aerodynamics:wing:low_speed:CD:CD0",
                 copy_shape="data:aerodynamics:aircraft:low_speed:CL",

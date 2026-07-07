@@ -130,12 +130,14 @@ class ComputeFuselageGeometryCabinSizing(om.ExplicitComponent):
     def setup(self):
         self.add_input("data:geometry:cabin:seats:economical:width", val=np.nan, units="m")
         self.add_input("data:geometry:cabin:seats:economical:length", val=np.nan, units="m")
-        self.add_input("data:geometry:cabin:seats:economical:count_by_row", val=np.nan)
+        self.add_input(
+            "data:geometry:cabin:seats:economical:count_by_row", val=np.nan, units="unitless"
+        )
         self.add_input("data:geometry:cabin:aisle_width", val=np.nan, units="m")
         self.add_input("data:geometry:cabin:exit_width", val=np.nan, units="m")
-        self.add_input("data:TLAR:NPAX", val=np.nan)
-        self.add_input("data:geometry:propulsion:engine:count", val=np.nan)
-        self.add_output("data:geometry:cabin:NPAX1")
+        self.add_input("data:TLAR:NPAX", val=np.nan, units="unitless")
+        self.add_input("data:geometry:propulsion:engine:count", val=np.nan, units="unitless")
+        self.add_output("data:geometry:cabin:NPAX1", units="unitless")
         self.add_output("data:weight:systems:flight_furnishing:CG:x", units="m")
         self.add_output("data:weight:operational:items:passenger_seats:CG:x", units="m")
         self.add_output("data:geometry:fuselage:length", units="m")
@@ -146,7 +148,7 @@ class ComputeFuselageGeometryCabinSizing(om.ExplicitComponent):
         self.add_output("data:geometry:fuselage:PAX_length", units="m")
         self.add_output("data:geometry:cabin:length", units="m")
         self.add_output("data:geometry:fuselage:wetted_area", units="m**2")
-        self.add_output("data:geometry:cabin:crew_count:commercial")
+        self.add_output("data:geometry:cabin:crew_count:commercial", units="unitless")
 
         self.declare_partials("data:geometry:cabin:NPAX1", ["data:TLAR:NPAX"], method="fd")
         self.declare_partials(

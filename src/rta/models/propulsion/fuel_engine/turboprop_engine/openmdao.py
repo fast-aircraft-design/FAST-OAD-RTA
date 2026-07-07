@@ -43,7 +43,7 @@ class OMMLTPL1Wrapper(IOMPropulsionWrapper):
         component.add_input("data:propulsion:power_offtake", np.nan, units="W")
         component.add_input("data:propulsion:gearbox_eta", np.nan, units="unitless")
         component.add_input("data:geometry:propulsion:propeller:diameter", np.nan, units="m")
-        component.add_input("data:geometry:propulsion:engine:count", 2)
+        component.add_input("data:geometry:propulsion:engine:count", 2, units="unitless")
         # tuning factors
         component.add_input("tuning:propulsion:k_psfc", np.nan, units="unitless")
         component.add_input("tuning:propulsion:k_prop", np.nan, units="unitless")

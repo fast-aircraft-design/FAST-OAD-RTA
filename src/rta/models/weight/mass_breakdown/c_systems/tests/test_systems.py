@@ -41,8 +41,8 @@ def get_indep_var_comp(var_names):
 
 def test_ecs_weight():
     ivc = IndepVarComp()
-    ivc.add_output("data:geometry:cabin:NPAX1", val=75)
-    ivc.add_output("tuning:weight:systems:ECS:mass:k", val=1.0)
+    ivc.add_output("data:geometry:cabin:NPAX1", val=75, units="unitless")
+    ivc.add_output("tuning:weight:systems:ECS:mass:k", val=1.0, units="unitless")
     ivc.add_output("tuning:weight:systems:ECS:mass:offset", val=0.0, units="kg")
 
     problem = run_system(ECSWeight(), ivc)
@@ -80,7 +80,7 @@ def test_communication_system_from_cs25():
 
 def test_electric_system_weight():
     ivc = IndepVarComp()
-    ivc.add_output("data:geometry:cabin:NPAX1", val=75)
+    ivc.add_output("data:geometry:cabin:NPAX1", val=75, units="unitless")
     ivc.add_output("data:weight:aircraft:MTOW", val=23e3, units="kg")
     ivc.add_output(
         "tuning:weight:systems:electric_systems:electric_generation:mass:offset",
@@ -181,7 +181,7 @@ def test_navigation_system_weight():
 
 def test_APU_weight():
     ivc = IndepVarComp()
-    ivc.add_output("data:geometry:cabin:NPAX1", val=75)
+    ivc.add_output("data:geometry:cabin:NPAX1", val=75, units="unitless")
     ivc.add_output("tuning:weight:systems:auxiliary_power_unit:mass:k", val=1.0)
     ivc.add_output(
         "tuning:weight:systems:auxiliary_power_unit:mass:offset",

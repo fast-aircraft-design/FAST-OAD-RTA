@@ -40,7 +40,7 @@ class Cd0NacelleAndPylonsTP(om.ExplicitComponent):
             self.add_input(
                 "data:aerodynamics:aircraft:low_speed:unit_reynolds", val=np.nan, units="unitless"
             )
-            self.add_input("data:aerodynamics:aircraft:takeoff:mach", val=np.nan, units="unitless")
+            self.add_input("data:aerodynamics:aircraft:takeoff:mach", val=np.nan)
             self.add_output("data:aerodynamics:nacelles:low_speed:CD:CD0", units="unitless")
         else:
             self.add_input(

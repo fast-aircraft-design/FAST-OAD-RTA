@@ -156,7 +156,7 @@ def test_oswald_coefficient():
     def get_coeff(mach, *, low_speed_aero=False):
         ivc = get_indep_var_comp(input_list)
         if low_speed_aero:
-            ivc.add_output("data:aerodynamics:aircraft:takeoff:mach", mach, units="unitless")
+            ivc.add_output("data:aerodynamics:aircraft:takeoff:mach", mach)
         else:
             ivc.add_output("data:TLAR:cruise_mach", mach, units="unitless")
         problem = run_system(OswaldCoefficient(low_speed_aero=low_speed_aero), ivc)

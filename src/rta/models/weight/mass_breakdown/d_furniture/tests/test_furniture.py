@@ -59,7 +59,7 @@ def test_furnishing_weight():
 
 def test_oxygen_weight():
     ivc = IndepVarComp()
-    ivc.add_output("data:geometry:cabin:NPAX1", val=75)
+    ivc.add_output("data:geometry:cabin:NPAX1", val=75, units="unitless")
     ivc.add_output("tuning:weight:furniture:oxygen:mass:k", val=1.0)
     ivc.add_output("tuning:weight:furniture:oxygen:mass:offset", val=0.0, units="kg")
 
@@ -98,8 +98,8 @@ def test_insulation_weight():
 
 def test_crew_seat_weight():
     ivc = IndepVarComp()
-    ivc.add_output("data:geometry:cabin:crew_count:technical", val=2.0)
-    ivc.add_output("data:geometry:cabin:crew_count:commercial", val=2.0)
+    ivc.add_output("data:geometry:cabin:crew_count:technical", val=2.0, units="unitless")
+    ivc.add_output("data:geometry:cabin:crew_count:commercial", val=2.0, units="unitless")
 
     ivc.add_output("tuning:weight:furniture:seats_crew_accommodation:mass:k", val=1.0)
     ivc.add_output(
