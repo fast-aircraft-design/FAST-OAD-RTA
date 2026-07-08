@@ -35,7 +35,7 @@ class LightsWeight(om.ExplicitComponent):
         self.add_input("data:geometry:fuselage:maximum_height", val=np.nan, units="m")
         self.add_input("data:geometry:cabin:length", val=np.nan, units="m")
 
-        self.add_input("tuning:weight:furniture:cabin_lighting:mass:k", val=1.0)
+        self.add_input("tuning:weight:furniture:cabin_lighting:mass:k", val=1.0, units="unitless")
         self.add_input("tuning:weight:furniture:cabin_lighting:mass:offset", val=0.0, units="kg")
 
         self.add_output("data:weight:furniture:cabin_lighting:mass", units="kg")

@@ -38,51 +38,91 @@ class Cd0Total(om.ExplicitComponent):
         self.low_speed_aero = self.options["low_speed_aero"]
 
         self.add_input("data:geometry:aircraft:wetted_area", val=np.nan, units="m**2")
-        self.add_input("tuning:aerodynamics:aircraft:cruise:CD:parasite:k", val=np.nan)
+        self.add_input(
+            "tuning:aerodynamics:aircraft:high_speed:CD:parasite:k", val=np.nan, units="unitless"
+        )
 
         if self.low_speed_aero:
-            self.add_input("data:aerodynamics:wing:low_speed:CD0", shape_by_conn=True, val=np.nan)
             self.add_input(
-                "data:aerodynamics:fuselage:low_speed:CD0",
+                "data:aerodynamics:wing:low_speed:CD:CD0",
                 shape_by_conn=True,
                 val=np.nan,
+                units="unitless",
             )
-            self.add_input("data:aerodynamics:horizontal_tail:low_speed:CD0", val=np.nan)
-            self.add_input("data:aerodynamics:vertical_tail:low_speed:CD0", val=np.nan)
-            self.add_input("data:aerodynamics:nacelles:low_speed:CD0", val=np.nan)
+            self.add_input(
+                "data:aerodynamics:fuselage:low_speed:CD:CD0",
+                shape_by_conn=True,
+                val=np.nan,
+                units="unitless",
+            )
+            self.add_input(
+                "data:aerodynamics:horizontal_tail:low_speed:CD:CD0",
+                val=np.nan,
+                units="unitless",
+            )
+            self.add_input(
+                "data:aerodynamics:vertical_tail:low_speed:CD:CD0",
+                val=np.nan,
+                units="unitless",
+            )
+            self.add_input(
+                "data:aerodynamics:nacelles:low_speed:CD:CD0", val=np.nan, units="unitless"
+            )
 
             self.add_output(
-                "data:aerodynamics:aircraft:low_speed:CD0",
-                copy_shape="data:aerodynamics:wing:low_speed:CD0",
+                "data:aerodynamics:aircraft:low_speed:CD:CD0",
+                copy_shape="data:aerodynamics:wing:low_speed:CD:CD0",
+                units="unitless",
             )
         else:
-            self.add_input("data:aerodynamics:wing:cruise:CD0", shape_by_conn=True, val=np.nan)
-            self.add_input("data:aerodynamics:fuselage:cruise:CD0", shape_by_conn=True, val=np.nan)
-            self.add_input("data:aerodynamics:horizontal_tail:cruise:CD0", val=np.nan)
-            self.add_input("data:aerodynamics:vertical_tail:cruise:CD0", val=np.nan)
-            self.add_input("data:aerodynamics:nacelles:cruise:CD0", val=np.nan)
+            self.add_input(
+                "data:aerodynamics:wing:high_speed:CD:CD0",
+                shape_by_conn=True,
+                val=np.nan,
+                units="unitless",
+            )
+            self.add_input(
+                "data:aerodynamics:fuselage:high_speed:CD:CD0",
+                shape_by_conn=True,
+                val=np.nan,
+                units="unitless",
+            )
+            self.add_input(
+                "data:aerodynamics:horizontal_tail:high_speed:CD:CD0",
+                val=np.nan,
+                units="unitless",
+            )
+            self.add_input(
+                "data:aerodynamics:vertical_tail:high_speed:CD:CD0",
+                val=np.nan,
+                units="unitless",
+            )
+            self.add_input(
+                "data:aerodynamics:nacelles:high_speed:CD:CD0", val=np.nan, units="unitless"
+            )
             self.add_output(
-                "data:aerodynamics:aircraft:cruise:CD0",
-                copy_shape="data:aerodynamics:wing:cruise:CD0",
+                "data:aerodynamics:aircraft:high_speed:CD:CD0",
+                copy_shape="data:aerodynamics:wing:high_speed:CD:CD0",
+                units="unitless",
             )
 
         self.declare_partials("*", "*", method="fd")
 
     def compute(self, inputs, outputs, **kwargs):
         wet_area_total = inputs["data:geometry:aircraft:wetted_area"]
-        k_techno = inputs["tuning:aerodynamics:aircraft:cruise:CD:parasite:k"]
+        k_techno = inputs["tuning:aerodynamics:aircraft:high_speed:CD:parasite:k"]
         if self.low_speed_aero:
-            cd0_wing = inputs["data:aerodynamics:wing:low_speed:CD0"]
-            cd0_fus = inputs["data:aerodynamics:fuselage:low_speed:CD0"]
-            cd0_ht = inputs["data:aerodynamics:horizontal_tail:low_speed:CD0"]
-            cd0_vt = inputs["data:aerodynamics:vertical_tail:low_speed:CD0"]
-            cd0_nac = inputs["data:aerodynamics:nacelles:low_speed:CD0"]
+            cd0_wing = inputs["data:aerodynamics:wing:low_speed:CD:CD0"]
+            cd0_fus = inputs["data:aerodynamics:fuselage:low_speed:CD:CD0"]
+            cd0_ht = inputs["data:aerodynamics:horizontal_tail:low_speed:CD:CD0"]
+            cd0_vt = inputs["data:aerodynamics:vertical_tail:low_speed:CD:CD0"]
+            cd0_nac = inputs["data:aerodynamics:nacelles:low_speed:CD:CD0"]
         else:
-            cd0_wing = inputs["data:aerodynamics:wing:cruise:CD0"]
-            cd0_fus = inputs["data:aerodynamics:fuselage:cruise:CD0"]
-            cd0_ht = inputs["data:aerodynamics:horizontal_tail:cruise:CD0"]
-            cd0_vt = inputs["data:aerodynamics:vertical_tail:cruise:CD0"]
-            cd0_nac = inputs["data:aerodynamics:nacelles:cruise:CD0"]
+            cd0_wing = inputs["data:aerodynamics:wing:high_speed:CD:CD0"]
+            cd0_fus = inputs["data:aerodynamics:fuselage:high_speed:CD:CD0"]
+            cd0_ht = inputs["data:aerodynamics:horizontal_tail:high_speed:CD:CD0"]
+            cd0_vt = inputs["data:aerodynamics:vertical_tail:high_speed:CD:CD0"]
+            cd0_nac = inputs["data:aerodynamics:nacelles:high_speed:CD:CD0"]
 
         k_parasite = (
             -2.39 * pow(10, -12) * wet_area_total**3
@@ -95,6 +135,6 @@ class Cd0Total(om.ExplicitComponent):
         cd0_total = cd0_total_hs * (1.0 + k_parasite * k_techno)
 
         if self.low_speed_aero:
-            outputs["data:aerodynamics:aircraft:low_speed:CD0"] = cd0_total
+            outputs["data:aerodynamics:aircraft:low_speed:CD:CD0"] = cd0_total
         else:
-            outputs["data:aerodynamics:aircraft:cruise:CD0"] = cd0_total
+            outputs["data:aerodynamics:aircraft:high_speed:CD:CD0"] = cd0_total

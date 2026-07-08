@@ -70,7 +70,7 @@ def test_wing_wet_area():
 def test_fuselage_basic():
     ivc = IndepVarComp()
 
-    ivc.add_output("data:geometry:cabin:NPAX1", val=75)
+    ivc.add_output("data:geometry:cabin:NPAX1", val=75, units="unitless")
     ivc.add_output("data:geometry:fuselage:length", val=26.96, units="m")
     ivc.add_output("data:geometry:fuselage:maximum_width", val=2.79, units="m")
     ivc.add_output("data:geometry:fuselage:maximum_height", val=2.93, units="m")

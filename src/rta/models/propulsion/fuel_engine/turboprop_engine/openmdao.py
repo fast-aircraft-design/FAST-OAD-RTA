@@ -41,19 +41,19 @@ class OMMLTPL1Wrapper(IOMPropulsionWrapper):
     def setup(self, component: Component):
         component.add_input("data:propulsion:RTO_power", np.nan, units="W")
         component.add_input("data:propulsion:power_offtake", np.nan, units="W")
-        component.add_input("data:propulsion:gearbox_eta", np.nan)
+        component.add_input("data:propulsion:gearbox_eta", np.nan, units="unitless")
         component.add_input("data:geometry:propulsion:propeller:diameter", np.nan, units="m")
-        component.add_input("data:geometry:propulsion:engine:count", 2)
+        component.add_input("data:geometry:propulsion:engine:count", 2, units="unitless")
         # tuning factors
-        component.add_input("tuning:propulsion:k_psfc", np.nan)
-        component.add_input("tuning:propulsion:k_prop", np.nan)
+        component.add_input("tuning:propulsion:k_psfc", np.nan, units="unitless")
+        component.add_input("tuning:propulsion:k_prop", np.nan, units="unitless")
 
         # rating settings
-        component.add_input("settings:propulsion:ratings:RTO:k_gb", np.nan)
-        component.add_input("settings:propulsion:ratings:NTO:k_gb", np.nan)
-        component.add_input("settings:propulsion:ratings:MCL:k_gb", np.nan)
-        component.add_input("settings:propulsion:ratings:MCT:k_gb", np.nan)
-        component.add_input("settings:propulsion:ratings:MCR:k_gb", np.nan)
+        component.add_input("settings:propulsion:ratings:RTO:k_gb", np.nan, units="unitless")
+        component.add_input("settings:propulsion:ratings:NTO:k_gb", np.nan, units="unitless")
+        component.add_input("settings:propulsion:ratings:MCL:k_gb", np.nan, units="unitless")
+        component.add_input("settings:propulsion:ratings:MCT:k_gb", np.nan, units="unitless")
+        component.add_input("settings:propulsion:ratings:MCR:k_gb", np.nan, units="unitless")
 
     @staticmethod
     def get_model(inputs) -> IPropulsion:

@@ -281,13 +281,16 @@ def test_compute_cg_others():
 
 def test_max_cg_ratio():
     ivc = IndepVarComp()
-    ivc.add_output("data:weight:aircraft:operating_empty:CG:MAC_position", val=0.0013)
-    ivc.add_output("data:weight:aircraft:load_case_1:CG:MAC_position", val=0.0570)
-    ivc.add_output("data:weight:aircraft:load_case_2:CG:MAC_position", val=0.025)
-    ivc.add_output("data:weight:aircraft:load_case_3:CG:MAC_position", val=0.0362)
+    ivc.add_output(
+        "data:weight:aircraft:operating_empty:CG:MAC_position", val=0.0013, units="unitless"
+    )
+    ivc.add_output("data:weight:aircraft:load_case_1:CG:MAC_position", val=0.0570, units="unitless")
+    ivc.add_output("data:weight:aircraft:load_case_2:CG:MAC_position", val=0.025, units="unitless")
+    ivc.add_output("data:weight:aircraft:load_case_3:CG:MAC_position", val=0.0362, units="unitless")
     ivc.add_output(
         "settings:weight:aircraft:CG:aft:MAC_position:margin",
         val=0.05,
+        units="unitless",
     )
 
     problem = run_system(ComputeMaxCGratio(), ivc)

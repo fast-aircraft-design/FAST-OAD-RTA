@@ -34,8 +34,8 @@ def get_indep_var_comp(var_names):
 def test_compute_nacelle_weight():
     ivc = om.IndepVarComp()
     ivc.add_output("data:propulsion:RTO_power", val=2.05e6, units="W")
-    ivc.add_output("data:geometry:propulsion:engine:count", val=2)
-    ivc.add_output("tuning:weight:airframe:nacelle:mass:k", val=1.0)
+    ivc.add_output("data:geometry:propulsion:engine:count", val=2, units="unitless")
+    ivc.add_output("tuning:weight:airframe:nacelle:mass:k", val=1.0, units="unitless")
     ivc.add_output("tuning:weight:airframe:nacelle:mass:offset", val=0.0, units="kg")
 
     problem = run_system(NacellesWeight(), ivc)
@@ -81,13 +81,13 @@ def test_wing_weight():
 def test_turboprop_weight():
     ivc = om.IndepVarComp()
     ivc.add_output("data:propulsion:RTO_power", val=2047252, units="W")
-    ivc.add_output("data:geometry:propulsion:engine:count", val=2)
+    ivc.add_output("data:geometry:propulsion:engine:count", val=2, units="unitless")
     ivc.add_output("data:geometry:fuselage:length", val=26.962, units="m")
     ivc.add_output("data:geometry:propulsion:propeller:diameter", val=3.926, units="m")
-    ivc.add_output("data:geometry:propulsion:propeller:B", val=6)
-    ivc.add_output("tuning:weight:propulsion:engine:mass:k", val=1.0)
+    ivc.add_output("data:geometry:propulsion:propeller:B", val=6, units="unitless")
+    ivc.add_output("tuning:weight:propulsion:engine:mass:k", val=1.0, units="unitless")
     ivc.add_output("tuning:weight:propulsion:engine_controls_instrumentation:mass:k", val=1.0)
-    ivc.add_output("tuning:weight:propulsion:propeller:mass:k", val=1.0)
+    ivc.add_output("tuning:weight:propulsion:propeller:mass:k", val=1.0, units="unitless")
 
     ivc.add_output("data:propulsion:propeller:max_power", val=2239.7, units="kW")
 

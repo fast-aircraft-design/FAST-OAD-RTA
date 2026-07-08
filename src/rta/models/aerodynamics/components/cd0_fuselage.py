@@ -30,24 +30,36 @@ class Cd0Fuselage(om.ExplicitComponent):
     def setup(self):
         self.low_speed_aero = self.options["low_speed_aero"]
         if self.low_speed_aero:
-            self.add_input("data:aerodynamics:wing:low_speed:reynolds", val=np.nan)
+            self.add_input(
+                "data:aerodynamics:aircraft:low_speed:unit_reynolds", val=np.nan, units="unitless"
+            )
             self.add_input(
                 "data:aerodynamics:aircraft:low_speed:CL",
                 shape_by_conn=True,
                 val=np.nan,
+                units="unitless",
             )
             self.add_input("data:aerodynamics:aircraft:takeoff:mach", val=np.nan)
             self.add_output(
-                "data:aerodynamics:fuselage:low_speed:CD0",
+                "data:aerodynamics:fuselage:low_speed:CD:CD0",
                 copy_shape="data:aerodynamics:aircraft:low_speed:CL",
+                units="unitless",
             )
         else:
-            self.add_input("data:aerodynamics:wing:cruise:reynolds", val=np.nan)
-            self.add_input("data:aerodynamics:aircraft:cruise:CL", shape_by_conn=True, val=np.nan)
-            self.add_input("data:TLAR:cruise_mach", val=np.nan)
+            self.add_input(
+                "data:aerodynamics:aircraft:high_speed:unit_reynolds", val=np.nan, units="unitless"
+            )
+            self.add_input(
+                "data:aerodynamics:aircraft:high_speed:CL",
+                shape_by_conn=True,
+                val=np.nan,
+                units="unitless",
+            )
+            self.add_input("data:TLAR:cruise_mach", val=np.nan, units="unitless")
             self.add_output(
-                "data:aerodynamics:fuselage:cruise:CD0",
-                copy_shape="data:aerodynamics:aircraft:cruise:CL",
+                "data:aerodynamics:fuselage:high_speed:CD:CD0",
+                copy_shape="data:aerodynamics:aircraft:high_speed:CL",
+                units="unitless",
             )
 
         self.add_input("data:geometry:wing:area", val=np.nan, units="m**2")
@@ -67,11 +79,11 @@ class Cd0Fuselage(om.ExplicitComponent):
         if self.low_speed_aero:
             cl = inputs["data:aerodynamics:aircraft:low_speed:CL"]
             mach = inputs["data:aerodynamics:aircraft:takeoff:mach"]
-            reynolds = inputs["data:aerodynamics:wing:low_speed:reynolds"]
+            unit_reynolds = inputs["data:aerodynamics:aircraft:low_speed:unit_reynolds"]
         else:
-            cl = inputs["data:aerodynamics:aircraft:cruise:CL"]
+            cl = inputs["data:aerodynamics:aircraft:high_speed:CL"]
             mach = inputs["data:TLAR:cruise_mach"]
-            reynolds = inputs["data:aerodynamics:wing:cruise:reynolds"]
+            unit_reynolds = inputs["data:aerodynamics:aircraft:high_speed:unit_reynolds"]
 
         # Reference for deltas: Conceptual Aircraft Design: An Industrial Approach.
         # Authors: Ajoy Kumar Kundu, Mark A. Price, David Riordan Pag 493
@@ -79,7 +91,7 @@ class Cd0Fuselage(om.ExplicitComponent):
         delta_cf_bellyfairing = 0.2  # find formulas to estimate (cd0 should be around 15 dc)
 
         cf_fus_opt = 0.455 / (
-            (1 + 0.144 * mach**2) ** 0.65 * (np.log10(reynolds * fus_length)) ** 2.58
+            (1 + 0.144 * mach**2) ** 0.65 * (np.log10(unit_reynolds * fus_length)) ** 2.58
         )
 
         cf_fus = cf_fus_opt * (1 + delta_cf_karman + delta_cf_bellyfairing)
@@ -99,6 +111,6 @@ class Cd0Fuselage(om.ExplicitComponent):
         cd0_fus = cd0_friction_fus + cd0_upsweep_fus
 
         if self.low_speed_aero:
-            outputs["data:aerodynamics:fuselage:low_speed:CD0"] = cd0_fus
+            outputs["data:aerodynamics:fuselage:low_speed:CD:CD0"] = cd0_fus
         else:
-            outputs["data:aerodynamics:fuselage:cruise:CD0"] = cd0_fus
+            outputs["data:aerodynamics:fuselage:high_speed:CD:CD0"] = cd0_fus
