@@ -37,7 +37,7 @@ def get_indep_var_comp(var_names):
 
 def test_water_weight():
     ivc = IndepVarComp()
-    ivc.add_output("tuning:weight:furniture:water:mass:k", val=1.0)
+    ivc.add_output("tuning:weight:furniture:water:mass:k", val=1.0, units="unitless")
     ivc.add_output("tuning:weight:furniture:water:mass:offset", val=0.0, units="kg")
 
     problem = run_system(WaterWeight(), ivc)
@@ -49,7 +49,7 @@ def test_furnishing_weight():
     ivc = IndepVarComp()
     ivc.add_output("data:weight:aircraft:MTOW", val=23e3, units="kg")
 
-    ivc.add_output("tuning:weight:furniture:furnishing:mass:k", val=1.0)
+    ivc.add_output("tuning:weight:furniture:furnishing:mass:k", val=1.0, units="unitless")
     ivc.add_output("tuning:weight:furniture:furnishing:mass:offset", val=0.0, units="kg")
 
     problem = run_system(FurnishingWeight(), ivc)
@@ -60,7 +60,7 @@ def test_furnishing_weight():
 def test_oxygen_weight():
     ivc = IndepVarComp()
     ivc.add_output("data:geometry:cabin:NPAX1", val=75, units="unitless")
-    ivc.add_output("tuning:weight:furniture:oxygen:mass:k", val=1.0)
+    ivc.add_output("tuning:weight:furniture:oxygen:mass:k", val=1.0, units="unitless")
     ivc.add_output("tuning:weight:furniture:oxygen:mass:offset", val=0.0, units="kg")
 
     problem = run_system(OxygenWeight(), ivc)
@@ -73,7 +73,7 @@ def test_light_weight():
     ivc.add_output("data:geometry:fuselage:maximum_width", val=2.79, units="m")
     ivc.add_output("data:geometry:fuselage:maximum_height", val=2.933, units="m")
     ivc.add_output("data:geometry:cabin:length", val=21.839, units="m")
-    ivc.add_output("tuning:weight:furniture:cabin_lighting:mass:k", val=1.0)
+    ivc.add_output("tuning:weight:furniture:cabin_lighting:mass:k", val=1.0, units="unitless")
     ivc.add_output("tuning:weight:furniture:cabin_lighting:mass:offset", val=0.0, units="kg")
 
     problem = run_system(LightsWeight(), ivc)
@@ -88,7 +88,7 @@ def test_insulation_weight():
     ivc.add_output("data:geometry:fuselage:maximum_width", val=2.79, units="m")
     ivc.add_output("data:geometry:fuselage:maximum_height", val=2.933, units="m")
     ivc.add_output("data:geometry:cabin:length", val=21.839, units="m")
-    ivc.add_output("tuning:weight:furniture:insulation:mass:k", val=1.0)
+    ivc.add_output("tuning:weight:furniture:insulation:mass:k", val=1.0, units="unitless")
     ivc.add_output("tuning:weight:furniture:insulation:mass:offset", val=0.0, units="kg")
 
     problem = run_system(InsulationWeight(), ivc)
@@ -118,7 +118,7 @@ def test_crew_seat_weight():
 def test_interior_weight():
     ivc = IndepVarComp()
     ivc.add_output("data:weight:aircraft:MTOW", val=23e3, units="kg")
-    ivc.add_output("tuning:weight:furniture:interior_integration:mass:k", val=1.0)
+    ivc.add_output("tuning:weight:furniture:interior_integration:mass:k", val=1.0, units="unitless")
     ivc.add_output(
         "tuning:weight:furniture:interior_integration:mass:offset",
         val=0.0,

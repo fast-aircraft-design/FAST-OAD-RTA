@@ -84,7 +84,7 @@
           <y units="m" is_input="False">4.0264537346716605<!--Y-position of nacelle center--></y>
         </nacelle>
         <propeller>
-          <blades is_input="True">6.0</blades>
+          <B is_input="True">6.0</B>
           <diameter units="m" is_input="False">3.926226153997489</diameter>
         </propeller>
         <pylon>

@@ -52,7 +52,9 @@ def test_ecs_weight():
 
 def test_autoflight_weight():
     ivc = IndepVarComp()
-    ivc.add_output("tuning:weight:systems:automatic_flight_system:mass:k", val=1.0)
+    ivc.add_output(
+        "tuning:weight:systems:automatic_flight_system:mass:k", val=1.0, units="unitless"
+    )
     ivc.add_output(
         "tuning:weight:systems:automatic_flight_system:mass:offset",
         val=0.0,
@@ -70,7 +72,7 @@ def test_communication_system_from_cs25():
     ivc = IndepVarComp()
 
     ivc.add_output("data:TLAR:range", val=750, units="NM")
-    ivc.add_output("tuning:weight:systems:communications:mass:k", val=0.8)
+    ivc.add_output("tuning:weight:systems:communications:mass:k", val=0.8, units="unitless")
     ivc.add_output("tuning:weight:systems:communications:mass:offset", val=1.0, units="kg")
 
     problem = run_system(CommunicationSystemWeightLegacy(), ivc)
@@ -108,7 +110,7 @@ def test_electric_system_weight():
 
 def test_flight_furnishing_weight():
     ivc = IndepVarComp()
-    ivc.add_output("tuning:weight:systems:flight_furnishing:mass:k", val=1.0)
+    ivc.add_output("tuning:weight:systems:flight_furnishing:mass:k", val=1.0, units="unitless")
     ivc.add_output("tuning:weight:systems:flight_furnishing:mass:offset", val=0.0, units="kg")
 
     problem = run_system(FlightFurnishingWeight(), ivc)
@@ -120,7 +122,7 @@ def test_flight_furnishing_weight():
 
 def test_fire_system_weight():
     ivc = IndepVarComp()
-    ivc.add_output("tuning:weight:systems:fire_protection:mass:k", val=1.0)
+    ivc.add_output("tuning:weight:systems:fire_protection:mass:k", val=1.0, units="unitless")
     ivc.add_output("tuning:weight:systems:fire_protection:mass:offset", val=0.0, units="kg")
 
     problem = run_system(FireSystemWeight(), ivc)
@@ -131,7 +133,7 @@ def test_fire_system_weight():
 def test_flight_control_weight():
     ivc = IndepVarComp()
     ivc.add_output("data:weight:aircraft:MTOW", val=23e3, units="kg")
-    ivc.add_output("tuning:weight:systems:flight_controls:mass:k", val=1.0)
+    ivc.add_output("tuning:weight:systems:flight_controls:mass:k", val=1.0, units="unitless")
     ivc.add_output("tuning:weight:systems:flight_controls:mass:offset", val=0.0, units="kg")
 
     problem = run_system(FlightControlsSystemWeight(), ivc)
@@ -142,7 +144,7 @@ def test_flight_control_weight():
 def test_hydraulic_weight():
     ivc = IndepVarComp()
     ivc.add_output("data:weight:aircraft:MTOW", val=23e3, units="kg")
-    ivc.add_output("tuning:weight:systems:hydraulic_systems:mass:k", val=1.0)
+    ivc.add_output("tuning:weight:systems:hydraulic_systems:mass:k", val=1.0, units="unitless")
     ivc.add_output("tuning:weight:systems:hydraulic_systems:mass:offset", val=0.0, units="kg")
 
     problem = run_system(HydraulicPowerSystemWeight(), ivc)
@@ -159,7 +161,7 @@ def test_de_ice_weight():
     ivc.add_output("data:geometry:wing:span", val=26.8, units="m")
     ivc.add_output("data:geometry:horizontal_tail:sweep_0", val=9.3, units="deg")
     ivc.add_output("data:geometry:horizontal_tail:span", val=6.1, units="m")
-    ivc.add_output("tuning:weight:systems:de-icing:mass:k", val=1.0)
+    ivc.add_output("tuning:weight:systems:de-icing:mass:k", val=1.0, units="unitless")
     ivc.add_output("tuning:weight:systems:de-icing:mass:offset", val=0.0, units="kg")
 
     problem = run_system(DeIceSystemWeight(), ivc)
@@ -171,7 +173,7 @@ def test_navigation_system_weight():
     ivc = IndepVarComp()
     ivc.add_output("data:geometry:fuselage:length", val=27, units="m")
     ivc.add_output("data:geometry:wing:b_50", val=26.8, units="m")
-    ivc.add_output("tuning:weight:systems:navigation:mass:k", val=1.0)
+    ivc.add_output("tuning:weight:systems:navigation:mass:k", val=1.0, units="unitless")
     ivc.add_output("tuning:weight:systems:navigation:mass:offset", val=0.0, units="kg")
 
     problem = run_system(NavigationSystemWeight(), ivc)
@@ -182,7 +184,7 @@ def test_navigation_system_weight():
 def test_APU_weight():
     ivc = IndepVarComp()
     ivc.add_output("data:geometry:cabin:NPAX1", val=75, units="unitless")
-    ivc.add_output("tuning:weight:systems:auxiliary_power_unit:mass:k", val=1.0)
+    ivc.add_output("tuning:weight:systems:auxiliary_power_unit:mass:k", val=1.0, units="unitless")
     ivc.add_output(
         "tuning:weight:systems:auxiliary_power_unit:mass:offset",
         val=0.0,
