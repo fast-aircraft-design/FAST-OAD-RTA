@@ -53,6 +53,6 @@ def test_gearbox_compute_single_point_forward():
 
     gearbox.compute_single_point_forward(fp)
 
-    # The expected results is: 550000 * 0.90 = 500000
+    # The expected results is: 555555.5 * 0.90 = 500000
     expected_power = 555555.5 * 0.90
     assert fp.gearbox_shaft_power == pytest.approx(expected_power, rel=1e-6)

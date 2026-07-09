@@ -178,12 +178,12 @@ def test_propulsion_system_module_compute_list_of_flight_points_forward():
     )
 
     fp1 = FlightPoint()
-    fp1.thrust_rate = 0.5  # N
+    fp1.thrust_rate = 0.5  # unitless
     fp1.true_airspeed = 200.0  # m/s
     fp1.thrust_is_regulated = 0  # unitless
 
     fp2 = FlightPoint()
-    fp2.thrust_rate = 0.93  # N
+    fp2.thrust_rate = 0.93  # unitless
     fp2.true_airspeed = 250.0  # m/s
     fp2.thrust_is_regulated = 0  # unitless
 
@@ -225,7 +225,7 @@ def test_propulsion_system_module_compute_list_of_flight_points_forward():
 
 
 def test_propulsion_system_module_compute_list_of_flight_points_mix():
-    """Test compute_flight_points() with a list of FlightPoints in backward mode."""
+    """Test compute_flight_points() with a list of FlightPoints in mixed backward/forward modes."""
     propeller = PropellerComponent()
     gearbox = GearboxComponent()
 
@@ -245,7 +245,7 @@ def test_propulsion_system_module_compute_list_of_flight_points_mix():
     fp1.thrust_is_regulated = 1  # unitless
 
     fp2 = FlightPoint()
-    fp2.thrust_rate = 0.93  # N
+    fp2.thrust_rate = 0.93  # unitless
     fp2.true_airspeed = 250.0  # m/s
     fp2.thrust_is_regulated = 0  # unitless
 
