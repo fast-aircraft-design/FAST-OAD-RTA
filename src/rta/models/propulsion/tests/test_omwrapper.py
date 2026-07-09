@@ -27,6 +27,7 @@ def test_PropulsionSystemOMComponent():
 
     true_airspeed = [15, 30, 60, 90, 120]
     thrusts = [10e3, 7.5e3, 5e3, 2.5e3, 1.0e3]
+    thrust_is_regulated = [1, 1, 1, 1, 1]
 
     propeller_efficiency = 0.85
     gearbox_efficiency = 0.95
@@ -40,6 +41,7 @@ def test_PropulsionSystemOMComponent():
 
     ivc.add_output("data:propulsion:true_airspeed", true_airspeed, units="m/s")
     ivc.add_output("data:propulsion:thrust", thrusts, units="N")
+    ivc.add_output("data:propulsion:thrust_is_regulated", thrust_is_regulated, units="unitless")
 
     problem = run_system(engine, ivc)
 

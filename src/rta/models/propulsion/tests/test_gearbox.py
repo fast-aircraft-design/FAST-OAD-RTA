@@ -18,16 +18,14 @@ power transmission calculations.
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import numpy as np
-import pandas as pd
 import pytest
 from fastoad.model_base.flight_point import FlightPoint
 
 from rta.models.propulsion.tests.dummy_components.gearbox import GearboxComponent
 
 
-def test_gearbox_compute_perfo_single_flight_point():
-    """Test compute_performances() with a single FlightPoint."""
+def test_gearbox_compute_single_point_backward():
+    """Test single_point_backward() with a single FlightPoint."""
     # Add the input field for gearbox
     FlightPoint.add_field(name="gearbox_shaft_power", unit="W")
     gearbox = GearboxComponent()
@@ -36,32 +34,25 @@ def test_gearbox_compute_perfo_single_flight_point():
     fp = FlightPoint()
     fp.gearbox_shaft_power = 500000.0  # W
 
-    gearbox.compute_performances(fp)
+    gearbox.compute_single_point_backward(fp)
 
-    # The expected results is: 500000 / 0.90 = 550000
+    # The expected results is: 500000 / 0.90 = 555555.5
     expected_power = 500000.0 / 0.90
     assert fp.TPshaft_power == pytest.approx(expected_power, rel=1e-6)
 
 
-def test_gearbox_compute_perfo_list_of_flight_points():
-    """Test compute_performances() with a list of FlightPoints."""
-    # Add the input field for gearbox
+def test_gearbox_compute_single_point_forward():
+    """Test single_point_forward() with a single FlightPoint."""
+
     FlightPoint.add_field(name="gearbox_shaft_power", unit="W")
     gearbox = GearboxComponent()
-    gearbox.input_parameters["data:propulsion:gearbox:efficiency"].value = 0.95
+    gearbox.input_parameters["data:propulsion:gearbox:efficiency"].value = 0.90
 
-    fp1 = FlightPoint()
-    fp1.gearbox_shaft_power = 1000000.0
+    fp = FlightPoint()
+    fp.TPshaft_power = 555555.5  # W
 
-    fp2 = FlightPoint()
-    fp2.gearbox_shaft_power = 2000000.0
+    gearbox.compute_single_point_forward(fp)
 
-    flight_points = pd.DataFrame([fp1, fp2])
-    gearbox.compute_performances(flight_points)
-
-    # First result: 1000000 / 0.95
-    expected_power1 = 1000000.0 / 0.95
-    # Second result: 2000000 / 0.95
-    expected_power2 = 2000000.0 / 0.95
-    expected = [expected_power1, expected_power2]
-    assert np.allclose(flight_points.TPshaft_power.to_list(), expected, rtol=1e-6)
+    # The expected results is: 550000 * 0.90 = 500000
+    expected_power = 555555.5 * 0.90
+    assert fp.gearbox_shaft_power == pytest.approx(expected_power, rel=1e-6)

@@ -20,6 +20,7 @@ for integration with FAST-OAD's OpenMDAO-based workflow.
 
 import numpy as np
 import openmdao.api as om
+import pandas as pd
 from fastoad.model_base import FlightPoint
 from fastoad.model_base.propulsion import (
     FuelEngineSet,
@@ -121,6 +122,9 @@ class PropulsionSystemOMComponent(om.ExplicitComponent):
         self.add_input("data:propulsion:true_airspeed", np.nan, units="m/s", shape_by_conn=True)
         self.add_input("data:propulsion:thrust", np.nan, units="N", shape_by_conn=True)
         self.add_input(
+            "data:propulsion:thrust_is_regulated", np.nan, units="unitless", shape_by_conn=True
+        )
+        self.add_input(
             "data:propulsion:engine_count",
             val=np.nan,
         )
@@ -139,10 +143,19 @@ class PropulsionSystemOMComponent(om.ExplicitComponent):
     def compute(self, inputs, outputs, discrete_inputs=None, discrete_outputs=None):
         engine_set = self.get_wrapper().get_model(inputs)
 
-        airspeed = inputs["data:propulsion:true_airspeed"]
-        thrust = inputs["data:propulsion:thrust"]
+        flight_points = []
+        for airspeed, thrust, thrust_is_regulated in zip(
+            inputs["data:propulsion:true_airspeed"],
+            inputs["data:propulsion:thrust"],
+            inputs["data:propulsion:thrust_is_regulated"],
+        ):
+            flight_points.append(
+                FlightPoint(
+                    true_airspeed=airspeed, thrust=thrust, thrust_is_regulated=thrust_is_regulated
+                )
+            )
 
-        flight_points = FlightPoint(true_airspeed=airspeed, thrust=thrust)
+        flight_points = pd.DataFrame(flight_points)
 
         engine_set.compute_flight_points(flight_points)
 
