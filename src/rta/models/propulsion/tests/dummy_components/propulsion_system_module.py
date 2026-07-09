@@ -61,6 +61,7 @@ class PropulsionSystemModule(PropulsionSystem):
         self.propeller = propeller
         self.gearbox = gearbox
         self.PSFC = 0.250  # kg/kWh
+        self.TPshaft_power_max = 20  # MW
 
     def get_consumed_mass(self, flight_point: FlightPoint, time_step: float) -> float:
         """Definition is mandatory but it is not used in this exemple"""
@@ -68,41 +69,102 @@ class PropulsionSystemModule(PropulsionSystem):
 
     def compute_flight_points(self, flight_points: FlightPoint | pd.DataFrame):
         """
-        Compute propulsion performance for flight point(s).
+        Compute the performance of the propulsion system for given flight point(s).
 
-        This method orchestrates the computation chain:
-        1. Call propeller compute_performances to compute gearbox_shaft_power
-        2. Call gearbox compute_performances to compute TPshaft_power
-        3. Calculate fuel flow as PSFC * TPshaft_power
-        4. Calculate SFC as fuel_flow / thrust
+        This method handles both single FlightPoint instances and lists of
+        FlightPoint instances. It delegates the actual computation to the
+        compute_flight_point() method.
 
         Args:
-            flight_points: A FlightPoint instance or DataFrame of flight points.
+            flight_points: A FlightPoint or list of FlightPoint to compute
+                          performance for.
+        """
+
+        if isinstance(flight_points, pd.DataFrame):
+            # Default inefficient but functional way of handling dataframe.
+            # User should redefine the method if relying heavily on dataframe,
+            # which is not the default case
+            for idx in flight_points.index:
+                fp = FlightPoint.create(flight_points.iloc[idx])
+                self.compute_flight_point(fp)
+                flight_points.iloc[[idx]] = pd.DataFrame([fp])
+        else:
+            self.compute_flight_point(flight_points)
+
+    def compute_flight_point(self, flight_point: FlightPoint):
+        """
+        Compute propulsion performance for a single flight point.
+
+        This method orchestrates the computation chain.
+        In backward mode
+            1. Call propeller compute_single_point_backward to compute gearbox_shaft_power
+            2. Call gearbox compute_single_point_backward to compute TPshaft_power
+            3. Calculate fuel flow as PSFC * TPshaft_power
+            4. Calculate SFC as fuel_flow / thrust
+        In forward mode
+            1. Calculate the gas turbine power at throttle ratio
+            2. Calculate fuel flow as PSFC * TPshaft_power
+            3. Calculate SFC as fuel_flow / thrust
+            4. Call gearbox compute_single_point_forward to compute gearbox_shaft_power
+            5. Call propeller compute_single_point_forward to compute thrust
+
+        Args:
+            flight_point: A FlightPoint instance.
 
         Returns:
-            The same FlightPoint(s) with computed outputs filled in:
+            The same FlightPoint with computed outputs filled in:
                 - psfc: Specific fuel consumption [kg/W/s]
                 - thrust: Thrust [N] (from input flight point)
                 - sfc: Specific fuel consumption [kg/N/s]
         """
 
-        # Step 1: Call propeller compute_perfo first
-        # This computes gearbox_shaft_power from thrust and true_airspeed
-        self.propeller.compute_performances(flight_points)
+        if flight_point.thrust_is_regulated:
+            # Step 1: Call propeller compute_single_point_backward first
+            # This computes gearbox_shaft_power from thrust and true_airspeed
+            self.propeller.compute_single_point_backward(flight_point)
 
-        # Step 2: Call gearbox compute_perfo
-        # This computes TPshaft_power from gearbox_shaft_power
-        self.gearbox.compute_performances(flight_points)
+            # Step 2: Call gearbox compute_single_point_backward
+            # This computes TPshaft_power from gearbox_shaft_power
+            self.gearbox.compute_single_point_backward(flight_point)
 
-        # Step 3: Calculate the fuel flow as: fuel_flow = PSFC * TPshaft_power
-        psfc_in_kg_per_w_s = self.PSFC / (1000.0 * 3600.0)  # kg/W/s
+            # Step 3: Calculate the fuel flow as: fuel_flow = PSFC * TPshaft_power
+            psfc_in_kg_per_w_s = self.PSFC / (1000.0 * 3600.0)  # kg/W/s
 
-        # Fuel flow in kg/s
-        fuel_flow = psfc_in_kg_per_w_s * flight_points.TPshaft_power
+            # Fuel flow in kg/s
+            fuel_flow = psfc_in_kg_per_w_s * flight_point.TPshaft_power
 
-        # Step 4: Calculate SFC [kg/N/s]
-        sfc = fuel_flow / flight_points.thrust
+            # Step 4: Calculate SFC [kg/N/s]
+            sfc = fuel_flow / flight_point.thrust
 
-        # Store results in flight point
-        flight_points.psfc = psfc_in_kg_per_w_s  # kg/W/s
-        flight_points.sfc = sfc  # kg/N/s
+            # Store results in flight point
+            flight_point.psfc = psfc_in_kg_per_w_s  # kg/W/s
+            flight_point.sfc = sfc  # kg/N/s
+
+            # Step 5: Calculate the throttle ratio, stored in the thrust rate
+            flight_point.thrust_rate = flight_point.TPshaft_power / (self.TPshaft_power_max * 1e6)
+
+        else:
+            # Step 1: Get the power available on the gas turbine first.
+            # Thrust rate acts here as a throttle ratio.
+            flight_point.TPshaft_power = self.TPshaft_power_max * 1e6 * flight_point.thrust_rate
+
+            # Step 2: Calculate the fuel flow as: fuel_flow = PSFC * TPshaft_power
+            psfc_in_kg_per_w_s = self.PSFC / (1000.0 * 3600.0)  # kg/W/s
+
+            # Fuel flow in kg/s
+            fuel_flow = psfc_in_kg_per_w_s * flight_point.TPshaft_power
+
+            # Step 3: Call the gearbox compute_single_point_forward
+            # This computes gearbox_shaft_power from TPshaft_power
+            self.gearbox.compute_single_point_forward(flight_point)
+
+            # Step 4: Finally, call the propeller compute_single_point_forward
+            # This computes thrust from gearbox_shaft_power and velocity
+            self.propeller.compute_single_point_forward(flight_point)
+
+            # Step 5: Calculate SFC [kg/N/s]
+            sfc = fuel_flow / flight_point.thrust
+
+            # Store results in flight point
+            flight_point.psfc = psfc_in_kg_per_w_s  # kg/W/s
+            flight_point.sfc = sfc  # kg/N/s

@@ -24,7 +24,6 @@ from copy import deepcopy
 from dataclasses import dataclass
 from typing import ClassVar
 
-import pandas as pd
 from fastoad.model_base.flight_point import FlightPoint, _FieldDescriptor
 from fastoad.openmdao.variables import VariableList
 from openmdao.core.component import Component
@@ -180,39 +179,10 @@ class AbstractPropulsiveComponent(ABC):
                 f" Please ensure units consistency between input and output fields."
             )
 
-    def compute_performances(self, flight_point: FlightPoint | pd.DataFrame):
-        """
-        Compute the performance of the component for given flight point(s).
-
-        This method handles both single FlightPoint instances and lists of
-        FlightPoint instances. It delegates the actual computation to the
-        compute_single_point() method which must be implemented by subclasses.
-
-        Args:
-            flight_point: A FlightPoint or list of FlightPoint to compute
-                          performance for.
-
-
-        Raises:
-            NotImplementedError: If the subclass has not implemented
-                                 compute_single_point().
-        """
-
-        if isinstance(flight_point, pd.DataFrame):
-            # Default inefficient but functional way of handling dataframe.
-            # User should redefine the method if relying heavily on dataframe,
-            # which is not the default case
-            for idx in flight_point.index:
-                fp = FlightPoint.create(flight_point.iloc[idx])
-                self.compute_single_point(fp)
-                flight_point.iloc[[idx]] = pd.DataFrame([fp])
-        else:
-            self.compute_single_point(flight_point)
-
     @abstractmethod
-    def compute_single_point(self, flight_point: FlightPoint) -> FlightPoint:
+    def compute_single_point_backward(self, flight_point: FlightPoint) -> FlightPoint:
         """
-        Compute performance for a single flight point.
+        Compute performance for a single flight point when thrust is regulated.
 
         Subclasses must override this method with their specific calculations.
         This method receives a FlightPoint with input values populated and
@@ -228,7 +198,29 @@ class AbstractPropulsiveComponent(ABC):
             NotImplementedError: If the subclass has not implemented this method.
         """
         raise NotImplementedError(
-            f"Subclass {self.__class__.__name__} must implement compute_single_point()"
+            f"Subclass {self.__class__.__name__} must implement compute_single_point_backward()"
+        )
+
+    @abstractmethod
+    def compute_single_point_forward(self, flight_point: FlightPoint) -> FlightPoint:
+        """
+        Compute performance for a single flight point when thrust is manual.
+
+        Subclasses must override this method with their specific calculations.
+        This method receives a FlightPoint with input values populated and
+        must return the same FlightPoint with output values computed and filled in.
+
+        Args:
+            flight_point: A single FlightPoint instance with input values set.
+
+        Returns:
+            The FlightPoint with computed output values.
+
+        Raises:
+            NotImplementedError: If the subclass has not implemented this method.
+        """
+        raise NotImplementedError(
+            f"Subclass {self.__class__.__name__} must implement compute_single_point_forward()"
         )
 
     def update_input_parameters(self, inputs: DefaultVector):

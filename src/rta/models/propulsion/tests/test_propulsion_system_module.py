@@ -69,6 +69,7 @@ def test_propulsion_system_module_compute_single_flight_point():
     fp = FlightPoint()
     fp.thrust = 50000.0  # N
     fp.true_airspeed = 200.0  # m/s
+    fp.thrust_is_regulated = 1
 
     module.compute_flight_points(fp)
 
@@ -87,14 +88,18 @@ def test_propulsion_system_module_compute_single_flight_point():
     # Step 4: SFC = fuel_flow / thrust
     expected_sfc = expected_fuel_flow / 50000.0
 
+    # Step 5: Throttle ratio
+    expected_thrust_rate = expected_tpshaft_power / 20e6
+
     assert fp.gearbox_shaft_power == pytest.approx(expected_gearbox_shaft_power, rel=1e-6)
     assert fp.TPshaft_power == pytest.approx(expected_tpshaft_power, rel=1e-6)
     assert fp.psfc == pytest.approx(psfc_kg_per_w_s, rel=1e-6)
     assert fp.sfc == pytest.approx(expected_sfc, rel=1e-6)
+    assert fp.thrust_rate == pytest.approx(expected_thrust_rate, rel=1e-6)
 
 
 def test_propulsion_system_module_compute_list_of_flight_points():
-    """Test compute_flight_points() with a list of FlightPoints."""
+    """Test compute_flight_points() with a list of FlightPoints in backward mode."""
     propeller = PropellerComponent()
     gearbox = GearboxComponent()
 
@@ -111,10 +116,12 @@ def test_propulsion_system_module_compute_list_of_flight_points():
     fp1 = FlightPoint()
     fp1.thrust = 50000.0  # N
     fp1.true_airspeed = 200.0  # m/s
+    fp1.thrust_is_regulated = 1  # unitless
 
     fp2 = FlightPoint()
     fp2.thrust = 60000.0  # N
     fp2.true_airspeed = 250.0  # m/s
+    fp2.thrust_is_regulated = 1  # unitless
 
     flight_points = pd.DataFrame([fp1, fp2])
     module.compute_flight_points(flight_points)
@@ -128,6 +135,8 @@ def test_propulsion_system_module_compute_list_of_flight_points():
     expected_fuel_flow1 = psfc_kg_per_w_s * expected_tpshaft_power1
     # SFC
     expected_sfc1 = expected_fuel_flow1 / 50000.0
+    # Throttle ratio
+    expected_thrust_rate1 = expected_tpshaft_power1 / 20e6
 
     # Second flight point
     expected_gearbox_shaft_power2 = (60000.0 * 250.0) / 0.85
@@ -137,13 +146,122 @@ def test_propulsion_system_module_compute_list_of_flight_points():
     expected_fuel_flow2 = psfc_kg_per_w_s * expected_tpshaft_power2
     # SFC
     expected_sfc2 = expected_fuel_flow2 / 60000.0
+    # Throttle ratio
+    expected_thrust_rate2 = expected_tpshaft_power2 / 20e6
 
     expected_gearbox_shaft_power = [expected_gearbox_shaft_power1, expected_gearbox_shaft_power2]
     expected_tpshaft_power = [expected_tpshaft_power1, expected_tpshaft_power2]
     expected_sfc = [expected_sfc1, expected_sfc2]
+    expected_thrust_rate = [expected_thrust_rate1, expected_thrust_rate2]
 
     assert np.allclose(
         expected_gearbox_shaft_power, flight_points.gearbox_shaft_power.to_list(), rtol=1e-6
     )
     assert np.allclose(expected_tpshaft_power, flight_points.TPshaft_power.to_list(), rtol=1e-6)
     assert np.allclose(expected_sfc, flight_points.sfc.to_list(), rtol=1e-6)
+    assert np.allclose(expected_thrust_rate, flight_points.thrust_rate.to_list(), rtol=1e-6)
+
+
+def test_propulsion_system_module_compute_list_of_flight_points_forward():
+    """Test compute_flight_points() with a list of FlightPoints in forward mode."""
+    propeller = PropellerComponent()
+    gearbox = GearboxComponent()
+
+    # Set propeller efficiency to 0.85
+    propeller.input_parameters["data:propulsion:propeller:efficiency"].value = 0.85
+    # Set gearbox efficiency to 0.90
+    gearbox.input_parameters["data:propulsion:gearbox:efficiency"].value = 0.90
+
+    module = PropulsionSystemModule(
+        propeller=propeller,
+        gearbox=gearbox,
+    )
+
+    fp1 = FlightPoint()
+    fp1.thrust_rate = 0.5  # unitless
+    fp1.true_airspeed = 200.0  # m/s
+    fp1.thrust_is_regulated = 0  # unitless
+
+    fp2 = FlightPoint()
+    fp2.thrust_rate = 0.93  # unitless
+    fp2.true_airspeed = 250.0  # m/s
+    fp2.thrust_is_regulated = 0  # unitless
+
+    flight_points = pd.DataFrame([fp1, fp2])
+    module.compute_flight_points(flight_points)
+
+    # First flight point
+    expected_tpshaft_power1 = 20e6 * 0.5
+    expected_gearbox_shaft_power1 = expected_tpshaft_power1 * 0.90
+    expected_thrust1 = expected_gearbox_shaft_power1 * 0.85 / 200
+
+    # Fuel flow
+    psfc_kg_per_w_s = 0.250 / (1000.0 * 3600.0)
+    expected_fuel_flow1 = psfc_kg_per_w_s * expected_tpshaft_power1
+    # SFC
+    expected_sfc1 = expected_fuel_flow1 / expected_thrust1
+
+    # Second flight point
+    expected_tpshaft_power2 = 20e6 * 0.93
+    expected_gearbox_shaft_power2 = expected_tpshaft_power2 * 0.90
+    expected_thrust2 = expected_gearbox_shaft_power2 * 0.85 / 250.0
+
+    # Fuel flow
+    expected_fuel_flow2 = psfc_kg_per_w_s * expected_tpshaft_power2
+    # SFC
+    expected_sfc2 = expected_fuel_flow2 / expected_thrust2
+
+    expected_gearbox_shaft_power = [expected_gearbox_shaft_power1, expected_gearbox_shaft_power2]
+    expected_tpshaft_power = [expected_tpshaft_power1, expected_tpshaft_power2]
+    expected_sfc = [expected_sfc1, expected_sfc2]
+    expected_thrust = [expected_thrust1, expected_thrust2]
+
+    assert np.allclose(
+        expected_gearbox_shaft_power, flight_points.gearbox_shaft_power.to_list(), rtol=1e-6
+    )
+    assert np.allclose(expected_tpshaft_power, flight_points.TPshaft_power.to_list(), rtol=1e-6)
+    assert np.allclose(expected_sfc, flight_points.sfc.to_list(), rtol=1e-6)
+    assert np.allclose(expected_thrust, flight_points.thrust.to_list(), rtol=1e-6)
+
+
+def test_propulsion_system_module_compute_list_of_flight_points_mix():
+    """Test compute_flight_points() with a list of FlightPoints in mixed backward/forward modes."""
+    propeller = PropellerComponent()
+    gearbox = GearboxComponent()
+
+    # Set propeller efficiency to 0.85
+    propeller.input_parameters["data:propulsion:propeller:efficiency"].value = 0.85
+    # Set gearbox efficiency to 0.90
+    gearbox.input_parameters["data:propulsion:gearbox:efficiency"].value = 0.90
+
+    module = PropulsionSystemModule(
+        propeller=propeller,
+        gearbox=gearbox,
+    )
+
+    fp1 = FlightPoint()
+    fp1.thrust = 50000.0  # N
+    fp1.true_airspeed = 200.0  # m/s
+    fp1.thrust_is_regulated = 1  # unitless
+
+    fp2 = FlightPoint()
+    fp2.thrust_rate = 0.93  # unitless
+    fp2.true_airspeed = 250.0  # m/s
+    fp2.thrust_is_regulated = 0  # unitless
+
+    flight_points = pd.DataFrame([fp1, fp2])
+    module.compute_flight_points(flight_points)
+
+    expected_gearbox_shaft_power = [11764705.8, 16740000.0]
+    expected_tpshaft_power = [13071895.4, 18600000.0]
+    expected_sfc = [1.815541e-5, 2.269426e-5]
+    expected_thrust = [50000.0, 56916.0]
+    expected_thrust_rate = [0.6535948, 0.93]
+
+    assert np.allclose(
+        expected_gearbox_shaft_power, flight_points.gearbox_shaft_power.to_list(), rtol=1e-6
+    )
+    assert np.allclose(expected_tpshaft_power, flight_points.TPshaft_power.to_list(), rtol=1e-6)
+    assert np.allclose(expected_sfc, flight_points.sfc.to_list(), rtol=1e-6)
+    assert np.allclose(expected_thrust, flight_points.thrust.to_list(), rtol=1e-6)
+    assert np.allclose(expected_thrust_rate, flight_points.thrust_rate.to_list(), rtol=1e-6)
