@@ -7,7 +7,7 @@
 [![image](https://img.shields.io/pypi/pyversions/fast-oad-rta.svg)](https://pypi.python.org/pypi/fast-oad-rta)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 
-![tests](https://github.com/fast-aircraft-design/RTA/actions/workflows/test.yml/badge.svg)
+![tests](https://github.com/fast-aircraft-design/FAST-OAD-RTA/actions/workflows/test.yml/badge.svg)
 [![codecov](https://codecov.io/gh/fast-aircraft-design/RTA/graph/badge.svg?token=I9Z8KXN112)](https://codecov.io/gh/fast-aircraft-design/RTA)
 
 
