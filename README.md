@@ -1,5 +1,13 @@
+<p align="center">
+  <img src="https://github.com/fast-aircraft-design/FAST-OAD-RTA/blob/master/docs/img/FAST_OAD_logo2.jpg?raw=true" alt="FAST-OAD logo" width="600">
+</p>
+
 # FAST-OAD plugin for Regional Transport Aircraft (RTA)
-![tests](https://github.com/fast-aircraft-design/RTA/actions/workflows/test.yml/badge.svg)
+[![image](https://img.shields.io/pypi/v/fast-oad-rta.svg)](https://pypi.python.org/pypi/fast-oad-rta)
+[![image](https://img.shields.io/pypi/pyversions/fast-oad-rta.svg)](https://pypi.python.org/pypi/fast-oad-rta)
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+
+![tests](https://github.com/fast-aircraft-design/FAST-OAD-RTA/actions/workflows/test.yml/badge.svg)
 [![codecov](https://codecov.io/gh/fast-aircraft-design/RTA/graph/badge.svg?token=I9Z8KXN112)](https://codecov.io/gh/fast-aircraft-design/RTA)
 
 
@@ -22,9 +30,13 @@ It is assumed that you know how to use [Git](https://git-scm.com),
 
 For a FAST-OAD user installation (when FAST-OAD has been installed with pip), the RTA plug-in can be installed in you python environnment using:
 ```bash
+pip install fast-oad-rta
+```
+or 
+```bash
 pip install git+https://github.com/fast-aircraft-design/RTA.git@master
 ```
-This will install the lastest RTA version based on github master branch.
+The latter will install the latest RTA version based on github master branch.
 
 If you are using poetry to manage your python environment, the following command will tell poetry to add RTA to your dependencies:
 ```bash
@@ -94,7 +106,7 @@ The list of active submodels with this plugin is given below:
 
 ## Developer installation
 
-This repository is designed to use [Poetry](https://python-poetry.org) (version 1.8.3 or above)
+This repository is designed to use [Poetry](https://python-poetry.org) (version 2.0.0 or above)
 for managing the development environment.
 Instructions below assume you have it already installed. You may adapt them if you don't 
 want to use Poetry.
