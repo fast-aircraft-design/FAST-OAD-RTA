@@ -1,13 +1,11 @@
 """
 Tests for the AbstractPropulsiveComponent base class.
 
-This module tests the functionality of the AbstractPropulsiveComponent
-including FlightPoint field expansion, compute_performances() method, and
-VariableList updates.
+This module tests the functionality of the AbstractPropulsiveComponent including FlightPoint
+field expansion, compute_single_point_forward() and compute_single_point_backward() methods,
+and VariableList updates.
 """
 
-import numpy as np
-import pandas as pd
 import pytest
 from fastoad.model_base.flight_point import FlightPoint, _FieldDescriptor
 from fastoad.openmdao.variables import Variable, VariableList
@@ -73,8 +71,8 @@ def test_flight_point_expansion_only_once():
     assert "gearbox_shaft_power" in str(record[0].message)
 
 
-def test_compute_perfo_single_flight_point():
-    """Test compute_performances() with a single FlightPoint."""
+def test_compute_single_point_backward():
+    """Test compute_single_point_backward() with a single FlightPoint."""
     component = PropellerComponent()
 
     fp = FlightPoint()
@@ -82,36 +80,27 @@ def test_compute_perfo_single_flight_point():
     fp.true_airspeed = 200.0  # m/s
     component.input_parameters["data:propulsion:propeller:efficiency"].value = 0.85
 
-    component.compute_performances(fp)
+    component.compute_single_point_backward(fp)
 
     # Expected: (50000 * 200) / 0.85 = 11764705.88...
     expected_power = (50000.0 * 200.0) / 0.85
     assert fp.gearbox_shaft_power == pytest.approx(expected_power, rel=1e-6)
 
 
-def test_compute_perfo_list_of_flight_points():
-    """Test compute_performances() with a list of FlightPoints."""
+def test_compute_single_point_forward():
+    """Test compute_single_point_forward() with a single FlightPoint."""
     component = PropellerComponent()
 
+    fp = FlightPoint()
+    fp.gearbox_shaft_power = 11764705.88  # W
+    fp.true_airspeed = 200.0  # m/s
     component.input_parameters["data:propulsion:propeller:efficiency"].value = 0.85
 
-    fp1 = FlightPoint()
-    fp1.thrust = 50000.0
-    fp1.true_airspeed = 200.0
+    component.compute_single_point_forward(fp)
 
-    fp2 = FlightPoint()
-    fp2.thrust = 60000.0
-    fp2.true_airspeed = 250.0
-
-    flightpoints = pd.DataFrame([fp1, fp2])
-    component.compute_performances(flightpoints)
-
-    # First result: (50000 * 200) / 0.85
-    expected_power1 = (50000.0 * 200.0) / 0.85
-    # Second result: (60000 * 250) / 0.85
-    expected_power2 = (60000.0 * 250.0) / 0.85
-    expected = [expected_power1, expected_power2]
-    assert np.allclose(flightpoints.gearbox_shaft_power.to_list(), expected, rtol=1e-6)
+    # Expected: (50000 * 200) / 0.85 = 11764705.88 * 0.85 / 200 = 50000
+    expected_thrust = 11764705.88 * 0.85 / 200
+    assert fp.thrust == pytest.approx(expected_thrust, rel=1e-6)
 
 
 def test_inputs_can_be_updated_using_update():
