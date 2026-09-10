@@ -29,13 +29,13 @@ class ComputeToCWingRTA(om.ExplicitComponent):
     """
 
     def setup(self):
-        self.add_input("data:TLAR:cruise_mach", val=np.nan)
+        self.add_input("data:TLAR:cruise_mach", val=np.nan, units="unitless")
         self.add_input("data:geometry:wing:sweep_25", val=np.nan, units="deg")
 
-        self.add_output("data:geometry:wing:thickness_ratio")
-        self.add_output("data:geometry:wing:root:thickness_ratio")
-        self.add_output("data:geometry:wing:kink:thickness_ratio")
-        self.add_output("data:geometry:wing:tip:thickness_ratio")
+        self.add_output("data:geometry:wing:thickness_ratio", units="unitless")
+        self.add_output("data:geometry:wing:root:thickness_ratio", units="unitless")
+        self.add_output("data:geometry:wing:kink:thickness_ratio", units="unitless")
+        self.add_output("data:geometry:wing:tip:thickness_ratio", units="unitless")
 
         self.declare_partials("data:geometry:wing:thickness_ratio", "*", method="fd")
         self.declare_partials("data:geometry:wing:root:thickness_ratio", "*", method="fd")

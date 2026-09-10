@@ -38,7 +38,7 @@ class DeIceSystemWeight(om.ExplicitComponent):
         self.add_input("data:geometry:wing:span", val=np.nan, units="m")
         self.add_input("data:geometry:horizontal_tail:sweep_0", val=np.nan, units="deg")
         self.add_input("data:geometry:horizontal_tail:span", val=np.nan, units="m")
-        self.add_input("tuning:weight:systems:de-icing:mass:k", val=1.0)
+        self.add_input("tuning:weight:systems:de-icing:mass:k", val=1.0, units="unitless")
         self.add_input("tuning:weight:systems:de-icing:mass:offset", val=0.0, units="kg")
 
         self.add_output("data:weight:systems:de-icing:mass", units="kg")

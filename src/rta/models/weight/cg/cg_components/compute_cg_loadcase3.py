@@ -30,7 +30,7 @@ class ComputeCGLoadCase3(om.ExplicitComponent):
         self.add_input("data:weight:payload:front_fret:CG:x", val=np.nan, units="m")
         self.add_input("data:mission:sizing:fuel", val=np.nan, units="kg")
         self.add_input("data:weight:fuel_tank:CG:x", val=np.nan, units="m")
-        self.add_input("data:TLAR:NPAX", val=np.nan)
+        self.add_input("data:TLAR:NPAX", val=np.nan, units="unitless")
         self.add_input("data:weight:aircraft:operating_empty:CG:x", val=np.nan, units="m")
         self.add_input("data:weight:aircraft:operating_empty:mass", val=np.nan, units="kg")
 
@@ -39,10 +39,10 @@ class ComputeCGLoadCase3(om.ExplicitComponent):
             val=np.nan,
             units="kg",
         )
-        self.add_input("settings:weight:aircraft:payload:fret_ratio", val=np.nan)
+        self.add_input("settings:weight:aircraft:payload:fret_ratio", val=np.nan, units="unitless")
 
-        self.add_output("data:weight:aircraft:load_case_3:CG:MAC_position")
-        self.add_output("data:weight:aircraft:load_case_3:CG:index")
+        self.add_output("data:weight:aircraft:load_case_3:CG:MAC_position", units="unitless")
+        self.add_output("data:weight:aircraft:load_case_3:CG:index", units="unitless")
         self.add_output("data:weight:aircraft:load_case_3:mass", units="kg")
 
         self.declare_partials("*", "*", method="fd")

@@ -39,7 +39,9 @@ class InteriorIntegrationWeight(om.ExplicitComponent):
     def setup(self):
         self.add_input("data:weight:aircraft:MTOW", val=np.nan, units="kg")
 
-        self.add_input("tuning:weight:furniture:interior_integration:mass:k", val=1.0)
+        self.add_input(
+            "tuning:weight:furniture:interior_integration:mass:k", val=1.0, units="unitless"
+        )
         self.add_input(
             "tuning:weight:furniture:interior_integration:mass:offset",
             val=0.0,

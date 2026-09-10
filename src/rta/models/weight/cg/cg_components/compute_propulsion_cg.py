@@ -29,7 +29,7 @@ class ComputePropulsionCG_RTA(om.ExplicitComponent):
     """Propulsion center of gravity estimation as a function of wing position"""
 
     def setup(self):
-        self.add_input("data:geometry:propulsion:engine:y_ratio", val=np.nan)
+        self.add_input("data:geometry:propulsion:engine:y_ratio", val=np.nan, units="unitless")
         self.add_input("data:geometry:wing:span", val=np.nan, units="m")
         self.add_input("data:geometry:wing:MAC:length", val=np.nan, units="m")
         self.add_input("data:geometry:wing:MAC:leading_edge:x:local", val=np.nan, units="m")

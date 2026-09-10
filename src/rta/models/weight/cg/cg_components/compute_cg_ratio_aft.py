@@ -151,8 +151,8 @@ class CGRatio(om.ExplicitComponent):
         self.add_input("data:geometry:wing:MAC:at25percent:x", val=np.nan, units="m")
         self.add_input("data:weight:aircraft:operating_empty:mass", units="kg")
 
-        self.add_output("data:weight:aircraft:operating_empty:CG:MAC_position")
-        self.add_output("data:weight:aircraft:operating_empty:CG:index")
+        self.add_output("data:weight:aircraft:operating_empty:CG:MAC_position", units="unitless")
+        self.add_output("data:weight:aircraft:operating_empty:CG:index", units="unitless")
 
     def compute(self, inputs, outputs, discrete_inputs=None, discrete_outputs=None):
         x_cg_all = inputs["data:weight:aircraft:operating_empty:CG:x"]

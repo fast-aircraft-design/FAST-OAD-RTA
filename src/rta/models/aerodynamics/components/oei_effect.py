@@ -33,9 +33,9 @@ class ComputeDeltaOEI(om.ExplicitComponent):
 
     def setup(self):
         self.add_input("data:geometry:propulsion:nacelle:y", val=np.nan, units="m")
-        self.add_input("data:geometry:propulsion:propeller:B", val=np.nan)
+        self.add_input("data:geometry:propulsion:propeller:B", val=np.nan, units="unitless")
         self.add_input("data:geometry:propulsion:propeller:diameter", val=np.nan, units="m")
-        self.add_input("data:geometry:vertical_tail:aspect_ratio", val=np.nan)
+        self.add_input("data:geometry:vertical_tail:aspect_ratio", val=np.nan, units="unitless")
         self.add_input("data:geometry:wing:area", val=np.nan, units="m**2")
         self.add_input("data:geometry:vertical_tail:area", val=np.nan, units="m**2")
         self.add_input(
@@ -44,21 +44,28 @@ class ComputeDeltaOEI(om.ExplicitComponent):
             units="m",
         )
 
-        self.add_input("data:aerodynamics:aircraft:low_speed:CT", shape=CT_POINT_COUNT)
-        self.add_input("data:aerodynamics:aircraft:low_speed:DCD_ext", val=0.0)
+        self.add_input(
+            "data:aerodynamics:aircraft:low_speed:CT", shape=CT_POINT_COUNT, units="unitless"
+        )
+        self.add_input("data:aerodynamics:aircraft:low_speed:DCD_ext", val=0.0, units="unitless")
 
-        self.add_output("data:aerodynamics:aircraft:low_speed:DCD_feather", val=0.004)
+        self.add_output(
+            "data:aerodynamics:aircraft:low_speed:DCD_feather", val=0.004, units="unitless"
+        )
         self.add_output(
             "data:aerodynamics:aircraft:landing:OEI_effect:DCD",
             copy_shape="data:aerodynamics:aircraft:low_speed:CT",
+            units="unitless",
         )
         self.add_output(
             "data:aerodynamics:aircraft:takeoff:OEI_effect:DCD",
             copy_shape="data:aerodynamics:aircraft:low_speed:CT",
+            units="unitless",
         )
         self.add_output(
             "data:aerodynamics:aircraft:low_speed:OEI_effect:DCD",
             copy_shape="data:aerodynamics:aircraft:low_speed:CT",
+            units="unitless",
         )
         self.declare_partials("*", "*", method="fd")
 

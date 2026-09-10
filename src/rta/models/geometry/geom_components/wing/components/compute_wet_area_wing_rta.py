@@ -30,7 +30,7 @@ class ComputeWetAreaWingRTA(om.ExplicitComponent):
         self.add_input("data:geometry:wing:root:chord", val=np.nan, units="m")
         self.add_input("data:geometry:wing:root:y", val=np.nan, units="m")
         self.add_input("data:geometry:wing:area", val=np.nan, units="m**2")
-        self.add_input("data:geometry:wing:thickness_ratio", val=np.nan)
+        self.add_input("data:geometry:wing:thickness_ratio", val=np.nan, units="unitless")
         self.add_output("data:geometry:wing:outer_area", units="m**2")
         self.add_output("data:geometry:wing:wetted_area", units="m**2")
 

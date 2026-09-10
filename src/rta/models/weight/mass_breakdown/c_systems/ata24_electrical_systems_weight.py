@@ -39,7 +39,7 @@ class ElectricalPowerSystemWeight(om.ExplicitComponent):
     """
 
     def setup(self):
-        self.add_input("data:geometry:cabin:NPAX1", val=np.nan)
+        self.add_input("data:geometry:cabin:NPAX1", val=np.nan, units="unitless")
         self.add_input("data:weight:aircraft:MTOW", val=np.nan, units="kg")
 
         self.add_input(
@@ -47,9 +47,15 @@ class ElectricalPowerSystemWeight(om.ExplicitComponent):
             val=0.0,
             units="kg",
         )
-        self.add_input("tuning:weight:systems:electric_systems:electric_generation:mass:k", val=1.0)
+        self.add_input(
+            "tuning:weight:systems:electric_systems:electric_generation:mass:k",
+            val=1.0,
+            units="unitless",
+        )
 
-        self.add_input("settings:weight:systems:electric_systems:mass:k_elec", val=1.0)
+        self.add_input(
+            "settings:weight:systems:electric_systems:mass:k_elec", val=1.0, units="unitless"
+        )
 
         self.add_output("data:weight:systems:electric_systems:electric_generation:mass", units="kg")
         self.add_output(

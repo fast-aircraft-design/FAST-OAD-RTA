@@ -30,7 +30,11 @@ Unknown usage for CT, alpha list and H_list
 
 class InitializeIN(om.ExplicitComponent):
     def setup(self):
-        self.add_output("data:aerodynamics:aircraft:low_speed:CT", shape=CT_POINT_COUNT)
+        self.add_output(
+            "data:aerodynamics:aircraft:low_speed:CT",
+            shape=CT_POINT_COUNT,
+            units="unitless",
+        )
         self.add_output(
             "data:aerodynamics:aircraft:low_speed:alpha",
             units="deg",
