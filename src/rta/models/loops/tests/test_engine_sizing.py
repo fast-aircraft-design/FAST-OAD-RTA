@@ -12,7 +12,7 @@ def test_compute_engine_size():
     ivc.add_output("data:TLAR:TOD", val=800, units="m")
     ivc.add_output("data:TLAR:TTC", val=30, units="min")
     ivc.add_output("data:TLAR:OEI_ceiling", val=8000, units="m")
-    ivc.add_output("data:TLAR:cruise_mach", val=0.55)
+    ivc.add_output("data:TLAR:cruise_mach", val=0.55, units="unitless")
 
     problem = run_system(ComputeEngineSize(), ivc, nonlinear_solver="om.NonlinearBlockGS")
 

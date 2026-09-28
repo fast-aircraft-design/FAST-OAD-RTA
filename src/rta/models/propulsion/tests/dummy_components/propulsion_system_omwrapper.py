@@ -123,6 +123,7 @@ class PropulsionSystemOMComponent(om.ExplicitComponent):
         self.add_input(
             "data:propulsion:engine_count",
             val=np.nan,
+            units="unitless",
         )
 
         self.add_output("data:propulsion:sfc", copy_shape="data:propulsion:thrust", units="kg/s/N")

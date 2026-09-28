@@ -86,7 +86,9 @@ def test_turboprop_weight():
     ivc.add_output("data:geometry:propulsion:propeller:diameter", val=3.926, units="m")
     ivc.add_output("data:geometry:propulsion:propeller:B", val=6, units="unitless")
     ivc.add_output("tuning:weight:propulsion:engine:mass:k", val=1.0, units="unitless")
-    ivc.add_output("tuning:weight:propulsion:engine_controls_instrumentation:mass:k", val=1.0)
+    ivc.add_output(
+        "tuning:weight:propulsion:engine_controls_instrumentation:mass:k", val=1.0, units="unitless"
+    )
     ivc.add_output("tuning:weight:propulsion:propeller:mass:k", val=1.0, units="unitless")
 
     ivc.add_output("data:propulsion:propeller:max_power", val=2239.7, units="kW")

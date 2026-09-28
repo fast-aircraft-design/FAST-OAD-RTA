@@ -101,7 +101,9 @@ def test_crew_seat_weight():
     ivc.add_output("data:geometry:cabin:crew_count:technical", val=2.0, units="unitless")
     ivc.add_output("data:geometry:cabin:crew_count:commercial", val=2.0, units="unitless")
 
-    ivc.add_output("tuning:weight:furniture:seats_crew_accommodation:mass:k", val=1.0)
+    ivc.add_output(
+        "tuning:weight:furniture:seats_crew_accommodation:mass:k", val=1.0, units="unitless"
+    )
     ivc.add_output(
         "tuning:weight:furniture:seats_crew_accommodation:mass:offset",
         val=0.0,

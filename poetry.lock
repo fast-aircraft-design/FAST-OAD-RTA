@@ -1054,19 +1054,18 @@ mpi = ["mpi4py (>=4.0.2,<5)"]
 
 [[package]]
 name = "fast-oad-cs25"
-version = "0.9.0"
+version = "0.9.1"
 description = "FAST-OAD_CS25 is a FAST-OAD plugin with CS25/FAR25-related models."
 optional = false
 python-versions = "<3.15,>=3.10"
 groups = ["main"]
 files = [
-    {file = "fast_oad_cs25-0.9.0-py3-none-any.whl", hash = "sha256:1ce01342ecac6ece9198655d2b5cf280159acfda9445b422394b1587ea6d7c29"},
-    {file = "fast_oad_cs25-0.9.0.tar.gz", hash = "sha256:0e7d711aac72da0d4fc62197dad2e2e581d3693753ade688100b229efeb548bd"},
+    {file = "fast_oad_cs25-0.9.1-py3-none-any.whl", hash = "sha256:8eaf2db9b4818c6468b7d2ffcbec9c4671f6d307f1c77018f164bc15b6b25680"},
+    {file = "fast_oad_cs25-0.9.1.tar.gz", hash = "sha256:6f90c03036e417361b94e9f4decd55eb7e2e2a8233842b795d16c5e90ccbee34"},
 ]
 
 [package.dependencies]
 fast-oad-core = ">=1.10.0,<2.0.0"
-jupyterlab-widgets = "3.0.15"
 pyparsing = ">=3.2.5,<4.0.0"
 
 [[package]]
@@ -5129,4 +5128,4 @@ type = ["pytest-mypy (>=1.0.1) ; platform_python_implementation != \"PyPy\""]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.10,<3.15"
-content-hash = "f7e2898772969c28797b45f64bb6eb0697ef1303a2ed46acc31c65ba9bed2bc5"
+content-hash = "50eb14459278abf4ed1aa341b20106912f7699bb5be02e92d2530e6d43b3c8ad"

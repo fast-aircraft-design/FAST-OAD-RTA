@@ -21,9 +21,9 @@ from ..operational_items_weight import OperationalItemsWeight
 
 def test_items_weight():
     ivc = IndepVarComp()
-    ivc.add_output("data:TLAR:NPAX", val=72)
+    ivc.add_output("data:TLAR:NPAX", val=72, units="unitless")
     ivc.add_output("settings:weight:aircraft:design_mass_per_seat", val=10, units="kg")
-    ivc.add_output("tuning:weight:furniture:passenger_seats:mass:k", val=1.0)
+    ivc.add_output("tuning:weight:furniture:passenger_seats:mass:k", val=1.0, units="unitless")
     ivc.add_output("tuning:weight:furniture:passenger_seats:mass:offset", val=0.0, units="kg")
 
     problem = run_system(OperationalItemsWeight(), ivc)
