@@ -186,7 +186,7 @@ class AbstractPropulsiveComponent(ABC):
 
         Subclasses must override this method with their specific calculations.
         This method receives a FlightPoint with input values populated and
-        must return the same FlightPoint with output values computed and filled in.
+        must update the same FlightPoint with output values computed and filled in.
 
         Args:
             flight_point: A single FlightPoint instance with input values set.
@@ -205,7 +205,7 @@ class AbstractPropulsiveComponent(ABC):
 
         Subclasses must override this method with their specific calculations.
         This method receives a FlightPoint with input values populated and
-        must return the same FlightPoint with output values computed and filled in.
+        must update the same FlightPoint with output values computed and filled in.
 
         Args:
             flight_point: A single FlightPoint instance with input values set.
