@@ -35,9 +35,9 @@ class WingWeight(om.ExplicitComponent):
     """
 
     def setup(self):
-        self.add_input("data:geometry:wing:root:thickness_ratio", val=np.nan)
-        self.add_input("data:geometry:wing:kink:thickness_ratio", val=np.nan)
-        self.add_input("data:geometry:wing:tip:thickness_ratio", val=np.nan)
+        self.add_input("data:geometry:wing:root:thickness_ratio", val=np.nan, units="unitless")
+        self.add_input("data:geometry:wing:kink:thickness_ratio", val=np.nan, units="unitless")
+        self.add_input("data:geometry:wing:tip:thickness_ratio", val=np.nan, units="unitless")
         self.add_input("data:geometry:wing:area", val=np.nan, units="m**2")
         self.add_input("data:geometry:wing:span", val=np.nan, units="m")
         self.add_input("data:geometry:wing:root:chord", val=np.nan, units="m")
@@ -45,26 +45,30 @@ class WingWeight(om.ExplicitComponent):
         self.add_input("data:geometry:wing:outer_area", val=np.nan, units="m**2")
         self.add_input("data:weight:aircraft:MTOW", val=np.nan, units="kg")
         self.add_input("data:mission:sizing:cs25:sizing_load", val=np.nan, units="N")
-        self.add_input("tuning:weight:airframe:wing:mass:k", val=1.0)
+        self.add_input("tuning:weight:airframe:wing:mass:k", val=1.0, units="unitless")
         self.add_input("tuning:weight:airframe:wing:mass:offset", val=0.0, units="kg")
-        self.add_input("tuning:weight:airframe:wing:bending_sizing:mass:k", val=1.0)
+        self.add_input(
+            "tuning:weight:airframe:wing:bending_sizing:mass:k", val=1.0, units="unitless"
+        )
         self.add_input(
             "tuning:weight:airframe:wing:bending_sizing:mass:offset",
             val=0.0,
             units="kg",
         )
-        self.add_input("tuning:weight:airframe:wing:shear_sizing:mass:k", val=1.0)
+        self.add_input("tuning:weight:airframe:wing:shear_sizing:mass:k", val=1.0, units="unitless")
         self.add_input("tuning:weight:airframe:wing:shear_sizing:mass:offset", val=0.0, units="kg")
-        self.add_input("tuning:weight:airframe:wing:ribs:mass:k", val=1.0)
+        self.add_input("tuning:weight:airframe:wing:ribs:mass:k", val=1.0, units="unitless")
         self.add_input("tuning:weight:airframe:wing:ribs:mass:offset", val=0.0, units="kg")
-        self.add_input("tuning:weight:airframe:wing:secondary_parts:mass:k", val=1.0)
+        self.add_input(
+            "tuning:weight:airframe:wing:secondary_parts:mass:k", val=1.0, units="unitless"
+        )
         self.add_input(
             "tuning:weight:airframe:wing:secondary_parts:mass:offset",
             val=0.0,
             units="kg",
         )
-        self.add_input("settings:weight:airframe:wing:mass:k_voil", val=1.0)
-        self.add_input("settings:weight:airframe:wing:mass:k_mvo", val=1.39)
+        self.add_input("settings:weight:airframe:wing:mass:k_voil", val=1.0, units="unitless")
+        self.add_input("settings:weight:airframe:wing:mass:k_mvo", val=1.39, units="unitless")
 
         self.add_output("data:weight:airframe:wing:mass", units="kg")
 

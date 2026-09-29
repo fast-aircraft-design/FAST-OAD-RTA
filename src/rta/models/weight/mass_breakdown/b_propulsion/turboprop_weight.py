@@ -26,13 +26,17 @@ class TurbopropWeight(om.ExplicitComponent):
 
     def setup(self):
         self.add_input("data:propulsion:RTO_power", val=np.nan, units="W")
-        self.add_input("data:geometry:propulsion:engine:count", val=np.nan)
+        self.add_input("data:geometry:propulsion:engine:count", val=np.nan, units="unitless")
         self.add_input("data:geometry:fuselage:length", val=np.nan, units="m")
         self.add_input("data:geometry:propulsion:propeller:diameter", val=np.nan, units="m")
-        self.add_input("data:geometry:propulsion:propeller:B", val=np.nan)
-        self.add_input("tuning:weight:propulsion:engine:mass:k", val=1.0)
-        self.add_input("tuning:weight:propulsion:engine_controls_instrumentation:mass:k", val=1.0)
-        self.add_input("tuning:weight:propulsion:propeller:mass:k", val=1.0)
+        self.add_input("data:geometry:propulsion:propeller:B", val=np.nan, units="unitless")
+        self.add_input("tuning:weight:propulsion:engine:mass:k", val=1.0, units="unitless")
+        self.add_input(
+            "tuning:weight:propulsion:engine_controls_instrumentation:mass:k",
+            val=1.0,
+            units="unitless",
+        )
+        self.add_input("tuning:weight:propulsion:propeller:mass:k", val=1.0, units="unitless")
 
         self.add_input("data:propulsion:propeller:max_power", val=np.nan, units="kW")
 

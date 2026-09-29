@@ -30,8 +30,6 @@ model:
       id: fastoad.geometry.legacy
     propeller:
       id: rta.propulsion.propeller_sizing
-    gasturbine:
-      id: rta.propulsion.turboprop_sizing
     weight:
       id: fastoad.weight.legacy
       payload_from_npax: false

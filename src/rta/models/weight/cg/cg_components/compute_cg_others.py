@@ -40,8 +40,10 @@ class ComputeOthersCG(om.ExplicitComponent):
 
         self.add_input("data:weight:operational:items:passenger_seats:CG:x", val=np.nan, units="m")
         self.add_input("data:weight:propulsion:engine:mass", val=np.nan, units="kg")
-        self.add_input("data:geometry:cabin:NPAX1", val=np.nan)
-        self.add_input("data:geometry:cabin:seats:economical:count_by_row", val=np.nan)
+        self.add_input("data:geometry:cabin:NPAX1", val=np.nan, units="unitless")
+        self.add_input(
+            "data:geometry:cabin:seats:economical:count_by_row", val=np.nan, units="unitless"
+        )
         self.add_input("data:geometry:cabin:seats:economical:length", val=np.nan, units="m")
 
         self.add_input("settings:geometry:fuselage:CG:ratio", val=0.45, units="unitless")

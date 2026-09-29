@@ -30,8 +30,8 @@ class ComputeCGLoadCase1(om.ExplicitComponent):
         self.add_input("data:weight:aircraft:operating_empty:CG:x", val=np.nan, units="m")
         self.add_input("data:weight:aircraft:operating_empty:mass", val=np.nan, units="kg")
 
-        self.add_output("data:weight:aircraft:load_case_1:CG:MAC_position")
-        self.add_output("data:weight:aircraft:load_case_1:CG:index")
+        self.add_output("data:weight:aircraft:load_case_1:CG:MAC_position", units="unitless")
+        self.add_output("data:weight:aircraft:load_case_1:CG:index", units="unitless")
         self.add_output("data:weight:aircraft:load_case_1:mass", units="kg")
 
         self.declare_partials("*", "*", method="fd")

@@ -36,7 +36,7 @@ class ComputeEngineSize(om.ExplicitComponent):
         self.add_input("data:TLAR:TOD", val=np.nan, units="m")
         self.add_input("data:TLAR:TTC", val=np.nan, units="min")
         self.add_input("data:TLAR:OEI_ceiling", val=np.nan, units="m")
-        self.add_input("data:TLAR:cruise_mach", val=np.nan)
+        self.add_input("data:TLAR:cruise_mach", val=np.nan, units="unitless")
 
         self.add_output("data:propulsion:RTO_power", val=self.initial_RTO_power, units="W")
         self.add_output(

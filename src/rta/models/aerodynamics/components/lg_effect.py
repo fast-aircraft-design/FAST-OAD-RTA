@@ -36,19 +36,23 @@ class ComputeDeltaLg(om.ExplicitComponent):
             self.add_output(
                 "data:aerodynamics:aircraft:landing:lg_effect:DCL",
                 shape=ALPHA_POINT_COUNT,
+                units="unitless",
             )
             self.add_output(
                 "data:aerodynamics:aircraft:landing:lg_effect:DCD",
                 shape=ALPHA_POINT_COUNT,
+                units="unitless",
             )
         else:
             self.add_output(
                 "data:aerodynamics:aircraft:takeoff:lg_effect:DCL",
                 shape=ALPHA_POINT_COUNT,
+                units="unitless",
             )
             self.add_output(
                 "data:aerodynamics:aircraft:takeoff:lg_effect:DCD",
                 shape=ALPHA_POINT_COUNT,
+                units="unitless",
             )
 
     def compute(self, inputs, outputs):

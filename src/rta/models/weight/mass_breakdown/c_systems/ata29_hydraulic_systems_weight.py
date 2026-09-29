@@ -42,7 +42,7 @@ class HydraulicPowerSystemWeight(om.ExplicitComponent):
     def setup(self):
         self.add_input("data:weight:aircraft:MTOW", val=np.nan, units="kg")
 
-        self.add_input("tuning:weight:systems:hydraulic_systems:mass:k", val=1.0)
+        self.add_input("tuning:weight:systems:hydraulic_systems:mass:k", val=1.0, units="unitless")
         self.add_input("tuning:weight:systems:hydraulic_systems:mass:offset", val=0.0, units="kg")
 
         self.add_output("data:weight:systems:hydraulic_systems:mass", units="kg")
