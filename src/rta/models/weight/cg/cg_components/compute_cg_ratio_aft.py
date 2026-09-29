@@ -16,135 +16,118 @@ Estimation of center of gravity ratio with aft
 
 import numpy as np
 import openmdao.api as om
+from fastoad_cs25.models.weight.cg.cg_components.compute_cg_ratio_aft import ComputeCGX
 
 
-class ComputeCGRatioAft(om.Group):
-    def setup(self):
-        self.add_subsystem("cg_all", ComputeCG(), promotes=["*"])
-        self.add_subsystem("cg_ratio", CGRatio(), promotes=["*"])
-
-
-class ComputeCG(om.ExplicitComponent):
+class ComputeCGXRatioAft(om.Group):
     def initialize(self):
         self.options.declare(
-            "cg_names",
+            "cg_x_item_names",
             default=[
-                "data:weight:airframe:wing:CG:x",
-                "data:weight:airframe:fuselage:CG:x",
-                "data:weight:airframe:horizontal_tail:CG:x",
-                "data:weight:airframe:vertical_tail:CG:x",
-                "data:weight:airframe:landing_gear:main:CG:x",
-                "data:weight:airframe:landing_gear:front:CG:x",
-                "data:weight:airframe:nacelle:CG:x",
-                "data:weight:propulsion:engine:CG:x",
-                "data:weight:propulsion:propeller:CG:x",
-                "data:weight:propulsion:engine_controls_instrumentation:CG:x",
-                "data:weight:propulsion:fuel_lines:CG:x",
-                "data:weight:systems:auxiliary_power_unit:CG:x",
-                "data:weight:systems:electric_systems:electric_generation:CG:x",
-                "data:weight:systems:electric_systems:electric_common_installation:CG:x",
-                "data:weight:systems:hydraulic_systems:CG:x",
-                "data:weight:systems:fire_protection:CG:x",
-                "data:weight:systems:flight_furnishing:CG:x",
-                "data:weight:systems:automatic_flight_system:CG:x",
-                "data:weight:systems:communications:CG:x",
-                "data:weight:systems:ECS:CG:x",
-                "data:weight:systems:de-icing:CG:x",
-                "data:weight:systems:navigation:CG:x",
-                "data:weight:systems:flight_controls:CG:x",
-                "data:weight:furniture:furnishing:CG:x",
-                "data:weight:furniture:water:CG:x",
-                "data:weight:furniture:interior_integration:CG:x",
-                "data:weight:furniture:insulation:CG:x",
-                "data:weight:furniture:cabin_lighting:CG:x",
-                "data:weight:furniture:seats_crew_accommodation:CG:x",
-                "data:weight:furniture:oxygen:CG:x",
-                "data:weight:operational:items:passenger_seats:CG:x",
-                "data:weight:operational:items:unusable_fuel:CG:x",
-                "data:weight:operational:items:documents_toolkit:CG:x",
-                "data:weight:operational:items:galley_structure:CG:x",
-                "data:weight:operational:equipment:others:CG:x",
-            ],
-        )
-
-        self.options.declare(
-            "mass_names",
-            [
-                "data:weight:airframe:wing:mass",
-                "data:weight:airframe:fuselage:mass",
-                "data:weight:airframe:horizontal_tail:mass",
-                "data:weight:airframe:vertical_tail:mass",
-                "data:weight:airframe:landing_gear:main:mass",
-                "data:weight:airframe:landing_gear:front:mass",
-                "data:weight:airframe:nacelle:mass",
-                "data:weight:propulsion:engine:mass",
-                "data:weight:propulsion:propeller:mass",
-                "data:weight:propulsion:engine_controls_instrumentation:mass",
-                "data:weight:propulsion:fuel_lines:mass",
-                "data:weight:systems:auxiliary_power_unit:mass",
-                "data:weight:systems:electric_systems:electric_generation:mass",
-                "data:weight:systems:electric_systems:electric_common_installation:mass",
-                "data:weight:systems:hydraulic_systems:mass",
-                "data:weight:systems:fire_protection:mass",
-                "data:weight:systems:flight_furnishing:mass",
-                "data:weight:systems:automatic_flight_system:mass",
-                "data:weight:systems:communications:mass",
-                "data:weight:systems:ECS:mass",
-                "data:weight:systems:de-icing:mass",
-                "data:weight:systems:navigation:mass",
-                "data:weight:systems:flight_controls:mass",
-                "data:weight:furniture:furnishing:mass",
-                "data:weight:furniture:water:mass",
-                "data:weight:furniture:interior_integration:mass",
-                "data:weight:furniture:insulation:mass",
-                "data:weight:furniture:cabin_lighting:mass",
-                "data:weight:furniture:seats_crew_accommodation:mass",
-                "data:weight:furniture:oxygen:mass",
-                "data:weight:operational:items:passenger_seats:mass",
-                "data:weight:operational:items:unusable_fuel:mass",
-                "data:weight:operational:items:documents_toolkit:mass",
-                "data:weight:operational:items:galley_structure:mass",
-                "data:weight:operational:equipment:others:mass",
+                "data:weight:airframe:wing:",
+                "data:weight:airframe:fuselage:",
+                "data:weight:airframe:horizontal_tail:",
+                "data:weight:airframe:vertical_tail:",
+                "data:weight:airframe:landing_gear:main:",
+                "data:weight:airframe:landing_gear:front:",
+                "data:weight:airframe:nacelle:",
+                "data:weight:propulsion:engine:",
+                "data:weight:propulsion:propeller:",
+                "data:weight:propulsion:engine_controls_instrumentation:",
+                "data:weight:propulsion:fuel_lines:",
+                "data:weight:systems:auxiliary_power_unit:",
+                "data:weight:systems:electric_systems:electric_generation:",
+                "data:weight:systems:electric_systems:electric_common_installation:",
+                "data:weight:systems:hydraulic_systems:",
+                "data:weight:systems:fire_protection:",
+                "data:weight:systems:flight_furnishing:",
+                "data:weight:systems:automatic_flight_system:",
+                "data:weight:systems:communications:",
+                "data:weight:systems:ECS:",
+                "data:weight:systems:de-icing:",
+                "data:weight:systems:navigation:",
+                "data:weight:systems:flight_controls:",
+                "data:weight:furniture:furnishing:",
+                "data:weight:furniture:water:",
+                "data:weight:furniture:interior_integration:",
+                "data:weight:furniture:insulation:",
+                "data:weight:furniture:cabin_lighting:",
+                "data:weight:furniture:seats_crew_accommodation:",
+                "data:weight:furniture:oxygen:",
+                "data:weight:operational:items:passenger_seats:",
+                "data:weight:operational:items:unusable_fuel:",
+                "data:weight:operational:items:documents_toolkit:",
+                "data:weight:operational:items:galley_structure:",
+                "data:weight:operational:equipment:others:",
             ],
         )
 
     def setup(self):
-        for cg_name in self.options["cg_names"]:
-            self.add_input(cg_name, val=np.nan, units="m")
-        for mass_name in self.options["mass_names"]:
-            self.add_input(mass_name, val=np.nan, units="kg")
+        self.add_subsystem(
+            "cg_x_all", ComputeCGX(cg_x_item_names=self.options["cg_x_item_names"]), promotes=["*"]
+        )
+        self.add_subsystem("cg_x_operating_empty", ComputeCGXOperatingEmpty(), promotes=["*"])
+        self.add_subsystem("cg_x_ratio", CGXRatio(), promotes=["*"])
 
+
+class ComputeCGXOperatingEmpty(om.ExplicitComponent):
+    def setup(self):
         self.add_input("data:weight:operational:equipment:crew:mass", val=np.nan, units="kg")
         self.add_input("data:weight:operational:equipment:crew:CG:x", val=np.nan, units="m")
+        self.add_input("data:weight:aircraft_empty:mass", val=np.nan, units="kg")
+        self.add_input("data:weight:aircraft_empty:CG:x", val=np.nan, units="m")
 
-        self.add_output("data:weight:aircraft_empty:mass", units="kg")
-        self.add_output("data:weight:aircraft_empty:CG:x", units="m")
         self.add_output("data:weight:aircraft:operating_empty:CG:x", units="m")
         self.add_output("data:weight:aircraft:operating_empty:mass", units="kg")
 
-        self.declare_partials("data:weight:aircraft_empty:mass", "*", method="fd")
-        self.declare_partials("data:weight:aircraft_empty:CG:x", "*", method="fd")
-        self.declare_partials("data:weight:aircraft:operating_empty:CG:x", "*", method="fd")
-        self.declare_partials("data:weight:aircraft:operating_empty:mass", "*", method="fd")
+    def setup_partials(self):
+        self.declare_partials("data:weight:aircraft:operating_empty:CG:x", "*", method="exact")
+        self.declare_partials(
+            "data:weight:aircraft:operating_empty:mass",
+            ["data:weight:operational:equipment:crew:mass", "data:weight:aircraft_empty:mass"],
+            val=1.0,
+        )
 
     def compute(self, inputs, outputs, discrete_inputs=None, discrete_outputs=None):
-        cgs = [inputs[cg_name][0] for cg_name in self.options["cg_names"]]
-        masses = [inputs[mass_name][0] for mass_name in self.options["mass_names"]]
+
         crew_mass = inputs["data:weight:operational:equipment:crew:mass"]
         crew_cg = inputs["data:weight:operational:equipment:crew:CG:x"]
+        empty_aircraft_mass = inputs["data:weight:aircraft_empty:mass"]
+        empty_aircraft_cg = inputs["data:weight:aircraft_empty:CG:x"]
 
-        weight_moment = np.dot(cgs, masses)
-
-        outputs["data:weight:aircraft:operating_empty:mass"] = np.sum(masses) + crew_mass
+        outputs["data:weight:aircraft:operating_empty:mass"] = empty_aircraft_mass + crew_mass
         outputs["data:weight:aircraft:operating_empty:CG:x"] = (
-            weight_moment + crew_mass * crew_cg
-        ) / (np.sum(masses) + crew_mass)
+            empty_aircraft_mass * empty_aircraft_cg + crew_mass * crew_cg
+        ) / (empty_aircraft_mass + crew_mass)
 
-        outputs["data:weight:aircraft_empty:mass"] = np.sum(masses)
-        outputs["data:weight:aircraft_empty:CG:x"] = weight_moment / np.sum(masses)
+    def compute_partials(self, inputs, partials, discrete_inputs=None):
+        crew_mass = inputs["data:weight:operational:equipment:crew:mass"]
+        crew_cg = inputs["data:weight:operational:equipment:crew:CG:x"]
+        empty_aircraft_mass = inputs["data:weight:aircraft_empty:mass"]
+        empty_aircraft_cg = inputs["data:weight:aircraft_empty:CG:x"]
+
+        partials[
+            "data:weight:aircraft:operating_empty:CG:x",
+            "data:weight:operational:equipment:crew:mass",
+        ] = (crew_cg * empty_aircraft_mass - empty_aircraft_mass * empty_aircraft_cg) / (
+            empty_aircraft_mass + crew_mass
+        ) ** 2.0
+        partials[
+            "data:weight:aircraft:operating_empty:CG:x",
+            "data:weight:aircraft_empty:mass",
+        ] = (empty_aircraft_cg * crew_mass - crew_mass * crew_cg) / (
+            empty_aircraft_mass + crew_mass
+        ) ** 2.0
+        partials[
+            "data:weight:aircraft:operating_empty:CG:x",
+            "data:weight:operational:equipment:crew:CG:x",
+        ] = crew_mass / (empty_aircraft_mass + crew_mass)
+        partials["data:weight:aircraft:operating_empty:CG:x", "data:weight:aircraft_empty:CG:x"] = (
+            empty_aircraft_mass / (empty_aircraft_mass + crew_mass)
+        )
 
 
-class CGRatio(om.ExplicitComponent):
+class CGXRatio(om.ExplicitComponent):
     def setup(self):
         self.add_input("data:weight:aircraft:operating_empty:CG:x", val=np.nan, units="m")
         self.add_input("data:geometry:wing:MAC:length", val=np.nan, units="m")
@@ -154,15 +137,65 @@ class CGRatio(om.ExplicitComponent):
         self.add_output("data:weight:aircraft:operating_empty:CG:MAC_position", units="unitless")
         self.add_output("data:weight:aircraft:operating_empty:CG:index", units="unitless")
 
+    def setup_partials(self):
+        self.declare_partials(
+            of="data:weight:aircraft:operating_empty:CG:MAC_position",
+            wrt=[
+                "data:weight:aircraft:operating_empty:CG:x",
+                "data:geometry:wing:MAC:length",
+                "data:geometry:wing:MAC:at25percent:x",
+            ],
+            method="exact",
+        )
+        self.declare_partials(
+            of="data:weight:aircraft:operating_empty:CG:index",
+            wrt=[
+                "data:weight:aircraft:operating_empty:CG:x",
+                "data:weight:aircraft:operating_empty:mass",
+                "data:geometry:wing:MAC:at25percent:x",
+            ],
+            method="exact",
+        )
+
     def compute(self, inputs, outputs, discrete_inputs=None, discrete_outputs=None):
         x_cg_all = inputs["data:weight:aircraft:operating_empty:CG:x"]
         wing_position = inputs["data:geometry:wing:MAC:at25percent:x"]
         mac = inputs["data:geometry:wing:MAC:length"]
-        W = inputs["data:weight:aircraft:operating_empty:mass"]
+        operating_empty_mass = inputs["data:weight:aircraft:operating_empty:mass"]
 
         outputs["data:weight:aircraft:operating_empty:CG:MAC_position"] = (
             x_cg_all - wing_position + 0.25 * mac
         ) / mac
         outputs["data:weight:aircraft:operating_empty:CG:index"] = (
-            (x_cg_all - wing_position) * W / 150
+            (x_cg_all - wing_position) * operating_empty_mass / 150
         )
+
+    def compute_partials(self, inputs, partials, discrete_inputs=None):
+        x_cg_all = inputs["data:weight:aircraft:operating_empty:CG:x"]
+        wing_position = inputs["data:geometry:wing:MAC:at25percent:x"]
+        mac = inputs["data:geometry:wing:MAC:length"]
+        operating_empty_mass = inputs["data:weight:aircraft:operating_empty:mass"]
+
+        partials[
+            "data:weight:aircraft:operating_empty:CG:MAC_position",
+            "data:weight:aircraft:operating_empty:CG:x",
+        ] = 1.0 / mac
+        partials[
+            "data:weight:aircraft:operating_empty:CG:MAC_position",
+            "data:geometry:wing:MAC:at25percent:x",
+        ] = -1.0 / mac
+        partials[
+            "data:weight:aircraft:operating_empty:CG:MAC_position", "data:geometry:wing:MAC:length"
+        ] = -(x_cg_all - wing_position) / mac**2.0
+
+        partials[
+            "data:weight:aircraft:operating_empty:CG:index",
+            "data:weight:aircraft:operating_empty:CG:x",
+        ] = operating_empty_mass / 150
+        partials[
+            "data:weight:aircraft:operating_empty:CG:index", "data:geometry:wing:MAC:at25percent:x"
+        ] = -operating_empty_mass / 150
+        partials[
+            "data:weight:aircraft:operating_empty:CG:index",
+            "data:weight:aircraft:operating_empty:mass",
+        ] = (x_cg_all - wing_position) / 150

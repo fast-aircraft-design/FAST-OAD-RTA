@@ -22,7 +22,7 @@ from fastoad_cs25.models.weight.cg.constants import SERVICE_GLOBAL_CG
 from .compute_cg_loadcase1 import ComputeCGLoadCase1
 from .compute_cg_loadcase2 import ComputeCGLoadCase2
 from .compute_cg_loadcase3 import ComputeCGLoadCase3
-from .compute_cg_ratio_aft import ComputeCGRatioAft
+from .compute_cg_ratio_aft import ComputeCGXRatioAft
 from .compute_max_cg_ratio import ComputeMaxCGratio
 
 RegisterSubmodel.active_models[SERVICE_GLOBAL_CG] = "rta.submodel.weight.cg.global.legacy"
@@ -34,7 +34,7 @@ class ComputeGlobalCG(om.Group):
     """Global center of gravity estimation"""
 
     def setup(self):
-        self.add_subsystem("cg_ratio_aft", ComputeCGRatioAft(), promotes=["*"])
+        self.add_subsystem("cg_ratio_aft", ComputeCGXRatioAft(), promotes=["*"])
         self.add_subsystem("cg_ratio_lc1", ComputeCGLoadCase1(), promotes=["*"])
         self.add_subsystem("cg_ratio_lc2", ComputeCGLoadCase2(), promotes=["*"])
         self.add_subsystem("cg_ratio_lc3", ComputeCGLoadCase3(), promotes=["*"])
