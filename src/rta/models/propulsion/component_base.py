@@ -180,7 +180,7 @@ class AbstractPropulsiveComponent(ABC):
             )
 
     @abstractmethod
-    def compute_single_point_backward(self, flight_point: FlightPoint) -> FlightPoint:
+    def compute_single_point_backward(self, flight_point: FlightPoint):
         """
         Compute performance for a single flight point when thrust is regulated.
 
@@ -191,9 +191,6 @@ class AbstractPropulsiveComponent(ABC):
         Args:
             flight_point: A single FlightPoint instance with input values set.
 
-        Returns:
-            The FlightPoint with computed output values.
-
         Raises:
             NotImplementedError: If the subclass has not implemented this method.
         """
@@ -202,7 +199,7 @@ class AbstractPropulsiveComponent(ABC):
         )
 
     @abstractmethod
-    def compute_single_point_forward(self, flight_point: FlightPoint) -> FlightPoint:
+    def compute_single_point_forward(self, flight_point: FlightPoint):
         """
         Compute performance for a single flight point when thrust is manual.
 
@@ -212,9 +209,6 @@ class AbstractPropulsiveComponent(ABC):
 
         Args:
             flight_point: A single FlightPoint instance with input values set.
-
-        Returns:
-            The FlightPoint with computed output values.
 
         Raises:
             NotImplementedError: If the subclass has not implemented this method.
