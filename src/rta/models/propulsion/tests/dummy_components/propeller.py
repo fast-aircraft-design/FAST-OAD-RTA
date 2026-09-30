@@ -86,17 +86,14 @@ class PropellerComponent(AbstractPropulsiveComponent):
     # Dictionary of FlightPoint fields to be computed (field_name: unit)
     _output_fields: ClassVar[dict] = OUTPUT_FIELDS
 
-    def compute_single_point(self, flight_point: FlightPoint) -> FlightPoint:
+    def compute_single_point_backward(self, flight_point: FlightPoint):
         """
-        Compute shaft power for a single flight point.
+        Compute shaft power for a single flight point and updates input flight point.
 
         Power = (Thrust * Velocity) / Efficiency
 
         Args:
             flight_point: FlightPoint with thrust, velocity, and efficiency set.
-
-        Returns:
-            FlightPoint with gearbox_shaft_power computed.
         """
         thrust = flight_point.thrust
         true_airspeed = flight_point.true_airspeed
@@ -108,4 +105,17 @@ class PropellerComponent(AbstractPropulsiveComponent):
         else:
             flight_point.gearbox_shaft_power = thrust * true_airspeed / efficiency
 
-        return flight_point
+    def compute_single_point_forward(self, flight_point: FlightPoint):
+        """
+        Compute thrust for a single flight point and updates input flight point.
+
+        Thrust = Power * Efficiency / Velocity
+
+        Args:
+            flight_point: FlightPoint with power, velocity, and efficiency set.
+        """
+        power = flight_point.gearbox_shaft_power
+        true_airspeed = flight_point.true_airspeed
+        efficiency = self.input_parameters["data:propulsion:propeller:efficiency"].get_val()
+
+        flight_point.thrust = power * efficiency / true_airspeed

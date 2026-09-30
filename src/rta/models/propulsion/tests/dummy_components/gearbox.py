@@ -84,17 +84,14 @@ class GearboxComponent(AbstractPropulsiveComponent):
     # Dictionary of FlightPoint fields to be computed (field_name: unit)
     _output_fields: ClassVar[dict] = OUTPUT_FIELDS
 
-    def compute_single_point(self, flight_point: FlightPoint):
+    def compute_single_point_backward(self, flight_point: FlightPoint):
         """
-        Compute input shaft power for a single flight point.
+        Compute input shaft power for a single flight point and updates input flight point.
 
         Input Power = Output Power / Efficiency
 
         Args:
             flight_point: FlightPoint with gearbox_shaft_power and efficiency set.
-
-        Returns:
-            FlightPoint with TPshaft_power computed.
         """
         output_power = flight_point.gearbox_shaft_power
         efficiency = scalarize(
@@ -103,3 +100,20 @@ class GearboxComponent(AbstractPropulsiveComponent):
 
         # Compute output power
         flight_point.TPshaft_power = output_power / efficiency
+
+    def compute_single_point_forward(self, flight_point: FlightPoint):
+        """
+        Compute output shaft power for a single flight point and updates input flight point.
+
+        Output Power = Input Power * Efficiency
+
+        Args:
+            flight_point: FlightPoint with TPshaft_power and efficiency set.
+        """
+        input_power = flight_point.TPshaft_power
+        efficiency = scalarize(
+            self.input_parameters["data:propulsion:gearbox:efficiency"].get_val()
+        )
+
+        # Compute output power
+        flight_point.gearbox_shaft_power = input_power * efficiency
