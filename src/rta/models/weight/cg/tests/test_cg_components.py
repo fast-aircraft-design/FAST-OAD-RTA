@@ -22,7 +22,7 @@ import openmdao.api as om
 import pytest
 from fastoad.io import VariableIO
 from fastoad.testing import run_system
-from openmdao.api import IndepVarComp
+from openmdao.utils.assert_utils import assert_check_partials
 from pytest import approx
 
 from ..cg_components.compute_cg_flight_controls import (
@@ -33,7 +33,7 @@ from ..cg_components.compute_cg_loadcase2 import ComputeCGLoadCase2
 from ..cg_components.compute_cg_loadcase3 import ComputeCGLoadCase3
 from ..cg_components.compute_cg_loadcase4 import ComputeCGLoadCase4
 from ..cg_components.compute_cg_others import ComputeOthersCG
-from ..cg_components.compute_cg_ratio_aft import ComputeCGRatioAft
+from ..cg_components.compute_cg_ratio_aft import ComputeCGXRatioAft
 from ..cg_components.compute_max_cg_ratio import ComputeMaxCGratio
 from ..cg_components.compute_propulsion_cg import ComputePropulsionCG_RTA
 
@@ -280,7 +280,7 @@ def test_compute_cg_others():
 
 
 def test_max_cg_ratio():
-    ivc = IndepVarComp()
+    ivc = om.IndepVarComp()
     ivc.add_output(
         "data:weight:aircraft:operating_empty:CG:MAC_position", val=0.0013, units="unitless"
     )
@@ -380,7 +380,7 @@ def test_compute_cg_ratio_aft():
 
     ivc = get_indep_var_comp(input_list)
 
-    problem = run_system(ComputeCGRatioAft(), ivc)
+    problem = run_system(ComputeCGXRatioAft(), ivc)
 
     assert problem.get_val("data:weight:aircraft_empty:mass", "kg") == approx(13765, abs=1)
     assert problem.get_val("data:weight:aircraft_empty:CG:x", "m") == approx(12.15, rel=1e-3)
@@ -388,5 +388,9 @@ def test_compute_cg_ratio_aft():
         12.06, rel=1e-3
     )
     assert problem.get_val("data:weight:aircraft:operating_empty:mass", "kg") == approx(
-        14085, abs=1
+        14085.0, abs=1
     )
+
+    # cg_x_all is taken directly from FAST-OAD_CS25, it is their job to check partials
+    data = problem.check_partials(out_stream=None, excludes=["*cg_x_all*"])
+    assert_check_partials(data)
