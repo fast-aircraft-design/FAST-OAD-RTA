@@ -66,7 +66,7 @@ classifiers = [
 
 # Development dependencies -----------------------------------------------------
 # Development dependencies using Poetry groups instead of [project.optional-dependencies]
-version = "0.1.0"  # This version number is overwritten by GitHub packaging workflow
+version = "0.1.1"  # This version number is overwritten by GitHub packaging workflow
 
 [tool.poetry.group.dev.dependencies]
 matplotlib = "^3.9.2"
