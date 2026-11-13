@@ -6,27 +6,18 @@ Version 0.1.1
 ==========
 
 - Added:
-    - Ruff linting rules by @esnguyenvan in https://github.com/fast-aircraft-design/FAST-OAD-RTA/pull/15
-    - Base hybrid propulsion components by @esnguyenvan in https://github.com/fast-aircraft-design/FAST-OAD-RTA/pull/14
-    - X-CG computation rework by @florentLutz in https://github.com/fast-aircraft-design/FAST-OAD-RTA/pull/23
+    - Ruff linting rules. (https://github.com/fast-aircraft-design/FAST-OAD-RTA/pull/15)
+    - Base hybrid propulsion components. (https://github.com/fast-aircraft-design/FAST-OAD-RTA/pull/14)
+    - X-CG computation rework. (https://github.com/fast-aircraft-design/FAST-OAD-RTA/pull/23)
 
 - Modified:
-    - Update to `fast-oad-core` v1.10.0 and `fast-oad-cs25` v0.9.1 by @florentLutz in https://github.com/fast-aircraft-design/FAST-OAD-RTA/pull/20
-    - Rework of the propulsion templates by @florentLutz in https://github.com/fast-aircraft-design/FAST-OAD-RTA/pull/21
-    - Update website in toml due to the package renaming by @enricostragiotti in https://github.com/fast-aircraft-design/FAST-OAD-RTA/pull/12
+    - Update to `fast-oad-core` v1.10.0 and `fast-oad-cs25` v0.9.1. (https://github.com/fast-aircraft-design/FAST-OAD-RTA/pull/20)
+    - Rework of the propulsion templates. (https://github.com/fast-aircraft-design/FAST-OAD-RTA/pull/21)
+    - Update website in toml due to the package renaming. (https://github.com/fast-aircraft-design/FAST-OAD-RTA/pull/12)
 
 - Fixed:
-    - Fixed typo, poetry version and added ✨  by @florentLutz in https://github.com/fast-aircraft-design/FAST-OAD-RTA/pull/22
-    - Enforce explicit `unitless` units for OpenMDAO connections and test inputs by @florentLutz with @Copilot in https://github.com/fast-aircraft-design/FAST-OAD-RTA/pull/19
-
-
-
-
-## New Contributors
-* @florentLutz with @Copilot made their first contribution in https://github.com/fast-aircraft-design/FAST-OAD-RTA/pull/19
-* @florentLutz made their first contribution in https://github.com/fast-aircraft-design/FAST-OAD-RTA/pull/22
-
-**Full Changelog**: https://github.com/fast-aircraft-design/FAST-OAD-RTA/compare/v0.1.0...v0.1.1
+    - Fixed typo, poetry version and added ✨. (https://github.com/fast-aircraft-design/FAST-OAD-RTA/pull/22)
+    - Enforce explicit `unitless` units for OpenMDAO connections and test inputs. (https://github.com/fast-aircraft-design/FAST-OAD-RTA/pull/19)
 
 
 Version 0.1.0
