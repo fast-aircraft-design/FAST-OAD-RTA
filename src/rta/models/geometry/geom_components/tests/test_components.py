@@ -84,6 +84,7 @@ def test_fuselage_basic():
 
     problem = run_system(ComputeFuselageGeometryBasic(), ivc)
 
+    assert problem.get_val("data:geometry:cabin:floor_height", units="m") == approx(0.98, abs=1e-2)
     assert problem.get_val("data:weight:systems:flight_furnishing:CG:x", "m") == approx(
         2.495, rel=1e-3
     )
@@ -117,6 +118,7 @@ def test_fuselage_with_cabin_sizing():
         "data:geometry:cabin:NPAX1",
         units="unitless",
     ) == approx(75, rel=1e-3)
+    assert problem.get_val("data:geometry:cabin:floor_height", units="m") == approx(0.98, abs=1e-2)
     assert problem.get_val("data:weight:systems:flight_furnishing:CG:x", "m") == approx(
         2.493, rel=1e-3
     )
