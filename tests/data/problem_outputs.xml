@@ -157,6 +157,7 @@
         </tip>
       </vertical_tail>
       <wing>
+        <dihedral units="deg">1.25</dihedral>
         <area units="m**2" is_input="False">61.05713495996408<!--wing reference area--></area>
         <aspect_ratio units="unitless" is_input="True">11.995<!--wing aspect ratio--></aspect_ratio>
         <b_50 units="m" is_input="False">27.06716575086977<!--actual length between root and tip along 50% of chord--></b_50>

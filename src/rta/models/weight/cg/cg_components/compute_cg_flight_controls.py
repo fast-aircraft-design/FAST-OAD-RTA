@@ -44,6 +44,10 @@ class ComputeFlightControlCG(om.Group):
                 (
                     "data:weight:airframe:flight_controls:CG:x",
                     "data:weight:systems:flight_controls:CG:x",
-                )
+                ),
+                (
+                    "data:weight:airframe:flight_controls:CG:z",
+                    "data:weight:systems:flight_controls:CG:z",
+                ),
             ],
         )

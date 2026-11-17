@@ -71,6 +71,7 @@ model:
 #  'service.geometry.nacelle_and_pylon': 'rta.submodel.geometry.nacelles',
 #  'service.geometry.wing': 'rta.submodel.geometry.wing',
 #  'service.weight.cg': 'rta.submodel.weight.cg.legacy',
+#  'service.cg.wing': 'rta.submodel.weight.cg.wing.legacy',
 #  'service.cg.wing.control_surfaces': 'rta.submodel.cg.wing.control_surfaces.legacy',
 #  'service.cg.others': 'rta.submodel.weight.cg.others.legacy',
 #  'service.cg.global': 'rta.submodel.weight.cg.global.legacy',

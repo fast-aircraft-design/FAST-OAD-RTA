@@ -34,6 +34,7 @@ from ..cg_components.compute_cg_loadcase3 import ComputeCGLoadCase3
 from ..cg_components.compute_cg_loadcase4 import ComputeCGLoadCase4
 from ..cg_components.compute_cg_others import ComputeOthersCG
 from ..cg_components.compute_cg_ratio_aft import ComputeCGXRatioAft
+from ..cg_components.compute_cg_wing import ComputeWingCG
 from ..cg_components.compute_max_cg_ratio import ComputeMaxCGratio
 from ..cg_components.compute_propulsion_cg import ComputePropulsionCG_RTA
 
@@ -43,6 +44,42 @@ def get_indep_var_comp(var_names):
     reader = VariableIO(Path(__file__).parent.resolve() / "data" / "ref_cg.xml")
     reader.path_separator = ":"
     return reader.read(only=var_names).to_ivc()
+
+
+def test_compute_wing_cg():
+    input_list = [
+        "data:geometry:wing:kink:span_ratio",
+        "data:geometry:wing:spar_ratio:front:root",
+        "data:geometry:wing:spar_ratio:front:kink",
+        "data:geometry:wing:spar_ratio:front:tip",
+        "data:geometry:wing:spar_ratio:rear:root",
+        "data:geometry:wing:spar_ratio:rear:kink",
+        "data:geometry:wing:spar_ratio:rear:tip",
+        "data:geometry:wing:span",
+        "data:geometry:wing:dihedral",
+        "data:geometry:wing:MAC:leading_edge:x:local",
+        "data:geometry:wing:root:chord",
+        "data:geometry:wing:kink:chord",
+        "data:geometry:wing:tip:chord",
+        "data:geometry:wing:root:y",
+        "data:geometry:wing:root:thickness_ratio",
+        "data:geometry:wing:kink:leading_edge:x:local",
+        "data:geometry:wing:kink:y",
+        "data:geometry:wing:kink:thickness_ratio",
+        "data:geometry:wing:tip:leading_edge:x:local",
+        "data:geometry:wing:tip:y",
+        "data:geometry:wing:tip:thickness_ratio",
+        "data:geometry:wing:MAC:at25percent:x",
+        "data:geometry:fuselage:maximum_height",
+    ]
+    ivc = get_indep_var_comp(input_list)
+
+    problem = run_system(ComputeWingCG(), ivc)
+
+    x_cg_wing = problem.get_val("data:weight:airframe:wing:CG:x", "m")
+    assert x_cg_wing == pytest.approx(13.159, abs=1e-2)
+    z_cg_wing = problem.get_val("data:weight:airframe:wing:CG:z", "m")
+    assert z_cg_wing == pytest.approx(2.86, abs=1e-2)
 
 
 def test_compute_flight_control_cg():
