@@ -38,7 +38,7 @@ class ComputeWingCG(om.ExplicitComponent):
         self.add_input("data:geometry:wing:spar_ratio:rear:kink", val=np.nan, units="unitless")
         self.add_input("data:geometry:wing:spar_ratio:rear:tip", val=np.nan, units="unitless")
         self.add_input("data:geometry:wing:span", val=np.nan, units="m")
-        self.add_input("data:geometry:wing:dihedral", val=np.nan, units="rad")
+        self.add_input("data:geometry:wing:root:dihedral", val=np.nan, units="rad")
         self.add_input("data:geometry:wing:MAC:leading_edge:x:local", val=np.nan, units="m")
         self.add_input("data:geometry:wing:root:chord", val=np.nan, units="m")
         self.add_input("data:geometry:wing:kink:chord", val=np.nan, units="m")
@@ -72,7 +72,7 @@ class ComputeWingCG(om.ExplicitComponent):
         rear_spar_ratio_middle = inputs["data:geometry:wing:spar_ratio:rear:kink"]
         rear_spar_ratio_tip = inputs["data:geometry:wing:spar_ratio:rear:tip"]
         span = inputs["data:geometry:wing:span"]
-        dihedral = inputs["data:geometry:wing:dihedral"]
+        dihedral = inputs["data:geometry:wing:root:dihedral"]
         x0_wing = inputs["data:geometry:wing:MAC:leading_edge:x:local"]
         l2_wing = inputs["data:geometry:wing:root:chord"]
         l3_wing = inputs["data:geometry:wing:kink:chord"]

@@ -88,8 +88,14 @@ def test_fuselage_basic():
     assert problem.get_val("data:weight:systems:flight_furnishing:CG:x", "m") == approx(
         2.495, rel=1e-3
     )
+    assert problem.get_val("data:weight:systems:flight_furnishing:CG:z", "m") == approx(
+        1.955, rel=1e-3
+    )
     assert problem.get_val("data:weight:operational:items:passenger_seats:CG:x", "m") == approx(
         10.055, rel=1e-3
+    )
+    assert problem.get_val("data:weight:operational:items:passenger_seats:CG:z", "m") == approx(
+        1.551, rel=1e-3
     )
     assert problem.get_val("data:geometry:cabin:length", "m") == approx(21.838, rel=1e-3)
     assert problem.get_val("data:geometry:fuselage:wetted_area", "m**2") == approx(
@@ -122,8 +128,14 @@ def test_fuselage_with_cabin_sizing():
     assert problem.get_val("data:weight:systems:flight_furnishing:CG:x", "m") == approx(
         2.493, rel=1e-3
     )
+    assert problem.get_val("data:weight:systems:flight_furnishing:CG:z", "m") == approx(
+        1.955, rel=1e-3
+    )
     assert problem.get_val("data:weight:operational:items:passenger_seats:CG:x", "m") == approx(
         12.219, rel=1e-3
+    )
+    assert problem.get_val("data:weight:operational:items:passenger_seats:CG:z", "m") == approx(
+        1.553, rel=1e-3
     )
     assert problem.get_val("data:geometry:fuselage:length", "m") == approx(26.96, rel=1e-3)
     assert problem.get_val("data:geometry:fuselage:maximum_width", "m") == approx(2.793, rel=1e-3)

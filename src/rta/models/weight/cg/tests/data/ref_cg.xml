@@ -16,6 +16,7 @@
         <aisle_width units="m" is_input="True">0.45<!--width of aisles--></aisle_width>
         <exit_width units="m" is_input="True">0.75<!--width of exits--></exit_width>
         <length units="m" is_input="False">21.839468184000005<!--cabin length--></length>
+        <floor_height units="m" is_input="False">0.9776293333333334<!--height of the cabin floor above the bottom of the fuselage--></floor_height>
         <crew_count>
           <commercial units="unitless" is_input="False">2.0<!--number of commercial crew members--></commercial>
           <technical units="unitless" is_input="True">2.0<!--number of technical crew members--></technical>
@@ -165,6 +166,7 @@
           <thickness_ratio units="unitless" is_input="False">0.18754943153338602<!--thickness ratio at wing root--></thickness_ratio>
           <virtual_chord units="m" is_input="False">2.7277486549236443<!--virtual chord length at wing root if sweep angle of trailing edge of outer wing part was on the whole wing (no kink)--></virtual_chord>
           <y units="m" is_input="False">1.396444<!--Y-position of wing root--></y>
+          <dihedral units="deg">5.0</dihedral>
         </root>
         <tip>
           <chord units="m" is_input="False">1.685748668742812<!--chord length at wing tip--></chord>
@@ -474,6 +476,7 @@
           <mass units="kg" is_input="False">2370.091121753705<!--Mass of airframe_inp_data:weight:airframe:wing:mass--></mass>
           <CG>
             <x units="m" is_input="False">13.159183733086218<!--wing (A1): X-position of center of gravity--></x>
+            <z units="m" is_input="False">3.16<!--wing (A1): Z-position of center of gravity--></z>
           </CG>
         </wing>
         <landing_gear>
@@ -572,6 +575,7 @@
             <mass units="kg" is_input="False">720.0<!--Mass of aircraft operational items and equipments_inp_data:weight:operational:items:passenger_seats:mass--></mass>
             <CG>
               <x units="m" is_input="False">12.2189096</x>
+              <z units="m" is_input="False">1.553</z>
             </CG>
           </passenger_seats>
           <unusable_fuel>
@@ -588,6 +592,7 @@
           <mass units="kg" is_input="False">967.8473345886238<!--Mass of the propulsion system_inp_data:weight:propulsion:engine:mass--></mass>
           <CG>
             <x units="m" is_input="False">11.361136041174243<!--engine (B1): X-position of center of gravity--></x>
+            <z units="m" is_input="False">2.9649<!--engine (B1): Z-position of center of gravity--></z>
           </CG>
         </engine>
         <engine_controls_instrumentation>

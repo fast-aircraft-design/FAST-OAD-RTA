@@ -39,7 +39,7 @@ class ComputeFlightControlCG(om.Group):
     def configure(self):
         self.promotes(
             "compute_flight_control_cg",
-            inputs=["*"],
+            inputs=["*", ("data:geometry:wing:dihedral", "data:geometry:wing:root:dihedral")],
             outputs=[
                 (
                     "data:weight:airframe:flight_controls:CG:x",

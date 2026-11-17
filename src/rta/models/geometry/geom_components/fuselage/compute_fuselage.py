@@ -37,6 +37,7 @@ class ComputeFuselageGeometryBasic(om.ExplicitComponent):
     """Geometry of fuselage part A - Cabin (Commercial) estimation"""
 
     def setup(self):
+        self.add_input("data:geometry:cabin:seats:economical:height", val=1.15, units="m")
         self.add_input("data:geometry:cabin:NPAX1", val=np.nan, units="unitless")
         self.add_input("data:geometry:fuselage:length", val=np.nan, units="m")
         self.add_input("data:geometry:fuselage:maximum_width", val=np.nan, units="m")
@@ -50,7 +51,9 @@ class ComputeFuselageGeometryBasic(om.ExplicitComponent):
 
         self.add_output("data:geometry:cabin:floor_height", units="m")
         self.add_output("data:weight:systems:flight_furnishing:CG:x", units="m")
+        self.add_output("data:weight:systems:flight_furnishing:CG:z", units="m")
         self.add_output("data:weight:operational:items:passenger_seats:CG:x", units="m")
+        self.add_output("data:weight:operational:items:passenger_seats:CG:z", units="m")
 
         self.add_output("data:geometry:cabin:length", units="m")
         self.add_output("data:geometry:fuselage:wetted_area", units="m**2")
@@ -65,10 +68,27 @@ class ComputeFuselageGeometryBasic(om.ExplicitComponent):
             method="fd",
         )
         self.declare_partials(
+            "data:weight:systems:flight_furnishing:CG:z",
+            [
+                "data:geometry:fuselage:maximum_height",
+                "settings:geometry:fuselage:floor_height_ratio",
+            ],
+            method="fd",
+        )
+        self.declare_partials(
             "data:weight:operational:items:passenger_seats:CG:x",
             [
                 "data:geometry:fuselage:front_length",
                 "data:geometry:fuselage:PAX_length",
+            ],
+            method="fd",
+        )
+        self.declare_partials(
+            "data:weight:operational:items:passenger_seats:CG:z",
+            [
+                "data:geometry:fuselage:maximum_height",
+                "settings:geometry:fuselage:floor_height_ratio",
+                "data:geometry:cabin:seats:economical:height",
             ],
             method="fd",
         )
@@ -100,6 +120,7 @@ class ComputeFuselageGeometryBasic(om.ExplicitComponent):
         )
 
     def compute(self, inputs, outputs):
+        hs_eco = inputs["data:geometry:cabin:seats:economical:height"]
         npax_1 = inputs["data:geometry:cabin:NPAX1"]
         fus_length = inputs["data:geometry:fuselage:length"]
         b_f = inputs["data:geometry:fuselage:maximum_width"]
@@ -113,8 +134,10 @@ class ComputeFuselageGeometryBasic(om.ExplicitComponent):
         cabin_length = 0.81 * fus_length
         floor_height = floor_height_ratio * h_f
         x_cg_d2 = lav + 0.35 * lpax
+        z_cg_d2 = floor_height + hs_eco / 2.0
 
         x_cg_c6 = lav / 2  # modified
+        z_cg_c6 = (floor_height + h_f) / 2.0
 
         pnc = np.trunc((npax_1 + 17) / 35)
 
@@ -126,8 +149,10 @@ class ComputeFuselageGeometryBasic(om.ExplicitComponent):
         wet_area_fus = wet_area_nose + wet_area_cyl + wet_area_tail
 
         outputs["data:weight:systems:flight_furnishing:CG:x"] = x_cg_c6
+        outputs["data:weight:systems:flight_furnishing:CG:z"] = z_cg_c6
         outputs["data:geometry:cabin:floor_height"] = floor_height
         outputs["data:weight:operational:items:passenger_seats:CG:x"] = x_cg_d2
+        outputs["data:weight:operational:items:passenger_seats:CG:z"] = z_cg_d2
         outputs["data:geometry:cabin:length"] = cabin_length
         outputs["data:geometry:cabin:crew_count:commercial"] = pnc
         outputs["data:geometry:fuselage:wetted_area"] = wet_area_fus
@@ -142,6 +167,7 @@ class ComputeFuselageGeometryCabinSizing(om.ExplicitComponent):
     """Geometry of fuselage part A - Cabin (Commercial) estimation"""
 
     def setup(self):
+        self.add_input("data:geometry:cabin:seats:economical:height", val=1.15, units="m")
         self.add_input("data:geometry:cabin:seats:economical:width", val=np.nan, units="m")
         self.add_input("data:geometry:cabin:seats:economical:length", val=np.nan, units="m")
         self.add_input(
@@ -157,7 +183,9 @@ class ComputeFuselageGeometryCabinSizing(om.ExplicitComponent):
         self.add_output("data:geometry:cabin:NPAX1", units="unitless")
         self.add_output("data:geometry:cabin:floor_height", units="m")
         self.add_output("data:weight:systems:flight_furnishing:CG:x", units="m")
+        self.add_output("data:weight:systems:flight_furnishing:CG:z", units="m")
         self.add_output("data:weight:operational:items:passenger_seats:CG:x", units="m")
+        self.add_output("data:weight:operational:items:passenger_seats:CG:z", units="m")
         self.add_output("data:geometry:fuselage:length", units="m")
         self.add_output("data:geometry:fuselage:maximum_width", units="m")
         self.add_output("data:geometry:fuselage:maximum_height", units="m")
@@ -247,6 +275,16 @@ class ComputeFuselageGeometryCabinSizing(om.ExplicitComponent):
             method="fd",
         )
         self.declare_partials(
+            "data:weight:systems:flight_furnishing:CG:x",
+            [
+                "data:geometry:cabin:seats:economical:count_by_row",
+                "data:geometry:cabin:seats:economical:width",
+                "data:geometry:cabin:aisle_width",
+                "settings:geometry:fuselage:floor_height_ratio",
+            ],
+            method="fd",
+        )
+        self.declare_partials(
             "data:weight:operational:items:passenger_seats:CG:x",
             [
                 "data:geometry:cabin:seats:economical:count_by_row",
@@ -254,6 +292,17 @@ class ComputeFuselageGeometryCabinSizing(om.ExplicitComponent):
                 "data:geometry:cabin:seats:economical:length",
                 "data:geometry:cabin:exit_width",
                 "data:geometry:cabin:aisle_width",
+            ],
+            method="fd",
+        )
+        self.declare_partials(
+            "data:weight:operational:items:passenger_seats:CG:z",
+            [
+                "data:geometry:cabin:seats:economical:count_by_row",
+                "data:geometry:cabin:seats:economical:width",
+                "data:geometry:cabin:seats:economical:height",
+                "data:geometry:cabin:aisle_width",
+                "settings:geometry:fuselage:floor_height_ratio",
             ],
             method="fd",
         )
@@ -279,8 +328,9 @@ class ComputeFuselageGeometryCabinSizing(om.ExplicitComponent):
             method="fd",
         )
 
-    def compute(self, inputs, outputs):
+    def compute(self, inputs, outputs):  # noqa:PLR0915
         front_seat_number_eco = inputs["data:geometry:cabin:seats:economical:count_by_row"]
+        hs_eco = inputs["data:geometry:cabin:seats:economical:height"]
         ws_eco = inputs["data:geometry:cabin:seats:economical:width"]
         ls_eco = inputs["data:geometry:cabin:seats:economical:length"]
         w_aisle = inputs["data:geometry:cabin:aisle_width"]
@@ -321,7 +371,9 @@ class ComputeFuselageGeometryCabinSizing(om.ExplicitComponent):
         cabin_length = 0.81 * fus_length
         floor_height = floor_height_ratio * h_f
         x_cg_c6 = lav / 2  # - (front_seat_number_eco - 4) * ls_eco + lpax * 0.1
+        z_cg_c6 = (floor_height + h_f) / 2.0
         x_cg_d2 = lav - (front_seat_number_eco - 4) * ls_eco + lpax / 2
+        z_cg_d2 = floor_height + hs_eco / 2.0
 
         # Equivalent diameter of the fuselage
         fus_dia = np.sqrt(b_f * h_f)
@@ -333,7 +385,9 @@ class ComputeFuselageGeometryCabinSizing(om.ExplicitComponent):
         outputs["data:geometry:cabin:NPAX1"] = npax_1
         outputs["data:geometry:cabin:floor_height"] = floor_height
         outputs["data:weight:systems:flight_furnishing:CG:x"] = x_cg_c6
+        outputs["data:weight:systems:flight_furnishing:CG:z"] = z_cg_c6
         outputs["data:weight:operational:items:passenger_seats:CG:x"] = x_cg_d2
+        outputs["data:weight:operational:items:passenger_seats:CG:z"] = z_cg_d2
         outputs["data:geometry:fuselage:length"] = fus_length
         outputs["data:geometry:fuselage:maximum_width"] = b_f
         outputs["data:geometry:fuselage:maximum_height"] = h_f
