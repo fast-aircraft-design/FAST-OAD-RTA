@@ -341,6 +341,7 @@
           </climb>
           <cruise>
             <altitude units="m" is_input="True">6096.0</altitude>
+            <altitude_input units="m" is_input="True">6096.0</altitude_input>
             <distance units="m" is_input="False">1138366.2786804861<!--covered ground distance during phase "cruise" of route "main_route" in mission "sizing"--></distance>
             <duration units="s" is_input="False">8004.551452602878<!--duration of phase "cruise" of route "main_route" in mission "sizing"--></duration>
             <fuel units="kg" is_input="False">1578.4203492477318<!--burned fuel during phase "cruise" of route "main_route" in mission "sizing"--></fuel>
@@ -410,14 +411,14 @@
           </CG>
         </load_case_1>
         <load_case_2>
-          <mass units="unitless" is_input="False">17783.2095335391</mass>
+          <mass units="kg" is_input="False">17783.2095335391</mass>
           <CG>
             <MAC_position units="unitless" is_input="False">0.025011366969096227<!--X-position of center of gravity as ratio of mean aerodynamic chord for load case 2--></MAC_position>
             <index units="unitless" is_input="False">-60.75140260444458</index>
           </CG>
         </load_case_2>
         <load_case_3>
-          <mass units="unitless" is_input="False">23597.2095335391</mass>
+          <mass units="kg" is_input="False">23597.2095335391</mass>
           <CG>
             <MAC_position units="unitless" is_input="False">0.03621373604128593<!--X-position of center of gravity as ratio of mean aerodynamic chord for load case 3--></MAC_position>
             <index units="unitless" is_input="False">-76.59951735250488</index>
@@ -836,7 +837,7 @@
     </propulsion>
     <aerodynamics>
       <aircraft>
-        <cruise>
+        <high_speed>
           <CD>
             <k units="unitless" is_input="True">1.0<!--correction ratio to apply to computed drag coefficient in cruise conditions--></k>
             <offset units="unitless" is_input="True">0.0<!--correction offset to apply to computed drag coefficient in cruise conditions--></offset>
@@ -860,7 +861,7 @@
               <offset units="unitless" is_input="True">0.0<!--offset to apply to defined cl range (which goes by default from 0.0 to 1.5) in cruise polar computation--></offset>
             </winglet_effect>
           </CL>
-        </cruise>
+        </high_speed>
         <low_speed>
           <CL0_clean>
             <k units="unitless" is_input="True">1.0</k>
