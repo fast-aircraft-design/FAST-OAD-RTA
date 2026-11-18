@@ -117,6 +117,7 @@ class ComputeFuselageGeometryBasic(om.ExplicitComponent):
                 "data:geometry:fuselage:maximum_height",
                 "settings:geometry:fuselage:floor_height_ratio",
             ],
+            method="fd",
         )
 
     def compute(self, inputs, outputs):
@@ -275,7 +276,7 @@ class ComputeFuselageGeometryCabinSizing(om.ExplicitComponent):
             method="fd",
         )
         self.declare_partials(
-            "data:weight:systems:flight_furnishing:CG:x",
+            "data:weight:systems:flight_furnishing:CG:z",
             [
                 "data:geometry:cabin:seats:economical:count_by_row",
                 "data:geometry:cabin:seats:economical:width",
