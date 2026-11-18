@@ -93,16 +93,23 @@ def test_compute_flight_control_cg():
     input_vars.add_output("data:geometry:wing:kink:chord", 2.4, units="m")
     input_vars.add_output("data:geometry:wing:kink:y", 5.189, units="m")
     input_vars.add_output("data:geometry:wing:kink:leading_edge:x:local", 0.234, units="m")
+    input_vars.add_output("data:geometry:wing:kink:thickness_ratio", 0.140, units="unitless")
     input_vars.add_output("data:geometry:wing:root:chord", 2.633, units="m")
     input_vars.add_output("data:geometry:wing:root:y", 1.396, units="m")
+    input_vars.add_output("data:geometry:wing:root:thickness_ratio", 0.187, units="unitless")
     input_vars.add_output("data:geometry:wing:tip:chord", 1.685, units="m")
     input_vars.add_output("data:geometry:wing:tip:leading_edge:x:local", 0.743, units="m")
     input_vars.add_output("data:geometry:wing:tip:y", 13.421, units="m")
+    input_vars.add_output("data:geometry:wing:tip:thickness_ratio", 0.125, units="unitless")
+    input_vars.add_output("data:weight:airframe:wing:CG:z", 3.166, units="m")
+    input_vars.add_output("data:weight:airframe:wing:CG:thickness", 0.359, units="m")
 
     problem = run_system(ComputeFlightControlCG(), input_vars)
 
     x_cg_flight_control = problem.get_val("data:weight:systems:flight_controls:CG:x", "m")
     assert x_cg_flight_control == pytest.approx(14.365, abs=1e-2)
+    z_cg_flight_control = problem.get_val("data:weight:systems:flight_controls:CG:z", "m")
+    assert z_cg_flight_control == pytest.approx(3.30, abs=1e-2)
 
 
 def test_compute_propulsion_cg():
