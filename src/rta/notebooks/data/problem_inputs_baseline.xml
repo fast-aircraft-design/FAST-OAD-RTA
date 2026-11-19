@@ -338,6 +338,7 @@
           </climb>
           <cruise>
             <altitude units="m" is_input="True">6096.0</altitude>
+            <altitude_input units="m" is_input="True">6096.0</altitude_input>
             <distance units="m" is_input="False">1138366.2786804861<!--covered ground distance during phase "cruise" of route "main_route" in mission "sizing"--></distance>
             <duration units="s" is_input="False">8004.551452602878<!--duration of phase "cruise" of route "main_route" in mission "sizing"--></duration>
             <fuel units="kg" is_input="False">1578.4203492477318<!--burned fuel during phase "cruise" of route "main_route" in mission "sizing"--></fuel>
@@ -826,7 +827,7 @@
     </propulsion>
     <aerodynamics>
       <aircraft>
-        <cruise>
+        <high_speed>
           <CD>
             <k is_input="True">1.0<!--correction ratio to apply to computed drag coefficient in cruise conditions--></k>
             <offset is_input="True">0.0<!--correction offset to apply to computed drag coefficient in cruise conditions--></offset>
@@ -850,7 +851,7 @@
               <offset is_input="True">0.0<!--offset to apply to defined cl range (which goes by default from 0.0 to 1.5) in cruise polar computation--></offset>
             </winglet_effect>
           </CL>
-        </cruise>
+        </high_speed>
         <low_speed>
           <CL0_clean>
             <k is_input="True">1.0</k>
