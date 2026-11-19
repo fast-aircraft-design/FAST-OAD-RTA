@@ -17,7 +17,11 @@ Estimation of global center of gravity
 
 import openmdao.api as om
 from fastoad.module_management.service_registry import RegisterSubmodel
-from fastoad_cs25.models.weight.cg.constants import SERVICE_GLOBAL_CG
+from fastoad_cs25.models.weight.cg.constants import (
+    SERVICE_EMPTY_AIRCRAFT_CG_Y,
+    SERVICE_EMPTY_AIRCRAFT_CG_Z,
+    SERVICE_GLOBAL_CG,
+)
 
 from .compute_cg_loadcase1 import ComputeCGLoadCase1
 from .compute_cg_loadcase2 import ComputeCGLoadCase2
@@ -35,6 +39,60 @@ class ComputeGlobalCG(om.Group):
 
     def setup(self):
         self.add_subsystem("cg_ratio_aft", ComputeCGXRatioAft(), promotes=["*"])
+
+        cg_item_names = [
+            "data:weight:airframe:wing:",
+            "data:weight:airframe:fuselage:",
+            "data:weight:airframe:horizontal_tail:",
+            "data:weight:airframe:vertical_tail:",
+            "data:weight:airframe:landing_gear:main:",
+            "data:weight:airframe:landing_gear:front:",
+            "data:weight:airframe:nacelle:",
+            "data:weight:propulsion:engine:",
+            "data:weight:propulsion:propeller:",
+            "data:weight:propulsion:engine_controls_instrumentation:",
+            "data:weight:propulsion:fuel_lines:",
+            "data:weight:systems:auxiliary_power_unit:",
+            "data:weight:systems:electric_systems:electric_generation:",
+            "data:weight:systems:electric_systems:electric_common_installation:",
+            "data:weight:systems:hydraulic_systems:",
+            "data:weight:systems:fire_protection:",
+            "data:weight:systems:flight_furnishing:",
+            "data:weight:systems:automatic_flight_system:",
+            "data:weight:systems:communications:",
+            "data:weight:systems:ECS:",
+            "data:weight:systems:de-icing:",
+            "data:weight:systems:navigation:",
+            "data:weight:systems:flight_controls:",
+            "data:weight:furniture:furnishing:",
+            "data:weight:furniture:water:",
+            "data:weight:furniture:interior_integration:",
+            "data:weight:furniture:insulation:",
+            "data:weight:furniture:cabin_lighting:",
+            "data:weight:furniture:seats_crew_accommodation:",
+            "data:weight:furniture:oxygen:",
+            "data:weight:operational:items:passenger_seats:",
+            "data:weight:operational:items:unusable_fuel:",
+            "data:weight:operational:items:documents_toolkit:",
+            "data:weight:operational:items:galley_structure:",
+            "data:weight:operational:equipment:others:",
+        ]
+
+        self.add_subsystem(
+            "cg_empty_y",
+            RegisterSubmodel.get_submodel(
+                SERVICE_EMPTY_AIRCRAFT_CG_Y, options={"cg_y_item_names": cg_item_names}
+            ),
+            promotes=["*"],
+        )
+        self.add_subsystem(
+            "cg_empty_z",
+            RegisterSubmodel.get_submodel(
+                SERVICE_EMPTY_AIRCRAFT_CG_Z, options={"cg_z_item_names": cg_item_names}
+            ),
+            promotes=["*"],
+        )
+
         self.add_subsystem("cg_ratio_lc1", ComputeCGLoadCase1(), promotes=["*"])
         self.add_subsystem("cg_ratio_lc2", ComputeCGLoadCase2(), promotes=["*"])
         self.add_subsystem("cg_ratio_lc3", ComputeCGLoadCase3(), promotes=["*"])

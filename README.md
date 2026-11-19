@@ -90,6 +90,7 @@ The list of active submodels with this plugin is given below:
 'service.geometry.fuselage.with_cabin_sizing': 'rta.submodel.geometry.fuselage.with_cabin_sizing',
 'service.geometry.nacelle_and_pylon': 'rta.submodel.geometry.nacelles',
 'service.geometry.wing': 'rta.submodel.geometry.wing',
+'service.cg.wing': 'rta.submodel.weight.cg.wing.legacy',
 'service.weight.cg': 'rta.submodel.weight.cg.legacy',
 'service.cg.wing.control_surfaces': 'rta.submodel.cg.wing.control_surfaces.legacy',
 'service.cg.others': 'rta.submodel.weight.cg.others.legacy',

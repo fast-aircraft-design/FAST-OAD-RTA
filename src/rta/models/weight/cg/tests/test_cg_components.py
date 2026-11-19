@@ -32,8 +32,9 @@ from ..cg_components.compute_cg_loadcase1 import ComputeCGLoadCase1
 from ..cg_components.compute_cg_loadcase2 import ComputeCGLoadCase2
 from ..cg_components.compute_cg_loadcase3 import ComputeCGLoadCase3
 from ..cg_components.compute_cg_loadcase4 import ComputeCGLoadCase4
-from ..cg_components.compute_cg_others import ComputeOthersCG
+from ..cg_components.compute_cg_others import ComputeOthersCGX, ComputeOthersCGZ
 from ..cg_components.compute_cg_ratio_aft import ComputeCGXRatioAft
+from ..cg_components.compute_cg_wing import ComputeWingCG
 from ..cg_components.compute_max_cg_ratio import ComputeMaxCGratio
 from ..cg_components.compute_propulsion_cg import ComputePropulsionCG_RTA
 
@@ -43,6 +44,42 @@ def get_indep_var_comp(var_names):
     reader = VariableIO(Path(__file__).parent.resolve() / "data" / "ref_cg.xml")
     reader.path_separator = ":"
     return reader.read(only=var_names).to_ivc()
+
+
+def test_compute_wing_cg():
+    input_list = [
+        "data:geometry:wing:kink:span_ratio",
+        "data:geometry:wing:spar_ratio:front:root",
+        "data:geometry:wing:spar_ratio:front:kink",
+        "data:geometry:wing:spar_ratio:front:tip",
+        "data:geometry:wing:spar_ratio:rear:root",
+        "data:geometry:wing:spar_ratio:rear:kink",
+        "data:geometry:wing:spar_ratio:rear:tip",
+        "data:geometry:wing:span",
+        "data:geometry:wing:root:dihedral",
+        "data:geometry:wing:MAC:leading_edge:x:local",
+        "data:geometry:wing:root:chord",
+        "data:geometry:wing:kink:chord",
+        "data:geometry:wing:tip:chord",
+        "data:geometry:wing:root:y",
+        "data:geometry:wing:root:thickness_ratio",
+        "data:geometry:wing:kink:leading_edge:x:local",
+        "data:geometry:wing:kink:y",
+        "data:geometry:wing:kink:thickness_ratio",
+        "data:geometry:wing:tip:leading_edge:x:local",
+        "data:geometry:wing:tip:y",
+        "data:geometry:wing:tip:thickness_ratio",
+        "data:geometry:wing:MAC:at25percent:x",
+        "data:geometry:fuselage:maximum_height",
+    ]
+    ivc = get_indep_var_comp(input_list)
+
+    problem = run_system(ComputeWingCG(), ivc)
+
+    x_cg_wing = problem.get_val("data:weight:airframe:wing:CG:x", "m")
+    assert x_cg_wing == pytest.approx(13.159, abs=1e-2)
+    z_cg_wing = problem.get_val("data:weight:airframe:wing:CG:z", "m")
+    assert z_cg_wing == pytest.approx(3.16, abs=1e-2)
 
 
 def test_compute_flight_control_cg():
@@ -56,31 +93,41 @@ def test_compute_flight_control_cg():
     input_vars.add_output("data:geometry:wing:kink:chord", 2.4, units="m")
     input_vars.add_output("data:geometry:wing:kink:y", 5.189, units="m")
     input_vars.add_output("data:geometry:wing:kink:leading_edge:x:local", 0.234, units="m")
+    input_vars.add_output("data:geometry:wing:kink:thickness_ratio", 0.140, units="unitless")
     input_vars.add_output("data:geometry:wing:root:chord", 2.633, units="m")
     input_vars.add_output("data:geometry:wing:root:y", 1.396, units="m")
+    input_vars.add_output("data:geometry:wing:root:thickness_ratio", 0.187, units="unitless")
     input_vars.add_output("data:geometry:wing:tip:chord", 1.685, units="m")
     input_vars.add_output("data:geometry:wing:tip:leading_edge:x:local", 0.743, units="m")
     input_vars.add_output("data:geometry:wing:tip:y", 13.421, units="m")
+    input_vars.add_output("data:geometry:wing:tip:thickness_ratio", 0.125, units="unitless")
+    input_vars.add_output("data:weight:airframe:wing:CG:z", 3.166, units="m")
+    input_vars.add_output("data:weight:airframe:wing:CG:thickness", 0.359, units="m")
 
     problem = run_system(ComputeFlightControlCG(), input_vars)
 
     x_cg_flight_control = problem.get_val("data:weight:systems:flight_controls:CG:x", "m")
     assert x_cg_flight_control == pytest.approx(14.365, abs=1e-2)
+    z_cg_flight_control = problem.get_val("data:weight:systems:flight_controls:CG:z", "m")
+    assert z_cg_flight_control == pytest.approx(3.30, abs=1e-2)
 
 
 def test_compute_propulsion_cg():
     input_list = [
+        "data:geometry:fuselage:maximum_height",
         "data:geometry:propulsion:engine:y_ratio",
         "data:geometry:wing:span",
         "data:geometry:wing:MAC:length",
         "data:geometry:wing:MAC:leading_edge:x:local",
         "data:geometry:wing:root:chord",
+        "data:geometry:wing:root:dihedral",
         "data:geometry:wing:root:y",
         "data:geometry:wing:kink:chord",
         "data:geometry:wing:kink:y",
         "data:geometry:wing:kink:leading_edge:x:local",
         "data:geometry:wing:MAC:at25percent:x",
         "data:geometry:propulsion:nacelle:length",
+        "data:geometry:propulsion:nacelle:diameter",
     ]
 
     ivc = get_indep_var_comp(input_list)
@@ -88,8 +135,11 @@ def test_compute_propulsion_cg():
     problem = run_system(ComputePropulsionCG_RTA(), ivc)
 
     assert problem.get_val("data:weight:propulsion:engine:CG:x", "m") == approx(11.36, rel=1e-3)
+    assert problem.get_val("data:weight:propulsion:engine:CG:z", "m") == approx(2.9649, rel=1e-3)
     assert problem.get_val("data:weight:propulsion:propeller:CG:x", "m") == approx(9.657, rel=1e-3)
+    assert problem.get_val("data:weight:propulsion:propeller:CG:z", "m") == approx(2.9649, rel=1e-3)
     assert problem.get_val("data:weight:airframe:nacelle:CG:x", "m") == approx(11.645, rel=1e-3)
+    assert problem.get_val("data:weight:airframe:nacelle:CG:z", "m") == approx(2.9649, rel=1e-3)
 
 
 def test_compute_loadcase1():
@@ -189,7 +239,7 @@ def test_compute_loadcase4():
     ) == approx(0.1045, rel=1e-3)
 
 
-def test_compute_cg_others():
+def test_compute_cg_x_others():
     input_list = [
         "data:geometry:wing:MAC:leading_edge:x:local",
         "data:geometry:wing:MAC:length",
@@ -207,7 +257,7 @@ def test_compute_cg_others():
         "data:geometry:cabin:seats:economical:length",
     ]
     ivc = get_indep_var_comp(input_list)
-    problem = run_system(ComputeOthersCG(), ivc)
+    problem = run_system(ComputeOthersCGX(), ivc)
 
     assert problem.get_val("data:weight:airframe:fuselage:CG:x", "m") == approx(12.13, rel=1e-3)
     assert problem.get_val("data:weight:airframe:landing_gear:front:CG:x", "m") == approx(
@@ -277,6 +327,91 @@ def test_compute_cg_others():
     assert problem.get_val("data:weight:payload:PAX:CG:x", "m") == approx(12.22, rel=1e-3)
     assert problem.get_val("data:weight:payload:rear_fret:CG:x", "m") == approx(14.75, rel=1e-3)
     assert problem.get_val("data:weight:payload:front_fret:CG:x", "m") == approx(8.37, rel=1e-3)
+
+
+def test_compute_cg_z_others():
+    input_list = [
+        "data:geometry:cabin:floor_height",
+        "data:geometry:fuselage:maximum_height",
+        "data:weight:propulsion:engine:CG:z",
+        "data:weight:airframe:wing:CG:z",
+        "data:weight:operational:items:passenger_seats:CG:z",
+    ]
+    ivc = get_indep_var_comp(input_list)
+    problem = run_system(ComputeOthersCGZ(), ivc)
+
+    assert problem.get_val("data:weight:airframe:fuselage:CG:z", "m") == approx(1.466, rel=1e-3)
+    assert problem.get_val("data:weight:airframe:landing_gear:front:CG:z", "m") == approx(
+        0.0, rel=1e-3
+    )
+    assert problem.get_val("data:weight:airframe:landing_gear:main:CG:z", "m") == approx(
+        0.0, rel=1e-3
+    )
+    assert problem.get_val(
+        "data:weight:propulsion:engine_controls_instrumentation:CG:z", "m"
+    ) == approx(1.955, rel=1e-3)
+    assert problem.get_val("data:weight:propulsion:fuel_lines:CG:z", "m") == approx(
+        2.9649, rel=1e-3
+    )
+
+    assert problem.get_val("data:weight:systems:auxiliary_power_unit:CG:z", "m") == approx(
+        1.955, rel=1e-3
+    )
+    assert problem.get_val(
+        "data:weight:systems:electric_systems:electric_generation:CG:z", "m"
+    ) == approx(2.9649, rel=1e-3)
+    assert problem.get_val(
+        "data:weight:systems:electric_systems:electric_common_installation:CG:z", "m"
+    ) == approx(2.9649, rel=1e-3)
+    assert problem.get_val("data:weight:systems:hydraulic_systems:CG:z", "m") == approx(
+        0.48881467, rel=1e-3
+    )
+
+    assert problem.get_val("data:weight:systems:fire_protection:CG:z", "m") == approx(
+        1.955, rel=1e-3
+    )
+    assert problem.get_val("data:weight:systems:automatic_flight_system:CG:z", "m") == approx(
+        1.955, rel=1e-3
+    )
+    assert problem.get_val("data:weight:systems:communications:CG:z", "m") == approx(
+        1.955, rel=1e-3
+    )
+    assert problem.get_val("data:weight:systems:ECS:CG:z", "m") == approx(0.48881467, rel=1e-3)
+    assert problem.get_val("data:weight:systems:de-icing:CG:z", "m") == approx(3.16, rel=1e-3)
+    assert problem.get_val("data:weight:systems:navigation:CG:z", "m") == approx(1.955, rel=1e-3)
+
+    assert problem.get_val("data:weight:furniture:furnishing:CG:z", "m") == approx(1.553, rel=1e-3)
+    assert problem.get_val("data:weight:furniture:water:CG:z", "m") == approx(1.955, rel=1e-3)
+    assert problem.get_val("data:weight:furniture:interior_integration:CG:z", "m") == approx(
+        1.553, rel=1e-3
+    )
+    assert problem.get_val("data:weight:furniture:insulation:CG:z", "m") == approx(1.466, rel=1e-3)
+    assert problem.get_val("data:weight:furniture:cabin_lighting:CG:z", "m") == approx(
+        1.955, rel=1e-3
+    )
+    assert problem.get_val("data:weight:furniture:seats_crew_accommodation:CG:z", "m") == approx(
+        1.553, rel=1e-3
+    )
+    assert problem.get_val("data:weight:furniture:oxygen:CG:z", "m") == approx(1.955, rel=1e-3)
+
+    assert problem.get_val("data:weight:operational:items:documents_toolkit:CG:z", "m") == approx(
+        1.955, rel=1e-3
+    )
+    assert problem.get_val("data:weight:operational:items:galley_structure:CG:z", "m") == approx(
+        1.955, rel=1e-3
+    )
+    assert problem.get_val("data:weight:operational:equipment:others:CG:z", "m") == approx(
+        1.955, rel=1e-3
+    )
+    assert problem.get_val("data:weight:operational:equipment:crew:CG:z", "m") == approx(
+        1.553, rel=1e-3
+    )
+    assert problem.get_val("data:weight:operational:items:unusable_fuel:CG:z", "m") == approx(
+        3.16, rel=1e-3
+    )
+
+    data = problem.check_partials(out_stream=None)
+    assert_check_partials(data)
 
 
 def test_max_cg_ratio():

@@ -23,7 +23,13 @@ RegisterSubmodel.active_models[SERVICE_OTHERS_CG] = "rta.submodel.weight.cg.othe
 
 
 @RegisterSubmodel(SERVICE_OTHERS_CG, "rta.submodel.weight.cg.others.legacy")
-class ComputeOthersCG(om.ExplicitComponent):
+class ComputeOthersCG(om.Group):
+    def setup(self):
+        self.add_subsystem(name="compute_cg_x_others", subsys=ComputeOthersCGX(), promotes=["*"])
+        self.add_subsystem(name="compute_cg_z_others", subsys=ComputeOthersCGZ(), promotes=["*"])
+
+
+class ComputeOthersCGX(om.ExplicitComponent):
     # TODO: Document equations. Cite sources
     """Other components center of gravities estimation"""
 
@@ -292,3 +298,190 @@ class ComputeOthersCG(om.ExplicitComponent):
         outputs["data:weight:payload:PAX:CG:x"] = x_cg_pl
         outputs["data:weight:payload:rear_fret:CG:x"] = x_cg_rear_fret
         outputs["data:weight:payload:front_fret:CG:x"] = x_cg_front_fret
+
+
+class ComputeOthersCGZ(om.ExplicitComponent):
+    # TODO: Document equations. Cite sources
+    """Other components center of gravities estimation"""
+
+    def setup(self):
+        self.add_input("data:geometry:cabin:floor_height", val=np.nan, units="m")
+        self.add_input("data:geometry:fuselage:maximum_height", val=np.nan, units="m")
+        self.add_input("data:weight:propulsion:engine:CG:z", val=np.nan, units="m")
+        self.add_input("data:weight:airframe:wing:CG:z", val=np.nan, units="m")
+        self.add_input("data:weight:operational:items:passenger_seats:CG:z", val=np.nan, units="m")
+
+        # TODO: add description of these CGs
+        self.add_output("data:weight:airframe:fuselage:CG:z", units="m")
+        self.add_output("data:weight:airframe:landing_gear:front:CG:z", units="m")
+        self.add_output("data:weight:airframe:landing_gear:main:CG:z", units="m")
+        self.add_output("data:weight:propulsion:engine_controls_instrumentation:CG:z", units="m")
+        self.add_output("data:weight:propulsion:fuel_lines:CG:z", units="m")
+
+        self.add_output("data:weight:systems:auxiliary_power_unit:CG:z", units="m")
+        self.add_output("data:weight:systems:electric_systems:electric_generation:CG:z", units="m")
+        self.add_output(
+            "data:weight:systems:electric_systems:electric_common_installation:CG:z",
+            units="m",
+        )
+        self.add_output("data:weight:systems:hydraulic_systems:CG:z", units="m")
+
+        self.add_output("data:weight:systems:fire_protection:CG:z", units="m")
+        self.add_output("data:weight:systems:automatic_flight_system:CG:z", units="m")
+        self.add_output("data:weight:systems:communications:CG:z", units="m")
+        self.add_output("data:weight:systems:ECS:CG:z", units="m")
+        self.add_output("data:weight:systems:de-icing:CG:z", units="m")
+        self.add_output("data:weight:systems:navigation:CG:z", units="m")
+
+        self.add_output("data:weight:furniture:furnishing:CG:z", units="m")
+        self.add_output("data:weight:furniture:water:CG:z", units="m")
+        self.add_output("data:weight:furniture:interior_integration:CG:z", units="m")
+        self.add_output("data:weight:furniture:insulation:CG:z", units="m")
+        self.add_output("data:weight:furniture:cabin_lighting:CG:z", units="m")
+        self.add_output("data:weight:furniture:seats_crew_accommodation:CG:z", units="m")
+        self.add_output("data:weight:furniture:oxygen:CG:z", units="m")
+
+        self.add_output("data:weight:operational:items:documents_toolkit:CG:z", units="m")
+        self.add_output("data:weight:operational:items:galley_structure:CG:z", units="m")
+        self.add_output("data:weight:operational:equipment:others:CG:z", units="m")
+        self.add_output("data:weight:operational:equipment:crew:CG:z", units="m")
+        self.add_output("data:weight:operational:items:unusable_fuel:CG:z", units="m")
+
+    def setup_partials(self):
+        self.declare_partials(
+            of=["data:weight:airframe:fuselage:CG:z", "data:weight:furniture:insulation:CG:z"],
+            wrt="data:geometry:fuselage:maximum_height",
+            val=0.5,
+        )
+
+        self.declare_partials(
+            of=[
+                "data:weight:propulsion:engine_controls_instrumentation:CG:z",
+                "data:weight:systems:auxiliary_power_unit:CG:z",
+                "data:weight:furniture:cabin_lighting:CG:z",
+                "data:weight:furniture:oxygen:CG:z",
+                "data:weight:operational:equipment:others:CG:z",
+                "data:weight:systems:navigation:CG:z",
+                "data:weight:systems:communications:CG:z",
+                "data:weight:systems:fire_protection:CG:z",
+                "data:weight:systems:automatic_flight_system:CG:z",
+                "data:weight:furniture:water:CG:z",
+                "data:weight:operational:items:documents_toolkit:CG:z",
+                "data:weight:operational:items:galley_structure:CG:z",
+            ],
+            wrt=["data:geometry:fuselage:maximum_height", "data:geometry:cabin:floor_height"],
+            val=0.5,
+        )
+
+        self.declare_partials(
+            of=[
+                "data:weight:propulsion:fuel_lines:CG:z",
+                "data:weight:systems:electric_systems:electric_generation:CG:z",
+                "data:weight:systems:electric_systems:electric_common_installation:CG:z",
+            ],
+            wrt="data:weight:propulsion:engine:CG:z",
+            val=1.0,
+        )
+
+        self.declare_partials(
+            of=["data:weight:systems:hydraulic_systems:CG:z", "data:weight:systems:ECS:CG:z"],
+            wrt=["data:geometry:cabin:floor_height"],
+            val=0.5,
+        )
+
+        self.declare_partials(
+            of=[
+                "data:weight:systems:de-icing:CG:z",
+                "data:weight:operational:items:unusable_fuel:CG:z",
+            ],
+            wrt=["data:weight:airframe:wing:CG:z"],
+            val=1.0,
+        )
+
+        self.declare_partials(
+            of=[
+                "data:weight:furniture:seats_crew_accommodation:CG:z",
+                "data:weight:furniture:furnishing:CG:z",
+                "data:weight:furniture:interior_integration:CG:z",
+                "data:weight:operational:equipment:crew:CG:z",
+            ],
+            wrt=["data:weight:operational:items:passenger_seats:CG:z"],
+            val=1.0,
+        )
+
+    def compute(self, inputs, outputs, discrete_inputs=None, discrete_outputs=None):  # noqa:PLR0915
+        fuselage_height = inputs["data:geometry:fuselage:maximum_height"]
+        floor_height = inputs["data:geometry:cabin:floor_height"]
+        z_cg_b1 = inputs["data:weight:propulsion:engine:CG:z"]
+        z_cg_a1 = inputs["data:weight:airframe:wing:CG:z"]
+        z_cg_d2 = inputs["data:weight:operational:items:passenger_seats:CG:z"]
+
+        z_cg_a2 = fuselage_height / 2.0
+
+        # Engine controls instrumentation in the cockpit
+        z_cg_b4 = (fuselage_height + floor_height) / 2.0
+        z_cg_b2 = z_cg_b1
+
+        z_cg_c11 = (fuselage_height + floor_height) / 2.0
+        z_cg_c12 = z_cg_b1
+        z_cg_c13 = floor_height / 2.0  # Below the cabin floor
+
+        z_cg_c21 = fuselage_height / 2.0
+        z_cg_c22 = floor_height / 2.0  # Below the cabin floor
+        z_cg_c23 = z_cg_a1
+        z_cg_c24 = (fuselage_height + floor_height) / 2.0
+        z_cg_c25 = z_cg_d2
+        z_cg_c26 = (fuselage_height + floor_height) / 2.0
+
+        z_cg_c27 = (fuselage_height + floor_height) / 2.0
+        z_cg_c3 = (fuselage_height + floor_height) / 2.0
+        z_cg_c4 = (fuselage_height + floor_height) / 2.0
+        z_cg_c52 = z_cg_d2
+
+        z_cg_e1 = (fuselage_height + floor_height) / 2.0
+        z_cg_e3 = (fuselage_height + floor_height) / 2.0
+        z_cg_e4 = (fuselage_height + floor_height) / 2.0
+        z_cg_e5 = z_cg_d2
+        z_cg_e7 = (fuselage_height + floor_height) / 2.0
+        z_cg_e8 = (fuselage_height + floor_height) / 2.0
+
+        z_cg_tank = z_cg_a1
+        z_cg_e9 = z_cg_d2
+
+        outputs["data:weight:airframe:fuselage:CG:z"] = z_cg_a2
+        outputs["data:weight:airframe:landing_gear:front:CG:z"] = 0.0  # In their stowed position
+        outputs["data:weight:airframe:landing_gear:main:CG:z"] = 0.0  # In their stowed position
+
+        outputs["data:weight:propulsion:engine_controls_instrumentation:CG:z"] = z_cg_b4
+        outputs["data:weight:propulsion:fuel_lines:CG:z"] = z_cg_b2
+
+        outputs["data:weight:systems:auxiliary_power_unit:CG:z"] = z_cg_c11
+        outputs["data:weight:systems:electric_systems:electric_generation:CG:z"] = z_cg_c12
+        outputs["data:weight:systems:electric_systems:electric_common_installation:CG:z"] = z_cg_c12
+        outputs["data:weight:systems:hydraulic_systems:CG:z"] = z_cg_c13
+
+        outputs["data:weight:furniture:insulation:CG:z"] = z_cg_c21
+        outputs["data:weight:systems:ECS:CG:z"] = z_cg_c22
+        outputs["data:weight:systems:de-icing:CG:z"] = z_cg_c23
+        outputs["data:weight:furniture:cabin_lighting:CG:z"] = z_cg_c24
+        outputs["data:weight:furniture:seats_crew_accommodation:CG:z"] = z_cg_c25
+        outputs["data:weight:furniture:oxygen:CG:z"] = z_cg_c26
+
+        outputs["data:weight:operational:equipment:others:CG:z"] = z_cg_c27
+        outputs["data:weight:systems:navigation:CG:z"] = z_cg_c3
+        outputs["data:weight:systems:communications:CG:z"] = z_cg_c4
+        outputs["data:weight:furniture:furnishing:CG:z"] = z_cg_c52
+
+        outputs["data:weight:systems:fire_protection:CG:z"] = z_cg_e1
+        outputs["data:weight:systems:automatic_flight_system:CG:z"] = z_cg_e3
+        outputs["data:weight:furniture:water:CG:z"] = z_cg_e4
+        outputs["data:weight:furniture:interior_integration:CG:z"] = z_cg_e5
+        outputs["data:weight:operational:items:documents_toolkit:CG:z"] = z_cg_e7
+        outputs["data:weight:operational:items:galley_structure:CG:z"] = z_cg_e8
+
+        outputs["data:weight:operational:items:unusable_fuel:CG:z"] = z_cg_tank
+        outputs["data:weight:operational:equipment:crew:CG:z"] = z_cg_e9
+
+    def compute_partials(self, inputs, partials, discrete_inputs=None):
+
+        pass

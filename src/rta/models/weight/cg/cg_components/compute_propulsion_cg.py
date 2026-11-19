@@ -29,27 +29,38 @@ class ComputePropulsionCG_RTA(om.ExplicitComponent):
     """Propulsion center of gravity estimation as a function of wing position"""
 
     def setup(self):
+        self.add_input("data:geometry:fuselage:maximum_height", val=np.nan, units="m")
         self.add_input("data:geometry:propulsion:engine:y_ratio", val=np.nan, units="unitless")
         self.add_input("data:geometry:wing:span", val=np.nan, units="m")
         self.add_input("data:geometry:wing:MAC:length", val=np.nan, units="m")
         self.add_input("data:geometry:wing:MAC:leading_edge:x:local", val=np.nan, units="m")
         self.add_input("data:geometry:wing:root:chord", val=np.nan, units="m")
+        self.add_input("data:geometry:wing:root:dihedral", val=np.nan, units="rad")
         self.add_input("data:geometry:wing:root:y", val=np.nan, units="m")
         self.add_input("data:geometry:wing:kink:chord", val=np.nan, units="m")
         self.add_input("data:geometry:wing:kink:y", val=np.nan, units="m")
         self.add_input("data:geometry:wing:kink:leading_edge:x:local", val=np.nan, units="m")
         self.add_input("data:geometry:wing:MAC:at25percent:x", val=np.nan, units="m")
         self.add_input("data:geometry:propulsion:nacelle:length", val=np.nan, units="m")
+        self.add_input("data:geometry:propulsion:nacelle:diameter", val=np.nan, units="m")
 
         self.add_output("data:weight:propulsion:engine:CG:x", units="m")
+        self.add_output("data:weight:propulsion:engine:CG:z", units="m")
         self.add_output("data:weight:propulsion:propeller:CG:x", units="m")
+        self.add_output("data:weight:propulsion:propeller:CG:z", units="m")
         self.add_output("data:weight:airframe:nacelle:CG:x", units="m")
+        self.add_output("data:weight:airframe:nacelle:CG:z", units="m")
 
         self.declare_partials("data:weight:propulsion:engine:CG:x", "*", method="fd")
+        self.declare_partials("data:weight:propulsion:engine:CG:z", "*", method="fd")
         self.declare_partials("data:weight:propulsion:propeller:CG:x", "*", method="fd")
+        self.declare_partials("data:weight:propulsion:propeller:CG:z", "*", method="fd")
         self.declare_partials("data:weight:airframe:nacelle:CG:x", "*", method="fd")
+        self.declare_partials("data:weight:airframe:nacelle:CG:z", "*", method="fd")
 
     def compute(self, inputs, outputs):
+        maximum_height = inputs["data:geometry:fuselage:maximum_height"]
+        dihedral = inputs["data:geometry:wing:root:dihedral"]
         y_ratio_engine = inputs["data:geometry:propulsion:engine:y_ratio"]
         span = inputs["data:geometry:wing:span"]
         l0_wing = inputs["data:geometry:wing:MAC:length"]
@@ -61,6 +72,7 @@ class ComputePropulsionCG_RTA(om.ExplicitComponent):
         y3_wing = inputs["data:geometry:wing:kink:y"]
         fa_length = inputs["data:geometry:wing:MAC:at25percent:x"]
         nac_length = inputs["data:geometry:propulsion:nacelle:length"]
+        nac_diameter = inputs["data:geometry:propulsion:nacelle:diameter"]
 
         y_nacelle = y_ratio_engine * span / 2
 
@@ -72,6 +84,10 @@ class ComputePropulsionCG_RTA(om.ExplicitComponent):
             - 0.2 * nac_length
         )
         x_nacelle_cg_absolute = fa_length - 0.25 * l0_wing - (x0_wing - x_nacelle_cg)
+        z_nacelle_cg = maximum_height + y_nacelle * np.sin(dihedral) - nac_diameter / 2.0
         outputs["data:weight:propulsion:engine:CG:x"] = x_nacelle_cg_absolute
+        outputs["data:weight:propulsion:engine:CG:z"] = z_nacelle_cg
         outputs["data:weight:propulsion:propeller:CG:x"] = 0.85 * x_nacelle_cg_absolute
+        outputs["data:weight:propulsion:propeller:CG:z"] = z_nacelle_cg
         outputs["data:weight:airframe:nacelle:CG:x"] = 1.025 * x_nacelle_cg_absolute
+        outputs["data:weight:airframe:nacelle:CG:z"] = z_nacelle_cg
