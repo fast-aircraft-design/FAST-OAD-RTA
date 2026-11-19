@@ -54,7 +54,7 @@ model:
   performance:
     id: fastoad.performances.mission
     propulsion_id: rta.wrapper.propulsion.ML_TP_L1
-    mission_file_path: ../data/sizing_mission_R.yml
+    mission_file_path: sizing_mission_R.yml
     use_initializer_iteration: false
     out_file: flight_points.csv
     adjust_fuel: true
@@ -80,3 +80,15 @@ model:
 #  'service.cg.propulsion': 'rta.submodel.weight.cg.propulsion',
 #  'service.mass.airframe.wing': 'rta.submodel.weight.mass.airframe.wing',
 #  'service.mass.airframe.nacelles': 'rta.submodel.weight.mass.airframe.nacelle'
+
+#optimization: # This section is needed only if optimization process is run
+ # design_variables:
+ #   - name: data:geometry:wing:aspect_ratio
+  #    lower: 9.0
+  #    upper: 18.0
+ # constraints:
+ #   - name: data:geometry:wing:span
+ #     upper: 60.0
+ # objective:
+ #   - name: data:mission:sizing:needed_block_fuel
+  #    scaler: 1.e-4
