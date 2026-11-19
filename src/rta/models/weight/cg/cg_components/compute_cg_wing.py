@@ -26,7 +26,9 @@ LIMIT_WING_BREAK = 0.35
 
 @oad.RegisterSubmodel(SERVICE_WING_CG, "rta.submodel.weight.cg.wing.legacy")
 class ComputeWingCG(om.ExplicitComponent):
-    # TODO: Document equations. Cite sources
+    # Based on FAST-OAD-CS25 
+    # Adapted to high wing and specific variable name of wing dihedral
+    # TODO: consider including high wing option within FAST-OAD-CS25 and harmonizing dihedral variable name.
     """Wing center of gravity estimation"""
 
     def setup(self):
