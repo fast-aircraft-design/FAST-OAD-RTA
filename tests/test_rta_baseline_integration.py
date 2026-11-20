@@ -1,4 +1,3 @@
-import contextlib
 import shutil
 from pathlib import Path
 from shutil import rmtree
@@ -18,8 +17,9 @@ FastoadLoader()
 
 DATA_FOLDER_PATH = Path(__file__).parent / "data"
 RESULTS_FOLDER_PATH = Path(__file__).parent / "results"
+CONFIGURATIONS_FOLDER = Path(__file__).parents[1] / "src" / "rta" / "configurations"
+MISSION_FILE = CONFIGURATIONS_FOLDER / "sizing_mission_R.yml"
 CONFIGURATION_FILE = "oad_process.yml"
-MISSION_FILE = "sizing_mission_R.yml"
 SOURCE_FILE = "problem_outputs.xml"
 RESULTS_FOLDER = "problem_folder"
 
@@ -34,6 +34,7 @@ def test_non_regression_mission(cleanup):
         CONFIGURATION_FILE,
         SOURCE_FILE,
         RESULTS_FOLDER,
+        MISSION_FILE,
         check_only_mtow=False,
         tolerance=1.0e-2,
     )
@@ -43,27 +44,34 @@ def run_non_regression_test(
     conf_file,
     legacy_result_file,
     result_dir,
+    source_mission_file,
     *,
     check_only_mtow=False,
     tolerance=5.0e-3,
 ):
     results_folder_path = RESULTS_FOLDER_PATH / result_dir
+    source_data_path = RESULTS_FOLDER_PATH / "source_problem_inputs_rta.xml"
     configuration_file_path = results_folder_path / conf_file
+    mission_file_path = results_folder_path / "sizing_mission_R.yml"
 
-    # Copy of configuration file and generation of problem instance ------------------
+    # Copy of configuration file, mission file and generation of problem instance ------------------
     api.generate_configuration_file(
-        configuration_file_path, distribution_name="FAST-OAD-RTA"
-    )  # just ensure folders are created...
-    shutil.copy(DATA_FOLDER_PATH / conf_file, configuration_file_path)
-    shutil.copy(
-        DATA_FOLDER_PATH / MISSION_FILE,
-        results_folder_path / MISSION_FILE,
+        configuration_file_path,
+        distribution_name="FAST-OAD-RTA",
+        overwrite=True,
+        sample_file_name="oad_process.yml",
     )
+    # We can actually use the same command to copy the mission file
+    shutil.copy(source_mission_file, mission_file_path)
+
+    # Copy source data file
+    api.generate_source_data_file(
+        source_data_path, distribution_name="FAST-OAD-RTA", overwrite=True
+    )
+    api.generate_inputs(configuration_file_path, source_data_path=source_data_path, overwrite=True)
     configurator = FASTOADProblemConfigurator(configuration_file_path)
 
     # Generation and reading of inputs ----------------------------------------
-    ref_inputs = DATA_FOLDER_PATH / legacy_result_file
-    configurator.write_needed_inputs(ref_inputs)
     problem = configurator.get_problem()
     problem.read_inputs()
     problem.setup()
@@ -71,13 +79,6 @@ def run_non_regression_test(
     # Run model ---------------------------------------------------------------
     problem.run_model()
     problem.write_outputs()
-
-    with contextlib.suppress(AttributeError):
-        problem.model.performance.flight_points.to_csv(
-            results_folder_path / "flight_points.csv",
-            sep="\t",
-            decimal=",",
-        )
 
     om.view_connections(
         problem,
