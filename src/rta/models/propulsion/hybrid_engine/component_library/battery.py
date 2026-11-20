@@ -47,10 +47,18 @@ INPUT_FIELDS = {
     "electric_dc_power": _FieldDescriptor(unit="W"),
 }
 OUTPUT_FIELDS = {
-    "battery_soc_derivative": _FieldDescriptor(unit="W"),
     "battery_power_rate": _FieldDescriptor(unit="unitless"),
 }
-# Needs to be added using the add_field mechanism as we can't provide a default value otherwise
+# Needs to be added using the add_field mechanism as we can't provide a default value otherwise.
+# Also need to add the derivative manually since this is interpreted before what is in the list
+# above is added. Therefore, causing an issue since the derivative doesn't exist.
+oad.FlightPoint.add_field(
+    "battery_soc_derivative",
+    unit="s**-1",
+    is_cumulative=False,
+    default_value=0.0,  # Needs a default value otherwise, since it has been declared, if it will
+    # be used in a operation resulting in an error since default is None
+)
 oad.FlightPoint.add_field(
     "battery_soc",
     unit="unitless",
