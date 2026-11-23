@@ -98,4 +98,4 @@ class ElectricMotorComponent(AbstractPropulsiveComponent):
 
         # Compute output power
         flight_point.electric_shaft_power = power
-        flight_point.electric_shaft_power = power / max_power
+        flight_point.electric_motor_power_rate = power / max_power

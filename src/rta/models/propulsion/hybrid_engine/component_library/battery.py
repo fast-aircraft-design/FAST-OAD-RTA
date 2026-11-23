@@ -97,7 +97,7 @@ class BatteryComponent(AbstractPropulsiveComponent):
             * 3600.0
         )
 
-        flight_point.battery_soc_derivative = -output_power / battery_energy_joules
+        flight_point.battery_soc_derivative = -output_power / battery_energy_joules * 100.0
         flight_point.battery_power_rate = output_power / max_power
 
     def compute_single_point_forward(self, flight_point: FlightPoint):

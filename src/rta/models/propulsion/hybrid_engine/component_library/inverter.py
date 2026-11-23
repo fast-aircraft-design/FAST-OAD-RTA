@@ -37,7 +37,7 @@ INPUT_PARAMETERS = VariableList(
             "data:propulsion:inverter:rated_power",
             val=np.nan,
             units="W",
-            desc="Inverter rated power",
+            desc="Inverter rated power on the DC side",
         ),
     ]
 )
@@ -47,6 +47,7 @@ INPUT_FIELDS = {
 }
 OUTPUT_FIELDS = {
     "electric_dc_power": _FieldDescriptor(unit="W"),
+    "inverter_dc_power_rate": _FieldDescriptor(unit="W"),
 }
 
 
@@ -74,8 +75,12 @@ class InverterComponent(AbstractPropulsiveComponent):
         efficiency = scalarize(
             self.input_parameters["data:propulsion:inverter:efficiency"].get_val()
         )
+        max_power = scalarize(
+            self.input_parameters["data:propulsion:inverter:rated_power"].get_val()
+        )
 
         flight_point.electric_dc_power = output_power / efficiency
+        flight_point.inverter_dc_power_rate = output_power / max_power
 
     def compute_single_point_forward(self, flight_point: FlightPoint):
         """
@@ -84,12 +89,13 @@ class InverterComponent(AbstractPropulsiveComponent):
         efficiency = scalarize(
             self.input_parameters["data:propulsion:inverter:efficiency"].get_val()
         )
-
-        # At shaft level
-        power = min(
-            flight_point.electric_dc_power * efficiency,
-            scalarize(self.input_parameters["data:propulsion:inverter:rated_power"].get_val()),
+        max_power = scalarize(
+            self.input_parameters["data:propulsion:inverter:rated_power"].get_val()
         )
+
+        # At AC level
+        power = flight_point.electric_dc_power * efficiency
 
         # Compute output power
         flight_point.electric_ac_power = power
+        flight_point.inverter_dc_power_rate = power / max_power

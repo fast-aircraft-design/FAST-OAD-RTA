@@ -38,7 +38,7 @@ INPUT_PARAMETERS = VariableList(
 
 INPUT_FIELDS = {
     "propeller_shaft_power": _FieldDescriptor(unit="W"),
-    "thermal_shaft_power_share": _FieldDescriptor(unit="W"),
+    "thermal_shaft_power_share": _FieldDescriptor(unit="unitless"),
 }
 OUTPUT_FIELDS = {
     "thermal_shaft_power": _FieldDescriptor(unit="W"),

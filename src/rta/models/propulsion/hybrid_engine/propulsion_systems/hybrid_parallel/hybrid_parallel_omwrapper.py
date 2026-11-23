@@ -15,10 +15,8 @@ Placeholder hybrid parallel OpenMDAO wrapper.
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-from fastoad.model_base.propulsion import (
-    FuelEngineSet,
-    IOMPropulsionWrapper,
-)
+import fastoad.api as oad
+from fastoad.model_base.propulsion import FuelEngineSet
 from openmdao.core.component import Component
 
 from .hybrid_parallel_module import HybridParallelModule
@@ -31,70 +29,83 @@ from ...component_library.inverter import InverterComponent
 from ...component_library.propeller import PropellerComponent
 
 
-class HybridParallelOMWrapper(IOMPropulsionWrapper):
+@oad.RegisterPropulsion("rta.wrapper.propulsion.hybrid_parallel")
+class HybridParallelOMWrapper(oad.IOMPropulsionWrapper):
     """
     Placeholder docstring
     """
-
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-
-        self.propeller_component = PropellerComponent()
-        self.gearbox_component = GearboxComponent()
-        self.gearbox_controller_component = GearboxControllerComponent()
-        self.gas_turbine_component = GasTurbineComponent()
-        self.electric_motor_component = ElectricMotorComponent()
-        self.inverter_component = InverterComponent()
-        self.battery_component = BatteryComponent()
 
     def setup(self, component: Component):
         """
         Placeholder docstring
         """
         # Declare default inputs from PropellerComponent
-        self.propeller_component.declare_openmdao_inputs(component)
+        propeller_component = PropellerComponent()
+        propeller_component.declare_openmdao_inputs(component)
 
         # Declare inputs from GearboxComponent
-        self.gearbox_component.declare_openmdao_inputs(component)
+        gearbox_component = GearboxComponent()
+        gearbox_component.declare_openmdao_inputs(component)
 
         # Declare inputs from GearboxControllerComponent
-        self.gearbox_controller_component.declare_openmdao_inputs(component)
+        gearbox_controller_component = GearboxControllerComponent()
+        gearbox_controller_component.declare_openmdao_inputs(component)
 
         # Declare inputs from GasTurbineComponent
-        self.gas_turbine_component.declare_openmdao_inputs(component)
+        gas_turbine_component = GasTurbineComponent()
+        gas_turbine_component.declare_openmdao_inputs(component)
 
         # Declare inputs from ElectricMotorComponent
-        self.electric_motor_component.declare_openmdao_inputs(component)
+        electric_motor_component = ElectricMotorComponent()
+        electric_motor_component.declare_openmdao_inputs(component)
 
         # Declare inputs from InverterComponent
-        self.inverter_component.declare_openmdao_inputs(component)
+        inverter_component = InverterComponent()
+        inverter_component.declare_openmdao_inputs(component)
 
         # Declare inputs from BatteryComponent
-        self.battery_component.declare_openmdao_inputs(component)
+        battery_component = BatteryComponent()
+        battery_component.declare_openmdao_inputs(component)
 
-    def get_model(self, inputs) -> FuelEngineSet:
+        component.add_input("data:geometry:propulsion:engine:count", 2, units="unitless")
+
+    @staticmethod
+    def get_model(inputs) -> FuelEngineSet:
         """
         Placeholder docstring
         """
 
         # Update inputs from the inputs vector
-        self.propeller_component.update_input_parameters(inputs)
-        self.gearbox_component.update_input_parameters(inputs)
-        self.gearbox_controller_component.update_input_parameters(inputs)
-        self.gas_turbine_component.update_input_parameters(inputs)
-        self.electric_motor_component.update_input_parameters(inputs)
-        self.inverter_component.update_input_parameters(inputs)
-        self.battery_component.update_input_parameters(inputs)
+        propeller_component = PropellerComponent()
+        propeller_component.update_input_parameters(inputs)
+
+        gearbox_component = GearboxComponent()
+        gearbox_component.update_input_parameters(inputs)
+
+        gearbox_controller_component = GearboxControllerComponent()
+        gearbox_controller_component.update_input_parameters(inputs)
+
+        gas_turbine_component = GasTurbineComponent()
+        gas_turbine_component.update_input_parameters(inputs)
+
+        electric_motor_component = ElectricMotorComponent()
+        electric_motor_component.update_input_parameters(inputs)
+
+        inverter_component = InverterComponent()
+        inverter_component.update_input_parameters(inputs)
+
+        battery_component = BatteryComponent()
+        battery_component.update_input_parameters(inputs)
 
         # Create the propulsion system module with configured components
         propulsion_system = HybridParallelModule(
-            propeller=self.propeller_component,
-            gearbox=self.gearbox_component,
-            gearbox_controller=self.gearbox_controller_component,
-            gas_turbine=self.gas_turbine_component,
-            electric_motor=self.electric_motor_component,
-            inverter=self.inverter_component,
-            battery=self.battery_component,
+            propeller=propeller_component,
+            gearbox=gearbox_component,
+            gearbox_controller=gearbox_controller_component,
+            gas_turbine=gas_turbine_component,
+            electric_motor=electric_motor_component,
+            inverter=inverter_component,
+            battery=battery_component,
         )
 
         engine_count = inputs["data:propulsion:engine_count"]

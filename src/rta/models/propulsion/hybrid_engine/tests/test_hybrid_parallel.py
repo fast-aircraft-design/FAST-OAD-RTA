@@ -32,7 +32,7 @@ def hybrid_parallel_module():
 
     # Initialize propeller input values
     propeller_component.input_parameters["data:propulsion:propeller:efficiency"].value = 0.85
-    propeller_component.input_parameters["data:propulsion: propeller:rated_power"].value = 2240.0
+    propeller_component.input_parameters["data:propulsion:propeller:rated_power"].value = 2240.0e3
 
     # Initialize gearbox input values
     gearbox_component.input_parameters["data:propulsion:gearbox:efficiency"].value = 0.95
@@ -57,7 +57,7 @@ def hybrid_parallel_module():
     inverter_component.input_parameters["data:propulsion:inverter:efficiency"].value = 0.95
     inverter_component.input_parameters[
         "data:propulsion:inverter:rated_power"
-    ].value = 500.0  # Doesn't matter if it is too high
+    ].value = 500.0e3  # Doesn't matter if it is too high
 
     # Initialize battery values
     battery_component.input_parameters["data:propulsion:battery:rated_energy"].value = 3e5
@@ -140,11 +140,11 @@ def test_propulsion_system_module_compute_single_flight_point_forward(hybrid_par
 
     hybrid_parallel_module.compute_flight_points(fp)
 
-    assert fp.propeller_shaft_power == pytest.approx(1520000.0, rel=1e-6)
+    assert fp.propeller_shaft_power == pytest.approx(2205900.0, rel=1e-6)
     assert fp.thermal_shaft_power == pytest.approx(1600000.0, rel=1e-6)
     assert fp.psfc == pytest.approx(6.94444e-8, rel=1e-6)
-    assert fp.sfc == pytest.approx(1.203990e-5, rel=1e-6)  # tsfc
-    assert fp.thrust == pytest.approx(9228.57, rel=1e-6)
+    assert fp.sfc == pytest.approx(8.296229e-6, rel=1e-6)  # tsfc
+    assert fp.thrust == pytest.approx(13392.96, rel=1e-6)
 
     assert fp.gas_turbine_power_rate == pytest.approx(
         0.8, rel=1e-6
@@ -170,16 +170,16 @@ def test_propulsion_system_module_compute_multiple_flight_point_forward(hybrid_p
     hybrid_parallel_module.compute_flight_points(flight_points)
 
     assert flight_points.propeller_shaft_power.to_list() == pytest.approx(
-        [1520000.0, 1615000.0], rel=1e-6
+        [2205900.0, 2343768.75], rel=1e-6
     )
     assert flight_points.thermal_shaft_power.to_list() == pytest.approx(
         [1600000.0, 1700000.0], rel=1e-6
     )
     assert flight_points.psfc.to_list() == pytest.approx([6.94444e-8, 6.94444e-8], rel=1e-6)
     assert flight_points.sfc.to_list() == pytest.approx(
-        [1.203990e-5, 1.332989e-5], rel=1e-6
+        [8.296229e-6, 9.185111e-6], rel=1e-6
     )  # tsfc
-    assert flight_points.thrust.to_list() == pytest.approx([9228.57, 8856.45], rel=1e-6)
+    assert flight_points.thrust.to_list() == pytest.approx([13392.96, 12852.92], rel=1e-6)
 
     assert flight_points.gas_turbine_power_rate.to_list() == pytest.approx(
         [0.8, 0.85], rel=1e-6
@@ -204,16 +204,16 @@ def test_propulsion_system_module_compute_multiple_flight_point_mix(hybrid_paral
     hybrid_parallel_module.compute_flight_points(flight_points)
 
     assert flight_points.propeller_shaft_power.to_list() == pytest.approx(
-        [1152941.0, 1615000.0], rel=1e-6
+        [1152941.0, 2343768.75], rel=1e-6
     )
     assert flight_points.thermal_shaft_power.to_list() == pytest.approx(
         [1092260.0, 1700000.0], rel=1e-6
     )
     assert flight_points.psfc.to_list() == pytest.approx([6.94444e-8, 6.94444e-8], rel=1e-6)
     assert flight_points.sfc.to_list() == pytest.approx(
-        [1.083591e-5, 1.332989e-5], rel=1e-6
+        [1.083591e-5, 9.185111e-6], rel=1e-6
     )  # tsfc
-    assert flight_points.thrust.to_list() == pytest.approx([7000.00, 8856.45], rel=1e-6)
+    assert flight_points.thrust.to_list() == pytest.approx([7000.00, 12852.92], rel=1e-6)
     assert flight_points.thrust_rate.to_list() == pytest.approx([0.4089111, 0.85], rel=1e-6)
 
     assert flight_points.gas_turbine_power_rate.to_list() == pytest.approx(

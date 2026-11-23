@@ -81,7 +81,6 @@ class GasTurbineComponent(AbstractPropulsiveComponent):
 
         flight_point.psfc = psfc
         flight_point.fuel_flow = fuel_flow
-        flight_point.sfc = fuel_flow / flight_point.thrust
         flight_point.gas_turbine_power_rate = output_power / max_power
 
     def compute_single_point_forward(self, flight_point: FlightPoint):

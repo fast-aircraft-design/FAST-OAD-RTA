@@ -19,15 +19,16 @@ from dataclasses import dataclass
 from typing import ClassVar
 
 from fastoad.model_base.flight_point import FlightPoint, _FieldDescriptor
+from fastoad.openmdao.variables import VariableList
 
 from rta.models.propulsion.component_base import AbstractPropulsiveComponent
 
-INPUT_PARAMETERS = {}
+INPUT_PARAMETERS = VariableList()
 INPUT_FIELDS = {
     "propeller_shaft_power": _FieldDescriptor(unit="W"),
 }
 OUTPUT_FIELDS = {
-    "thermal_shaft_power_share": _FieldDescriptor(unit="W"),  # Added here so that it is
+    "thermal_shaft_power_share": _FieldDescriptor(unit="unitless"),  # Added here so that it is
 }
 
 

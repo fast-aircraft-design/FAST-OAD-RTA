@@ -21,6 +21,8 @@ from fastoad.model_base.flight_point import FlightPoint
 
 from rta.models.propulsion.propulsion_system_base import PropulsionSystem
 
+from ...exceptions import RTAInconsistentInputParametersError
+
 
 class HybridParallelModule(PropulsionSystem):
     """
@@ -72,7 +74,11 @@ class HybridParallelModule(PropulsionSystem):
         Placeholder docstring
         """
 
-        if flight_point.thrust_is_regulated:
+        thrust_is_regulated = self._check_thrust_inputs(
+            flight_point.thrust_is_regulated, flight_point.thrust_rate, flight_point.thrust
+        )
+
+        if thrust_is_regulated:
             self.propeller.compute_single_point_backward(flight_point)
 
             # Here the gearbox acts as a regulator between sources so this is where a control
@@ -99,8 +105,9 @@ class HybridParallelModule(PropulsionSystem):
                 )
             )
 
-            # Calculate the throttle ratio, stored in the thrust rate
+            # Calculate the throttle ratio, stored in the thrust rate and the SFC in kg/N/s
             flight_point.thrust_rate = throttle_ratio
+            flight_point.sfc = flight_point.fuel_flow / flight_point.thrust
 
         else:
             # First step is to interpret the thrust rate as power ratio on sources. Depend on a
@@ -119,5 +126,43 @@ class HybridParallelModule(PropulsionSystem):
             self.propeller.compute_single_point_forward(flight_point)
 
             # Step 5: Calculate SFC [kg/N/s]
-            sfc = flight_point.fuel_flow / flight_point.thrust
-            flight_point.sfc = sfc  # kg/N/s
+            flight_point.sfc = flight_point.fuel_flow / flight_point.thrust
+
+    @staticmethod
+    def _check_thrust_inputs(thrust_is_regulated: float, thrust_rate: float, thrust: float) -> bool:
+        """
+        This method checks that the inputs are consistent. Unlike the rubber engine's version of
+        this method, it does not cast to a specific shape and only applies to floats. Returns the
+        value of thrust is regulated or raises an error in the case of an inconsistent behaviour
+
+        :param thrust_is_regulated: flight point's thrust_is_regulated field
+        :param thrust_rate: flight point's thrust_rate field
+        :param thrust: flight point's thrust field
+        :return: the corrected value of thrust_is_regulated, thrust_rate and thrust
+        """
+
+        thrust_is_regulated = bool(round(thrust_is_regulated, 0))
+
+        # If thrust_is_regulated is not specified infer its value from the other field,
+        # prioritizing the use of the thrust_rate
+        if thrust_is_regulated is None:
+            if thrust_rate is not None:
+                return False
+            if thrust is not None:
+                return True
+            raise RTAInconsistentInputParametersError(
+                "When thrust_is_regulated is None, either thrust_rate or thrust should be provided."
+            )
+
+        # If it is specified, check that the required input is provided
+        if thrust_is_regulated:
+            if thrust is None:
+                raise RTAInconsistentInputParametersError(
+                    "When thrust_is_regulated is True, thrust should be provided."
+                )
+        elif thrust_rate is None:
+            raise RTAInconsistentInputParametersError(
+                "When thrust_is_regulated is False, thrust_rate should be provided."
+            )
+
+        return thrust_is_regulated

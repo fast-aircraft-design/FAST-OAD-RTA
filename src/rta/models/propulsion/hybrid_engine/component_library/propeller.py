@@ -33,9 +33,9 @@ INPUT_PARAMETERS = VariableList(
             desc="Propeller efficiency (0-1)",
         ),
         Variable(
-            "data:propulsion: propeller:rated_power",
+            "data:propulsion:propeller:rated_power",
             val=np.nan,
-            units="kw",
+            units="W",
             desc="Propeller maximum power",
         ),
     ]
@@ -78,7 +78,7 @@ class PropellerComponent(AbstractPropulsiveComponent):
             self.input_parameters["data:propulsion:propeller:efficiency"].get_val()
         )
         max_power = scalarize(
-            self.input_parameters["data:propulsion: propeller:rated_power"].get_val()
+            self.input_parameters["data:propulsion:propeller:rated_power"].get_val()
         )
 
         # Avoid division by zero
@@ -99,12 +99,17 @@ class PropellerComponent(AbstractPropulsiveComponent):
         # complicated, so they'll just be thrown out as constraints in the flight_points.csv file.
         # This means that models should behave properly when sightly out of their bounds
         max_power = scalarize(
-            self.input_parameters["data:propulsion: propeller:rated_power"].get_val()
+            self.input_parameters["data:propulsion:propeller:rated_power"].get_val()
         )
         true_airspeed = flight_point.true_airspeed
         efficiency = scalarize(
             self.input_parameters["data:propulsion:propeller:efficiency"].get_val()
         )
 
-        flight_point.thrust = power * efficiency / true_airspeed
-        flight_point.propeller_power_rate = power / max_power
+        if true_airspeed == 0:
+            # To get static thrust we cut at 15.0 m/s
+            flight_point.thrust = power * efficiency / 15.0
+            flight_point.propeller_power_rate = power / max_power
+        else:
+            flight_point.thrust = power * efficiency / true_airspeed
+            flight_point.propeller_power_rate = power / max_power
