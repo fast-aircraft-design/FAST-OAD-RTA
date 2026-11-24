@@ -28,10 +28,10 @@ from rta.models.propulsion.component_base import AbstractPropulsiveComponent
 INPUT_PARAMETERS = VariableList(
     [
         Variable(
-            "data:propulsion:gas_turbine:sfc",
+            "data:propulsion:gas_turbine:psfc",
             val=np.nan,
             units="kg/W/s",
-            desc="Gas turbine sfc",
+            desc="Gas turbine psfc",
         ),
         Variable(
             "data:propulsion:gas_turbine:rto_power",
@@ -73,7 +73,7 @@ class GasTurbineComponent(AbstractPropulsiveComponent):
         Placeholder docstring
         """
         output_power = flight_point.thermal_shaft_power
-        psfc = scalarize(self.input_parameters["data:propulsion:gas_turbine:sfc"].get_val())
+        psfc = scalarize(self.input_parameters["data:propulsion:gas_turbine:psfc"].get_val())
         max_power = scalarize(
             self.input_parameters["data:propulsion:gas_turbine:rto_power"].get_val()
         )
@@ -90,7 +90,7 @@ class GasTurbineComponent(AbstractPropulsiveComponent):
         max_power = scalarize(
             self.input_parameters["data:propulsion:gas_turbine:rto_power"].get_val()
         )
-        psfc = scalarize(self.input_parameters["data:propulsion:gas_turbine:sfc"].get_val())
+        psfc = scalarize(self.input_parameters["data:propulsion:gas_turbine:psfc"].get_val())
         output_power = flight_point.gas_turbine_power_rate * max_power
         fuel_flow = output_power * psfc
 

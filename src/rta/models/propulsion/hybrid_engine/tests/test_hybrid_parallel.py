@@ -40,7 +40,7 @@ def hybrid_parallel_module():
     # Nothing is required for the gearbox controller due to its simplicity
 
     # Initialize gas turbine values
-    gas_turbine_component.input_parameters["data:propulsion:gas_turbine:sfc"].value = (
+    gas_turbine_component.input_parameters["data:propulsion:gas_turbine:psfc"].value = (
         0.250 / 3600.0 / 1000.0
     )
     gas_turbine_component.input_parameters["data:propulsion:gas_turbine:rto_power"].value = 2000.0e3
