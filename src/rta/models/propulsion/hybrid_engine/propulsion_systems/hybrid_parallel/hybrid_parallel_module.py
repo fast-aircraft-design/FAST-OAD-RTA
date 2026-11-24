@@ -62,7 +62,7 @@ class HybridParallelModule(PropulsionSystem):
             # Default inefficient but functional way of handling dataframe.
             # User should redefine the method if relying heavily on dataframe,
             # which is not the default case
-            for idx in flight_points.index:
+            for idx in range(len(flight_points)):
                 fp = FlightPoint.create(flight_points.iloc[idx])
                 self.compute_flight_point(fp)
                 flight_points.iloc[[idx]] = pd.DataFrame([fp])
